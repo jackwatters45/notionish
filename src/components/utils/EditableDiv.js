@@ -1,10 +1,11 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { SidebarContext, TodosContext } from '../MainContent';
 
-const EditableDiv = ({ id, className, placeholder = 'Empty' }) => {
+const EditableDiv = ({ id, className, placeholder = 'Empty', autoFocus }) => {
   const { setTodos, todos } = useContext(TodosContext);
   const { selectedTodo } = useContext(SidebarContext);
+  const editableRef = useRef();
 
   const handleChange = (e) => {
     const todosCopy = [...todos];
@@ -20,7 +21,17 @@ const EditableDiv = ({ id, className, placeholder = 'Empty' }) => {
     Document.execCommand('insertText', false, text);
   };
 
-  const editableRef = useRef();
+  useEffect(() => {
+    if (!autoFocus) return;
+    // focus end of text - https://stackoverflow.com/a/3866442/20942838
+    const range = document.createRange();
+    range.selectNodeContents(editableRef.current);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }, [autoFocus]);
+
   return (
     <ContentEditable
       className={className}

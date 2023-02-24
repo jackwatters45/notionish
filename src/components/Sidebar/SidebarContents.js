@@ -120,7 +120,7 @@ const SidebarContents = () => {
   return (
     <>
       <PropertiesContainer>
-        <TodoName id={'name'} todo={selectedTodo} />
+        <TodoName id={'name'} todo={selectedTodo} autoFocus />
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
         <StaticProperty>{selectedTodo.project.name}</StaticProperty>
         <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
