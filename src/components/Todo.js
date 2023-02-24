@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import { mdiCheckboxBlankOutline } from '@mdi/js';
 import styled from 'styled-components';
 import { TodosContext } from './MainContent';
+import { SidebarContext } from './MainContent';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px 10px;
@@ -38,7 +39,9 @@ const DoneContainer = styled.button`
   padding: 2px 1px;
 `;
 
-const Todo = ({ todo, toggleSidebar }) => {
+const Todo = ({ todo }) => {
+  const { toggleSidebar } = useContext(SidebarContext);
+
   const { todos, setTodos, handleRemoveTodo } = useContext(TodosContext);
 
   const handleChange = (e) => {
@@ -62,10 +65,12 @@ const Todo = ({ todo, toggleSidebar }) => {
     if (e.key === 'Enter') e.target.blur();
   };
 
-  // TODO auto height of name input
-
   return (
-    <TodoContainer onClick={toggleSidebar} draggable="true">
+    <TodoContainer
+      className="card"
+      onClick={(e) => toggleSidebar(e, todo)}
+      draggable="true"
+    >
       <StyledInput
         autoFocus
         name="name"

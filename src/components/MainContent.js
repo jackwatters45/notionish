@@ -1,8 +1,8 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import AddProject from './AddProject';
 import Project from './Project';
-import Sidebar from './Sidebar';
+import Sidebar from './Sidebar/Sidebar';
 
 const MainContentContainer = styled.div`
   display: flex;
@@ -18,6 +18,7 @@ const ProjectContainer = styled.div`
 
 export const ProjectsContext = createContext({});
 export const TodosContext = createContext({});
+export const SidebarContext = createContext({});
 
 const testProjects = [
   {
@@ -58,43 +59,69 @@ const MainContent = () => {
     setProjects(projects.filter(({ id }) => id !== projectId));
   };
 
-  const [selectedTodo, setSelectedTodo] = useState();
-
   const [todos, setTodos] = useState(testTodos); // TODO replace initial
   const handleRemoveTodo = (id) =>
     setTodos(todos.filter((todo) => todo.id !== id));
 
+  const [selectedTodo, setSelectedTodo] = useState();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
-  const toggleSidebar = (todo) => {
-    if (!todo.name) return;
+  const closeSidebar = () => setIsSidebarVisible(false);
+  const toggleSidebar = (e, todo) => {
+    const isCurrentlyOpen = () =>
+      isSidebarVisible &&
+      (e.target.outerHTML.includes(selectedTodo.name) ||
+        e.target.parentElement.outerHTML.includes(selectedTodo.name));
+    if (isCurrentlyOpen()) return setIsSidebarVisible(false);
 
-    if (isSidebarVisible) return setIsSidebarVisible(false); // TODO check if different card clicked
     setIsSidebarVisible(true);
     setSelectedTodo(todo);
   };
-  const closeSidebar = () => setIsSidebarVisible(false);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (
+        isSidebarVisible &&
+        !e.target.closest('.sidebar') &&
+        !e.target.className.includes('card') &&
+        !e.target.parentElement.className.includes('card')
+      )
+        setIsSidebarVisible(false);
+    };
+    window.addEventListener('click', handleClick);
+    return () => {
+      window.removeEventListener('click', handleClick);
+    };
+  }, [isSidebarVisible]);
 
   return (
     <MainContentContainer>
       <TodosContext.Provider value={{ todos, setTodos, handleRemoveTodo }}>
-        <ProjectsContext.Provider value={{ projects, setProjects }}>
-          <ProjectContainer>
-            {projects.map((project) => (
-              <Project
-                project={project}
-                key={project.id}
-                toggleSidebar={toggleSidebar}
-                removeProject={removeProject}
-              />
-            ))}
-          </ProjectContainer>
-          <AddProject />
-        </ProjectsContext.Provider>
-        <Sidebar
-          isSidebarVisible={isSidebarVisible}
-          closeSidebar={closeSidebar}
-          todo={selectedTodo}
-        />
+        <SidebarContext.Provider
+          value={{
+            isSidebarVisible,
+            closeSidebar,
+            selectedTodo,
+            toggleSidebar,
+          }}
+        >
+          <ProjectsContext.Provider value={{ projects, setProjects }}>
+            <ProjectContainer>
+              {projects.map((project) => (
+                <Project
+                  project={project}
+                  key={project.id}
+                  removeProject={removeProject}
+                />
+              ))}
+            </ProjectContainer>
+            <AddProject />
+          </ProjectsContext.Provider>
+          <Sidebar
+            isSidebarVisible={isSidebarVisible}
+            closeSidebar={closeSidebar}
+            todo={selectedTodo}
+          />
+        </SidebarContext.Provider>
       </TodosContext.Provider>
     </MainContentContainer>
   );

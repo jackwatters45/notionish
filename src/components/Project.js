@@ -58,7 +58,7 @@ const NewTodoButton = styled.button`
   padding: 6px 2px;
 `;
 
-const Project = ({ project, toggleSidebar, removeProject }) => {
+const Project = ({ project, removeProject }) => {
   const { todos, setTodos } = useContext(TodosContext);
   const handleAddTodo = () =>
     setTodos([
@@ -89,18 +89,13 @@ const Project = ({ project, toggleSidebar, removeProject }) => {
           style={{ display: trashIconStatus }}
           path={mdiDeleteOutline}
           size={0.75}
-          onClick={() => removeProject(project.id)}
         />
       </Header>
       <TodosContext.Provider value={{ todos, setTodos }}>
         <TodosContainer>
           {todos.map((todo) => {
             return todo.project.id === project.id ? (
-              <Todo
-                todo={todo}
-                key={todo.id}
-                toggleSidebar={() => toggleSidebar(todo)}
-              />
+              <Todo todo={todo} key={todo.id} />
             ) : undefined;
           })}
         </TodosContainer>

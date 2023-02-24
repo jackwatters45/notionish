@@ -21,6 +21,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   user-select: none;
+  caret-color: var(--main-font-color);
 }
 
 /* General Styles */
@@ -34,6 +35,22 @@ hr {
   border: none;
   height: 1px;
   width: 100%
+}
+
+div {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+[contenteditable=true]:empty:before {
+  content: attr(placeholder);
+  display: block;
+  color: var(--empty-font-color);
+}
+
+div::placeholder {
+  color: var(--empty-font-color);
 }
 
 input {
@@ -50,7 +67,7 @@ input::placeholder {
 }
 
 textarea {
-    border: none;
+  border: none;
   overflow: auto;
   outline: none;
   -webkit-box-shadow: none;
