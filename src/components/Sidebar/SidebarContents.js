@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import {
@@ -12,16 +12,20 @@ import {
 import EditableDiv from '../utils/EditableDiv';
 import { SidebarContext, TodosContext } from '../MainContent';
 import PropertyLabel from './PropertyLabel';
+import { tabPress } from '../utils/cursorHelpers';
 
+const SidebarContentContainer = styled.div`
+  padding: 48px 48px 0 48px;
+`;
+
+// TODO once I start adding properties gonna need to make rows responsive
 const PropertiesContainer = styled.form`
   display: grid;
+  height: 100%;
   grid-template-columns: 140px 1fr;
-  grid-template-rows: repeat(5, auto);
-  padding: 48px 48px 12px 48px;
-  grid-column: 2;
+  grid-template-rows: repeat(7, auto) 1fr;
   & > * {
     display: flex;
-    align-items: start;
     gap: 8px;
   }
 `;
@@ -31,21 +35,19 @@ const TodoName = styled(EditableDiv)`
   font-size: 30px;
   font-weight: 700;
   grid-column: 1 / -1;
-  word-break: break-word;
-  display: inline-block;
-  color: var(--main-font-color);
-  outline: none;
 `;
 
 const StyledInput = styled(EditableDiv)`
-  align-self: start;
-  justify-self: start;
-  padding: 0 5px;
+  padding: 5px;
   height: fit-content;
-  word-break: break-word;
-  display: inline-block;
+  &:focus {
+    background: rgb(37, 37, 37);
+    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+  }
 `;
 
+// TODO
 const StyledDateInput = styled.input`
   align-self: start;
   justify-self: start;
@@ -55,52 +57,27 @@ const StyledDateInput = styled.input`
   display: inline-block;
 `;
 
-const StaticProperty = styled.p`
-  min-height: 30px;
-  align-self: start;
-  color: var(--main-font-color);
-  padding: 0 5px;
-  margin: 5px 0;
-  word-break: break-word;
-  display: inline-block;
-`;
-
 const DoneButton = styled(Icon)`
   cursor: pointer;
   align-self: start;
-  margin: 5px 0;
+  margin: 5px;
   color: var(--main-font-color);
 `;
 
-const NotesContainer = styled.div`
-  grid-column: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px 0px;
-  align-self: flex-start;
-  padding: 0 48px;
-  height: 95%;
+const StyledHr = styled.hr`
+  grid-column: 1 / -1;
 `;
 
-const Notes = styled.textarea`
-  width: 100%;
+const StyledNotes = styled(EditableDiv)`
   height: 100%;
-  border: none;
-  overflow: auto;
-  outline: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  resize: none;
-  background-color: inherit;
-  font: inherit;
-  color: var(--main-font-color);
+  width: 100%;
+  grid-column: 1 / -1;
+  margin: 5px 0;
 `;
 
-// TODO div input stuff
-// TODO input positioning (probably not necessary if figure out above)
-// TODO Date
+// TODO Notes Styling
+// TODO separate text content and html
+// TODO Date component
 const SidebarContents = () => {
   const { todos, setTodos, handleRemoveTodo } = useContext(TodosContext);
   const { selectedTodo, closeSidebar } = useContext(SidebarContext);
@@ -117,12 +94,22 @@ const SidebarContents = () => {
     setTodos(todosCopy);
   };
 
+  useEffect(() => {
+    window.addEventListener('keydown', tabPress);
+    return () => window.removeEventListener('keydown', tabPress);
+  }, []);
+
   return (
-    <>
-      <PropertiesContainer>
+    <SidebarContentContainer>
+      <PropertiesContainer id="properties">
         <TodoName id={'name'} todo={selectedTodo} autoFocus />
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
-        <StaticProperty>{selectedTodo.project.name}</StaticProperty>
+        <StyledInput
+          id={'project'}
+          styledValue={selectedTodo.project.name}
+          todo={selectedTodo}
+          disabled={true}
+        />
         <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
         <StyledInput id={'priority'} todo={selectedTodo} />
         <PropertyLabel icon={calendarIcon} property={'Date'} />
@@ -134,24 +121,21 @@ const SidebarContents = () => {
           onChange={handleChange}
         />
         <PropertyLabel icon={clockIcon} property={'Time Created'} />
-        <StaticProperty>{selectedTodo.created.toLocaleString()}</StaticProperty>
+        <StyledInput id={'created'} todo={selectedTodo} disabled={true} />
         <PropertyLabel icon={checkboxIcon} property={'Done?'} />
         <DoneButton
           path={emptyCheckboxIcon}
-          size={1}
+          size={0.85}
           onClick={handleRemoveTodoAndSidebar}
         />
-      </PropertiesContainer>
-      <NotesContainer>
-        <hr />
-        <Notes
-          placeholder="Add notes here..."
-          value={selectedTodo.notes}
-          name="notes"
-          onChange={handleChange}
+        <StyledHr />
+        <StyledNotes
+          id={'notes'}
+          todo={selectedTodo}
+          placeholder={'Add notes here...'}
         />
-      </NotesContainer>
-    </>
+      </PropertiesContainer>
+    </SidebarContentContainer>
   );
 };
 

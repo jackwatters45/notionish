@@ -18,11 +18,9 @@ const SidebarContainer = styled.div`
   bottom: 0px;
   display: grid;
   grid-template-columns: 5px auto;
-  grid-template-rows: 36px auto 1fr;
+  grid-template-rows: 36px auto;
   margin: auto;
   background: rgb(32, 32, 32);
-  box-shadow: rgba(15, 15, 15, 0.05) 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px,
-    rgba(15, 15, 15, 0.2) 0px 9px 24px;
   height: 100%;
   color: var(--secondary-font-color);
 `;

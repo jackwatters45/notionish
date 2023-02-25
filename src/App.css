@@ -33,7 +33,7 @@ a {
 hr {
   background-color: var(--empty-font-color);
   border: none;
-  height: 1px;
+  height: .5px;
   width: 100%
 }
 
@@ -46,10 +46,6 @@ div {
 [contenteditable=true]:empty:before {
   content: attr(placeholder);
   display: block;
-  color: var(--empty-font-color);
-}
-
-div::placeholder {
   color: var(--empty-font-color);
 }
 
