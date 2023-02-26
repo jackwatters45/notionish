@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
 import Todo from './Todo';
 import Icon from '@mdi/react';
-import { mdiPlus, mdiDeleteOutline } from '@mdi/js';
+import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
 import { TodosContext } from './MainContent';
+import NewButton from './utils/NewButton';
 
 const ProjectContainer = styled.div`
   margin: 4px;
@@ -47,19 +48,13 @@ const TrashIcon = styled(Icon)`
 const TodosContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
-`;
-
-const NewTodoButton = styled.button`
-  gap: 2px;
-  margin-top: 4px;
-  color: var(--secondary-font-color);
-  display: flex;
-  padding: 6px 2px;
+  gap: 6px;
 `;
 
 const Project = ({ project, removeProject }) => {
   const { todos, setTodos } = useContext(TodosContext);
+
+  // TODO
   const handleAddTodo = () =>
     setTodos([
       ...todos,
@@ -89,21 +84,22 @@ const Project = ({ project, removeProject }) => {
           style={{ display: trashIconStatus }}
           path={mdiDeleteOutline}
           size={0.75}
+          onClick={() => removeProject(project.id)}
         />
       </Header>
-      <TodosContext.Provider value={{ todos, setTodos }}>
-        <TodosContainer>
-          {todos.map((todo) => {
-            return todo.project.id === project.id ? (
+      <TodosContainer>
+        {todos &&
+          todos.map((todo) =>
+            todo.project.id === project.id ? (
               <Todo todo={todo} key={todo.id} />
-            ) : undefined;
-          })}
-        </TodosContainer>
-      </TodosContext.Provider>
-      <NewTodoButton onClick={handleAddTodo}>
+            ) : undefined,
+          )}
+      </TodosContainer>
+      <NewButton onClick={handleAddTodo} text={'New'} />
+      {/* <NewTodoButton onClick={handleAddTodo}>
         <Icon path={mdiPlus} size={0.75} />
         <p>New</p>
-      </NewTodoButton>
+      </NewTodoButton> */}
     </ProjectContainer>
   );
 };

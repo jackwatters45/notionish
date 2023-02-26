@@ -47,6 +47,7 @@ div {
   content: attr(placeholder);
   display: block;
   color: var(--empty-font-color);
+  cursor: text;
 }
 
 input {
@@ -60,23 +61,6 @@ input {
 
 input::placeholder {
   color: var(--empty-font-color);
-}
-
-textarea {
-  border: none;
-  overflow: auto;
-  outline: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  resize: none;
-  background-color: inherit;
-  font: inherit;
-  color: var(--main-font-color);
-}
-
-textarea::placeholder {
-  color: var(--secondary-font-color);
 }
 
 .shadow {

@@ -33,6 +33,7 @@ export const trimSpaces = (string) => {
     .replace(/&lt;/g, '<');
 };
 
+// Tab press finds next editable sibling and goes to end of line
 export const tabPress = (e) => {
   if (e.key !== 'Tab') return;
   if (!document.activeElement.parentElement.id === 'properties') return;

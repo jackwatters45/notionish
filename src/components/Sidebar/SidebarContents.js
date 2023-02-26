@@ -1,5 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
+import TextProperty from '../EditableDivs/TextProperty';
+import { SidebarContext } from '../MainContent';
+import PropertyLabel from './PropertyLabel';
+import { tabPress } from '../utils/cursorHelpers';
 import Icon from '@mdi/react';
 import {
   mdiArrowDownDropCircleOutline as dropdownIcon,
@@ -9,16 +13,12 @@ import {
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
   mdiCalendarMonth as calendarIcon,
 } from '@mdi/js';
-import EditableDiv from '../utils/EditableDiv';
-import { SidebarContext, TodosContext } from '../MainContent';
-import PropertyLabel from './PropertyLabel';
-import { tabPress } from '../utils/cursorHelpers';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;
 `;
 
-// TODO once I start adding properties gonna need to make rows responsive
+// TODO once I start adding properties -> make rows responsive (flex)
 const PropertiesContainer = styled.form`
   display: grid;
   height: 100%;
@@ -30,14 +30,14 @@ const PropertiesContainer = styled.form`
   }
 `;
 
-const TodoName = styled(EditableDiv)`
+const TodoName = styled(TextProperty)`
   margin: 0 0 10px 0;
   font-size: 30px;
   font-weight: 700;
   grid-column: 1 / -1;
 `;
 
-const StyledInput = styled(EditableDiv)`
+const StyledInput = styled(TextProperty)`
   padding: 5px;
   height: fit-content;
   &:focus {
@@ -45,16 +45,6 @@ const StyledInput = styled(EditableDiv)`
     box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
       rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
   }
-`;
-
-// TODO
-const StyledDateInput = styled.input`
-  align-self: start;
-  justify-self: start;
-  padding: 0 5px;
-  height: fit-content;
-  word-break: break-word;
-  display: inline-block;
 `;
 
 const DoneButton = styled(Icon)`
@@ -68,31 +58,16 @@ const StyledHr = styled.hr`
   grid-column: 1 / -1;
 `;
 
-const StyledNotes = styled(EditableDiv)`
+const StyledNotes = styled(TextProperty)`
   height: 100%;
   width: 100%;
   grid-column: 1 / -1;
-  margin: 5px 0;
+  margin: 10px 0;
 `;
 
-// TODO Notes Styling
-// TODO separate text content and html
-// TODO Date component
 const SidebarContents = () => {
-  const { todos, setTodos, handleRemoveTodo } = useContext(TodosContext);
-  const { selectedTodo, closeSidebar } = useContext(SidebarContext);
-
-  const handleRemoveTodoAndSidebar = () => {
-    handleRemoveTodo(selectedTodo.id);
-    closeSidebar();
-  };
-
-  const handleChange = (e) => {
-    const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === selectedTodo.id);
-    todoCopy[e.target.name] = e.target.value;
-    setTodos(todosCopy);
-  };
+  const { selectedTodo, handleRemoveTodoAndSidebar } =
+    useContext(SidebarContext);
 
   useEffect(() => {
     window.addEventListener('keydown', tabPress);
@@ -102,26 +77,37 @@ const SidebarContents = () => {
   return (
     <SidebarContentContainer>
       <PropertiesContainer id="properties">
-        <TodoName id={'name'} todo={selectedTodo} autoFocus />
+        <TodoName
+          property={'name'}
+          todo={selectedTodo}
+          styledValue={selectedTodo.html}
+          autoFocus
+        />
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
         <StyledInput
-          id={'project'}
+          property={'project'}
           styledValue={selectedTodo.project.name}
           todo={selectedTodo}
           disabled={true}
         />
         <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
-        <StyledInput id={'priority'} todo={selectedTodo} />
+        <StyledInput property={'priority'} todo={selectedTodo} />
         <PropertyLabel icon={calendarIcon} property={'Date'} />
-        <StyledDateInput
-          name="date"
-          type="date"
-          placeholder="Empty"
-          value={selectedTodo.date}
-          onChange={handleChange}
+        <StyledInput
+          property={'date'}
+          type={'date'}
+          styledValue={selectedTodo.date.toString()}
+          todo={selectedTodo}
+          disabled={true}
         />
         <PropertyLabel icon={clockIcon} property={'Time Created'} />
-        <StyledInput id={'created'} todo={selectedTodo} disabled={true} />
+        <StyledInput
+          property={'created'}
+          type={'date'}
+          styledValue={selectedTodo.created.toString()}
+          todo={selectedTodo}
+          disabled={true}
+        />
         <PropertyLabel icon={checkboxIcon} property={'Done?'} />
         <DoneButton
           path={emptyCheckboxIcon}
@@ -130,7 +116,7 @@ const SidebarContents = () => {
         />
         <StyledHr />
         <StyledNotes
-          id={'notes'}
+          property={'notes'}
           todo={selectedTodo}
           placeholder={'Add notes here...'}
         />

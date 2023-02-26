@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
-import Icon from '@mdi/react';
-import { mdiCheckboxBlankOutline } from '@mdi/js';
 import styled from 'styled-components';
-import { TodosContext } from './MainContent';
 import { SidebarContext } from './MainContent';
+import CardDone from './utils/CardDone';
+import TextProperty from './EditableDivs/TextProperty';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px 10px;
@@ -21,49 +20,13 @@ const TodoContainer = styled.div`
   cursor: pointer;
 `;
 
-const StyledInput = styled.input`
+const StyledNameProp = styled(TextProperty)`
   background-color: var(--card-background-color);
   padding: 0 0 6px 0;
-  word-wrap: break-word;
-  word-break: break-all;
-`;
-
-const DoneContainer = styled.button`
-  display: flex;
-  gap: 2px;
-  font-size: 12px;
-  width: fit-content;
-  align-items: center;
-  justify-content: center;
-  color: var(--main-font-color);
-  padding: 2px 1px;
 `;
 
 const Todo = ({ todo }) => {
   const { toggleSidebar } = useContext(SidebarContext);
-
-  const { todos, setTodos, handleRemoveTodo } = useContext(TodosContext);
-
-  const handleChange = (e) => {
-    const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
-
-    todoCopy[e.target.name] = e.target.value;
-
-    setTodos(todosCopy);
-  };
-
-  const handleBlurNameInput = () => {
-    if (!todo.name) return handleRemoveTodo(todo.id);
-
-    const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
-    todoCopy.name = todo.name;
-    setTodos(todosCopy);
-  };
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') e.target.blur();
-  };
 
   return (
     <TodoContainer
@@ -71,19 +34,13 @@ const Todo = ({ todo }) => {
       onClick={(e) => toggleSidebar(e, todo)}
       draggable="true"
     >
-      <StyledInput
+      <StyledNameProp
+        property={'name'}
+        todo={todo}
         autoFocus
-        name="name"
         placeholder="Type a name..."
-        value={todo.name}
-        onChange={handleChange}
-        onBlur={handleBlurNameInput}
-        onKeyDown={handleKeyPress}
       />
-      <DoneContainer onClick={() => handleRemoveTodo(todo.id)}>
-        <Icon path={mdiCheckboxBlankOutline} size={0.8} />
-        <p>Done</p>
-      </DoneContainer>
+      <CardDone todo={todo} />
     </TodoContainer>
   );
 };

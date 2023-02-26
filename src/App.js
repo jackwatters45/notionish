@@ -19,10 +19,10 @@ const Header = styled.h1`
   padding: 10px 0px;
 `;
 
-function App() {
+const  App = () => {
   return (
     <AppContainer>
-      <Header>Todo List</Header>
+      <Header>Notion Clone</Header>
       <MainContent />
       <Footer />
     </AppContainer>

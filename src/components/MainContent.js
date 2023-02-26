@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import AddProject from './AddProject';
+import AddProject from './utils/AddProject';
 import Project from './Project';
 import Sidebar from './Sidebar/Sidebar';
 
@@ -27,45 +27,38 @@ const testProjects = [
   },
 ];
 
-const testTodos = [
-  {
-    name: 'Todo 1',
-    id: 'le6tim0g',
-    project: {
-      id: 'le6tmu59',
-      name: 'Project 1',
-    },
-    priority: 'High',
-    date: '2023-02-16T08:06:12.975Z',
-    created: '2023-02-16T08:06:12.975Z',
-    notes: '',
-  },
-  {
-    name: 'Todo 2',
-    id: 'le6tisov',
-    project: {
-      id: 'le6tmu59',
-      name: 'Project 1',
-    },
-    priority: 'Low',
-    date: '2023-02-16T08:06:21.631Z',
-    created: '2023-02-16T08:06:21.631Z',
-    notes: '',
-  },
-];
+// const testTodos = [
+//   {
+//     name: { value: 'Todo 1', html: 'Todo 1' },
+//     id: 'le6tim0g',
+//     project: {
+//       id: 'le6tmu59',
+//       name: 'Project 1',
+//     },
+//     priority: { value: 'High', html: 'High' },
+//     date: new Date(),
+//     created: new Date(),
+//     notes: { value: '', html: '' },
+//   },
+// ];
+
 const MainContent = () => {
   const [projects, setProjects] = useState(testProjects); // TODO replace initial
   const removeProject = (projectId) => {
     setProjects(projects.filter(({ id }) => id !== projectId));
   };
 
-  const [todos, setTodos] = useState(testTodos); // TODO replace initial
+  const [todos, setTodos] = useState('');
+  const [selectedTodo, setSelectedTodo] = useState();
   const handleRemoveTodo = (id) =>
     setTodos(todos.filter((todo) => todo.id !== id));
 
-  const [selectedTodo, setSelectedTodo] = useState();
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const closeSidebar = () => setIsSidebarVisible(false);
+  const handleRemoveTodoAndSidebar = () => {
+    handleRemoveTodo(selectedTodo.id);
+    closeSidebar();
+  };
   const toggleSidebar = (e, todo) => {
     const isCurrentlyOpen = () =>
       isSidebarVisible &&
@@ -100,22 +93,22 @@ const MainContent = () => {
           value={{
             isSidebarVisible,
             closeSidebar,
+            handleRemoveTodoAndSidebar,
             selectedTodo,
             toggleSidebar,
           }}
         >
-          <ProjectsContext.Provider value={{ projects, setProjects }}>
-            <ProjectContainer>
-              {projects.map((project) => (
+          <ProjectContainer>
+            {projects &&
+              projects.map((project) => (
                 <Project
                   project={project}
                   key={project.id}
                   removeProject={removeProject}
                 />
               ))}
-            </ProjectContainer>
-            <AddProject />
-          </ProjectsContext.Provider>
+          </ProjectContainer>
+          <AddProject projects={projects} setProjects={setProjects} />
           <Sidebar
             isSidebarVisible={isSidebarVisible}
             closeSidebar={closeSidebar}
