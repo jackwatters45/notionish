@@ -3,22 +3,14 @@ import ContentEditable from 'react-contenteditable';
 import { TodosContext } from '../MainContent';
 import styled from 'styled-components';
 import useEditableDiv from './useEditableDiv';
+import { propertySharedStyle } from './Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
-  width: 100%;
-  word-break: break-word;
-  display: inline-block;
-  color: var(--main-font-color);
-  border-radius: 4px;
-  align-self: start;
-  justify-self: start;
-  outline: none;
-  user-select: none;
-  transition: background 20ms ease-in 0s;
+  ${propertySharedStyle}
 `;
 
-// TODO
-const DateProperty = (props) => {
+// Property name is unique so kinda like a key (active prop db)
+const NumberProperty = (props) => {
   const { todo } = props;
   const { setTodos, todos } = useContext(TodosContext);
   const editableDivProps = useEditableDiv(props);
@@ -30,12 +22,18 @@ const DateProperty = (props) => {
     setTodos(todosCopy);
   };
 
+  // Only numbers allowed
+  const onlyAllowNumbers = (e) => {
+    if (e.keyCode < 48 || e.keyCode > 57) e.preventDefault();
+  };
+
   return (
     <StyledContentEditable
+      onKeyDownCapture={onlyAllowNumbers}
       onChange={handleChangePlainText}
       {...editableDivProps}
     />
   );
 };
 
-export default DateProperty;
+export default NumberProperty;

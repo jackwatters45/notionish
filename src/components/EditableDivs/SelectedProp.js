@@ -6,11 +6,11 @@ import useEditableDiv from './useEditableDiv';
 import { propertySharedStyle } from './Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
- ${propertySharedStyle}
+  ${propertySharedStyle}
 `;
 
 // Property name is unique so kinda like a key (active prop db)
-const TextProperty = (props) => {
+const SelectedProp = (props) => {
   const { todo, property } = props;
   const { setTodos, todos } = useContext(TodosContext);
   const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
@@ -28,12 +28,14 @@ const TextProperty = (props) => {
   };
 
   return (
-    <StyledContentEditable
-      onChange={handleChangePlainText}
-      onBlur={property === 'name' ? handleBlurNameInput : null}
-      {...editableDivProps}
-    />
+    <>
+      <StyledContentEditable
+        onChange={handleChangePlainText}
+        onBlur={property === 'name' ? handleBlurNameInput : null}
+        {...editableDivProps}
+      />
+    </>
   );
 };
 
-export default TextProperty;
+export default SelectedProp;

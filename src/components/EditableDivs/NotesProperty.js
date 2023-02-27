@@ -3,25 +3,17 @@ import ContentEditable from 'react-contenteditable';
 import { TodosContext } from '../MainContent';
 import styled from 'styled-components';
 import useEditableDiv from './useEditableDiv';
+import { propertySharedStyle } from './Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
-  width: 100%;
-  word-break: break-word;
-  display: inline-block;
-  color: var(--main-font-color);
-  border-radius: 4px;
-  align-self: start;
-  justify-self: start;
-  outline: none;
-  user-select: none;
-  transition: background 20ms ease-in 0s;
+  ${propertySharedStyle}
 `;
 
 // TODO make sure to check for notes stuff cause that will  be totally different
 const NotesProperty = (props) => {
   const { todo } = props;
   const { setTodos, todos } = useContext(TodosContext);
-  const editableDivProps = useEditableDiv(props);
+  const { onKeyDown: _, ...editableDivProps } = useEditableDiv(props);
 
   // TODO need to account for html
   const handleChangePlainText = (e) => {
@@ -34,8 +26,6 @@ const NotesProperty = (props) => {
   return (
     <StyledContentEditable
       onChange={handleChangePlainText}
-      onKeyDown={(e) => e.preventDefault()}
-      onMouseEnter={(e) => e.preventDefault()}
       {...editableDivProps}
     />
   );
