@@ -87,7 +87,9 @@ const MainContent = () => {
 
   return (
     <>
-      <TodosContext.Provider value={{ todos, setTodos, handleRemoveTodo }}>
+      <TodosContext.Provider
+        value={{ todos, setTodos, handleRemoveTodo, projects }}
+      >
         <SidebarContext.Provider
           value={{
             isSidebarVisible,

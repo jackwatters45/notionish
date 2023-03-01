@@ -3,10 +3,8 @@
 Still todo
 
 - drag and drop
-- editing project (on click -> input??)
 - views
-- add property
-- delete property
+
 - backend
 - sort
 - filter
@@ -23,5 +21,11 @@ Random Notes
 
 Currently
 
-- created time (just a date thats disabled)
-- different types of components (select, notes)
+- selected styling
+- -> custom hook
+- notes (not too detailed - make it work not work well)
+- url img
+
+- rename project (on click -> input??)
+- add property
+- delete property

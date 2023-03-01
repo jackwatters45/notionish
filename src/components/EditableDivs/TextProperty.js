@@ -10,6 +10,7 @@ const StyledContentEditable = styled(ContentEditable)`
 `;
 
 // Property name is unique so kinda like a key (active prop db)
+// for created - maybe add a type and if type = date that is how formatted
 const TextProperty = (props) => {
   const { todo, property } = props;
   const { setTodos, todos } = useContext(TodosContext);

@@ -16,6 +16,7 @@ import {
 import UrlProperty from '../EditableDivs/UrlProperty';
 import NotesProperty from '../EditableDivs/NotesProperty';
 import DateProperty from '../EditableDivs/DatePicker/DateProperty';
+import SelectProp from '../EditableDivs/Select/SelectProp';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;
@@ -56,9 +57,13 @@ const StyledUrlInput = styled(UrlProperty)`
   ${PropertyStyle}
 `;
 
+const StyledSelect = styled(SelectProp)`
+  ${PropertyStyle}
+`;
+
 const StyledDateInput = styled(DateProperty)`
-padding: 6px 8px 7px;
-height: fit-content;
+  padding: 6px 8px 7px;
+  height: fit-content;
 `;
 
 const DoneButton = styled(Icon)`
@@ -94,26 +99,18 @@ const SidebarContents = () => {
         <TodoName
           property={'name'}
           todo={selectedTodo}
-          styledValue={selectedTodo.html}
           autoFocus
         />
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
-        <StyledTextInput
+        <StyledSelect
           property={'project'}
-          styledValue={selectedTodo.project.name}
           todo={selectedTodo}
           disabled={true}
         />
         <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
         <StyledUrlInput property={'priority'} todo={selectedTodo} />
         <PropertyLabel icon={calendarIcon} property={'Date'} />
-        <StyledDateInput
-          property={'date'}
-          type={'date'}
-          todo={selectedTodo}
-          disabled={true}
-          hoverable={true}
-        />
+        <StyledDateInput property={'date'} type={'date'} todo={selectedTodo} />
         <PropertyLabel icon={clockIcon} property={'Time Created'} />
         <StyledTextInput
           property={'created'}

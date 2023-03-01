@@ -12,6 +12,7 @@ const DatePickerContainer = styled.div`
 
 const StyledContentEditable = styled(ContentEditable)`
   cursor: pointer;
+  width: 100%;
 `;
 
 const DateProperty = (props) => {
@@ -49,6 +50,7 @@ const DateProperty = (props) => {
       if (e.target === dateButtonRef.current && !isDatePicker)
         return showDatePicker();
 
+      if (!datePickerRef.current) return;
       if (
         isDatePicker &&
         !datePickerRef.current.contains(e.target) &&
@@ -68,7 +70,7 @@ const DateProperty = (props) => {
   }, [dateButtonRef, isDatePicker, setIsPopupVisible]);
 
   return (
-    <DatePickerContainer >
+    <DatePickerContainer>
       <StyledContentEditable
         {...editableDivProps}
         html={html ? html.toDateString() : 'Empty'}

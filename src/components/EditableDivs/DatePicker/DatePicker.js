@@ -17,6 +17,7 @@ import { TodosContext } from '../../MainContent';
 
 const DropDown = styled.div`
   position: absolute;
+  margin: 30px 0px;
   width: 270px;
   background: var(--secondary-background-color);
   box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
@@ -225,13 +226,13 @@ const DatePicker = forwardRef(({ style, todo, propId }, ref) => {
         color:
           dateArr[1] === month || isSameDay(new Date(...dateArr))
             ? 'var(--main-font-color)'
-            : '',
+            : 'var(--empty-font-color)',
       },
     };
   };
 
   return (
-    <DropDown ref={ref} style={style}>
+    <DropDown id="datePicker" ref={ref} style={style}>
       <InputDiv>
         <StyledInput
           onChange={handleInput}

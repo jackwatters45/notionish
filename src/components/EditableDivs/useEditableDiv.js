@@ -10,7 +10,7 @@ const useEditableDiv = (props) => {
     disabled,
     className,
     placeholder = 'Empty',
-    hoverable = false
+    hoverable = false,
   } = props;
 
   const editableRef = useRef();
