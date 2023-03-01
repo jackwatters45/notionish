@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
-import { SidebarContext } from '../../MainContent';
 import styled from 'styled-components';
 import useEditableDiv from '../useEditableDiv';
 import { propertySharedStyle } from '../Theme';
 import SelectDropdown from './SelectDropdown';
+import usePopupProperty from '../usePopupProperty';
 
 const SelectContainer = styled.div`
   ${propertySharedStyle};
@@ -37,49 +37,12 @@ const SelectProp = (props) => {
     ...editableDivProps
   } = useEditableDiv(props);
 
-  const dropdownRef = useRef();
-  const { setIsPopupVisible } = useContext(SidebarContext);
-  const [isDropdown, setIsDropdown] = useState(false);
+  const { isDropdown, ...popupProps } = usePopupProperty(
+    props,
+    selectButtonRef,
+  );
 
-  const getRight = () => {
-    const pickerRightLoc =
-      selectButtonRef.current.getBoundingClientRect().left + 270;
-    // if greater than 0 nothing, if less right: 0
-    return window.innerWidth - pickerRightLoc < 0 ? { right: 0 } : {};
-  };
-
-  useEffect(() => {
-    const showDatePicker = () => {
-      setIsPopupVisible(true);
-      setIsDropdown(true);
-    };
-    const hideDatePicker = () => {
-      setIsPopupVisible(false);
-      setIsDropdown(false);
-    };
-
-    const handleClick = (e) => {
-      if (
-        (e.target === selectButtonRef.current ||
-          selectButtonRef.current.contains(e.target)) &&
-        !isDropdown
-      )
-        return showDatePicker();
-
-      if (isDropdown && !e.target.className.includes('calendarCell'))
-        return hideDatePicker();
-    };
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isDropdown) hideDatePicker();
-    };
-    window.addEventListener('click', handleClick);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('click', handleClick);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isDropdown, selectButtonRef, setIsPopupVisible]);
-
+  // hover for div parent div of content editable div
   const [hover, setHover] = useState(false);
   const handleClick = () => setHover(false);
   const toggleHoverOn = () => {
@@ -100,16 +63,7 @@ const SelectProp = (props) => {
       >
         <StyledContentEditable {...editableDivProps} html={html.name} id={id} />
       </SelectButtonBackground>
-      {isDropdown ? (
-        <SelectDropdown
-          ref={dropdownRef}
-          style={getRight()}
-          propId={id}
-          todo={props.todo}
-        />
-      ) : (
-        ''
-      )}
+      {isDropdown ? <SelectDropdown {...popupProps} /> : ''}
     </SelectContainer>
   );
 };

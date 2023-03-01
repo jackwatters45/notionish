@@ -21,10 +21,8 @@ Random Notes
 
 Currently
 
-- selected styling
 - -> custom hook
 - notes (not too detailed - make it work not work well)
-- url img
 
 - rename project (on click -> input??)
 - add property

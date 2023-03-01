@@ -58,7 +58,11 @@ const StyledUrlInput = styled(UrlProperty)`
 `;
 
 const StyledSelect = styled(SelectProp)`
-  ${PropertyStyle}
+&:focus {
+  background: rgb(37, 37, 37);
+  box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+    rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+}
 `;
 
 const StyledDateInput = styled(DateProperty)`
