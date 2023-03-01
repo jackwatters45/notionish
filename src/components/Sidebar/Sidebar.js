@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import { mdiChevronRight } from '@mdi/js';
+import { mdiChevronDoubleRight } from '@mdi/js';
 import SidebarContents from './SidebarContents';
 import { SidebarContext } from '../MainContent';
 
@@ -82,7 +82,11 @@ const Sidebar = () => {
         style={{ width: sidebarWidth }}
       >
         <Dragger onMouseDown={startResizing} />
-        <CloseButton onClick={closeSidebar} path={mdiChevronRight} size={1} />
+        <CloseButton
+          onClick={closeSidebar}
+          path={mdiChevronDoubleRight}
+          size={1}
+        />
         <SidebarContents />
       </SidebarContainer>
     );

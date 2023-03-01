@@ -10,6 +10,7 @@ const useEditableDiv = (props) => {
     disabled,
     className,
     placeholder = 'Empty',
+    hoverable = false
   } = props;
 
   const editableRef = useRef();
@@ -40,11 +41,11 @@ const useEditableDiv = (props) => {
   const handleClick = () => setHover(false);
   const toggleHoverOn = () => {
     if (property === 'notes' || property === 'name') return;
-    if (!disabled) setHover(true);
+    if (!disabled || hoverable) setHover(true);
   };
   const toggleHoverOff = () => {
     if (property === 'notes' || property === 'name') return;
-    if (!disabled) setHover(false);
+    if (!disabled || hoverable) setHover(false);
   };
 
   const style =

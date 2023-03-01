@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import TextProperty from '../EditableDivs/TextProperty';
 import { SidebarContext } from '../MainContent';
 import PropertyLabel from './PropertyLabel';
@@ -13,6 +13,9 @@ import {
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
   mdiCalendarMonth as calendarIcon,
 } from '@mdi/js';
+import UrlProperty from '../EditableDivs/UrlProperty';
+import NotesProperty from '../EditableDivs/NotesProperty';
+import DateProperty from '../EditableDivs/DatePicker/DateProperty';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;
@@ -37,8 +40,8 @@ const TodoName = styled(TextProperty)`
   grid-column: 1 / -1;
 `;
 
-const StyledInput = styled(TextProperty)`
-  padding: 5px;
+const PropertyStyle = css`
+  padding: 6px 8px 7px;
   height: fit-content;
   &:focus {
     background: rgb(37, 37, 37);
@@ -46,11 +49,22 @@ const StyledInput = styled(TextProperty)`
       rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
   }
 `;
+const StyledTextInput = styled(TextProperty)`
+  ${PropertyStyle}
+`;
+const StyledUrlInput = styled(UrlProperty)`
+  ${PropertyStyle}
+`;
+
+const StyledDateInput = styled(DateProperty)`
+padding: 6px 8px 7px;
+height: fit-content;
+`;
 
 const DoneButton = styled(Icon)`
   cursor: pointer;
   align-self: start;
-  margin: 5px;
+  margin: 6px 8px 7px;
   color: var(--main-font-color);
 `;
 
@@ -58,7 +72,7 @@ const StyledHr = styled.hr`
   grid-column: 1 / -1;
 `;
 
-const StyledNotes = styled(TextProperty)`
+const StyledNotes = styled(NotesProperty)`
   height: 100%;
   width: 100%;
   grid-column: 1 / -1;
@@ -84,27 +98,27 @@ const SidebarContents = () => {
           autoFocus
         />
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
-        <StyledInput
+        <StyledTextInput
           property={'project'}
           styledValue={selectedTodo.project.name}
           todo={selectedTodo}
           disabled={true}
         />
         <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
-        <StyledInput property={'priority'} todo={selectedTodo} />
+        <StyledUrlInput property={'priority'} todo={selectedTodo} />
         <PropertyLabel icon={calendarIcon} property={'Date'} />
-        <StyledInput
+        <StyledDateInput
           property={'date'}
           type={'date'}
-          styledValue={selectedTodo.date.toString()}
           todo={selectedTodo}
           disabled={true}
+          hoverable={true}
         />
         <PropertyLabel icon={clockIcon} property={'Time Created'} />
-        <StyledInput
+        <StyledTextInput
           property={'created'}
           type={'date'}
-          styledValue={selectedTodo.created.toString()}
+          styledValue={selectedTodo.created.toDateString()}
           todo={selectedTodo}
           disabled={true}
         />

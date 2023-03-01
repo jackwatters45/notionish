@@ -25,22 +25,11 @@ const testProjects = [
     id: 'le6tmu59',
     name: 'Project 1',
   },
+  {
+    id: 'le6tmu60',
+    name: 'Project 2',
+  },
 ];
-
-// const testTodos = [
-//   {
-//     name: { value: 'Todo 1', html: 'Todo 1' },
-//     id: 'le6tim0g',
-//     project: {
-//       id: 'le6tmu59',
-//       name: 'Project 1',
-//     },
-//     priority: { value: 'High', html: 'High' },
-//     date: new Date(),
-//     created: new Date(),
-//     notes: { value: '', html: '' },
-//   },
-// ];
 
 const MainContent = () => {
   const [projects, setProjects] = useState(testProjects); // TODO replace initial
@@ -56,7 +45,7 @@ const MainContent = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const closeSidebar = () => setIsSidebarVisible(false);
   const handleRemoveTodoAndSidebar = () => {
-    handleRemoveTodo(selectedTodo.id);
+    if(selectedTodo) handleRemoveTodo(selectedTodo.id);
     closeSidebar();
   };
   const toggleSidebar = (e, todo) => {
@@ -70,19 +59,27 @@ const MainContent = () => {
     setSelectedTodo(todo);
   };
 
+  // TODO need two levels of click - sidebar and sidebar content
   useEffect(() => {
     const handleClick = (e) => {
+      // TODO fix this
+      if(!e.target.parentElement)return 
       if (
         isSidebarVisible &&
         !e.target.closest('.sidebar') &&
         !e.target.className.includes('card') &&
         !e.target.parentElement.className.includes('card')
       )
-        setIsSidebarVisible(false);
+        closeSidebar();
+    };
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isSidebarVisible) closeSidebar();
     };
     window.addEventListener('click', handleClick);
+    document.addEventListener('keydown', handleEscape);
     return () => {
       window.removeEventListener('click', handleClick);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [isSidebarVisible]);
 

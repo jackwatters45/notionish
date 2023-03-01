@@ -8,6 +8,7 @@
 :root {
   --main-background-color: rgb(25, 25, 25);
   --card-background-color: rgb(47, 47, 47);
+  --secondary-background-color: rgb(37, 37, 37);
   --section-background-color: rgb(28, 28, 28);
   --card-hover-background-color: rgb(55, 55, 55);
   --main-font-color: rgba(255, 255, 255, .81);
