@@ -6,7 +6,7 @@ import useEditableDiv from './useEditableDiv';
 import { propertySharedStyle } from './Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
- ${propertySharedStyle}
+  ${propertySharedStyle}
 `;
 
 // Property name is unique so kinda like a key (active prop db)

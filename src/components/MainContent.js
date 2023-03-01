@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import AddProject from './utils/AddProject';
 import Project from './Project';
@@ -32,6 +32,8 @@ const testProjects = [
 ];
 
 const MainContent = () => {
+  const sidebarRef = useRef();
+  const mainContentContainerRef = useRef();
   const [projects, setProjects] = useState(testProjects); // TODO replace initial
   const removeProject = (projectId) => {
     setProjects(projects.filter(({ id }) => id !== projectId));
@@ -45,7 +47,7 @@ const MainContent = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const closeSidebar = () => setIsSidebarVisible(false);
   const handleRemoveTodoAndSidebar = () => {
-    if(selectedTodo) handleRemoveTodo(selectedTodo.id);
+    if (selectedTodo) handleRemoveTodo(selectedTodo.id);
     closeSidebar();
   };
   const toggleSidebar = (e, todo) => {
@@ -59,21 +61,21 @@ const MainContent = () => {
     setSelectedTodo(todo);
   };
 
-  // TODO need two levels of click - sidebar and sidebar content
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+
   useEffect(() => {
     const handleClick = (e) => {
-      // TODO fix this
-      if(!e.target.parentElement)return 
       if (
         isSidebarVisible &&
-        !e.target.closest('.sidebar') &&
-        !e.target.className.includes('card') &&
-        !e.target.parentElement.className.includes('card')
+        !isPopupVisible &&
+        !sidebarRef.current.contains(e.target) &&
+        !e.target.className.includes('card')
       )
         closeSidebar();
     };
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isSidebarVisible) closeSidebar();
+      if (e.key === 'Escape' && isSidebarVisible && !isPopupVisible)
+        closeSidebar();
     };
     window.addEventListener('click', handleClick);
     document.addEventListener('keydown', handleEscape);
@@ -81,10 +83,10 @@ const MainContent = () => {
       window.removeEventListener('click', handleClick);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isSidebarVisible]);
+  }, [isPopupVisible, isSidebarVisible]);
 
   return (
-    <MainContentContainer>
+    <>
       <TodosContext.Provider value={{ todos, setTodos, handleRemoveTodo }}>
         <SidebarContext.Provider
           value={{
@@ -93,27 +95,31 @@ const MainContent = () => {
             handleRemoveTodoAndSidebar,
             selectedTodo,
             toggleSidebar,
+            setIsPopupVisible,
           }}
         >
-          <ProjectContainer>
-            {projects &&
-              projects.map((project) => (
-                <Project
-                  project={project}
-                  key={project.id}
-                  removeProject={removeProject}
-                />
-              ))}
-          </ProjectContainer>
-          <AddProject projects={projects} setProjects={setProjects} />
+          <MainContentContainer ref={mainContentContainerRef}>
+            <ProjectContainer>
+              {projects &&
+                projects.map((project) => (
+                  <Project
+                    project={project}
+                    key={project.id}
+                    removeProject={removeProject}
+                  />
+                ))}
+            </ProjectContainer>
+            <AddProject projects={projects} setProjects={setProjects} />
+          </MainContentContainer>
           <Sidebar
+            ref={sidebarRef}
             isSidebarVisible={isSidebarVisible}
             closeSidebar={closeSidebar}
             todo={selectedTodo}
           />
         </SidebarContext.Provider>
-      </TodosContext.Provider>
-    </MainContentContainer>
+      </TodosContext.Provider>{' '}
+    </>
   );
 };
 

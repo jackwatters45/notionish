@@ -36,11 +36,12 @@ const Todo = ({ todo }) => {
     >
       <StyledNameProp
         property={'name'}
+        className="card"
         todo={todo}
         autoFocus
         placeholder="Type a name..."
       />
-      <CardDone todo={todo} />
+      <CardDone className="card" todo={todo} />
     </TodoContainer>
   );
 };

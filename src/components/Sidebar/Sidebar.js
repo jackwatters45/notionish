@@ -1,9 +1,9 @@
 import React, {
-  useRef,
   useState,
   useEffect,
   useCallback,
   useContext,
+  forwardRef,
 } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
@@ -40,10 +40,9 @@ const Dragger = styled.div`
   cursor: col-resize;
 `;
 
-const Sidebar = () => {
+const Sidebar = forwardRef((_, ref) => {
   const { isSidebarVisible, closeSidebar } = useContext(SidebarContext);
 
-  const sidebarRef = useRef(null);
   const [isResizing, setIsResizing] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(400);
   const stopResizing = useCallback(() => setIsResizing(false), []);
@@ -55,14 +54,14 @@ const Sidebar = () => {
           Math.min(
             Math.max(
               400,
-              sidebarRef.current.getBoundingClientRect().right -
+              ref.current.getBoundingClientRect().right -
                 mouseMoveEvent.clientX,
             ),
             (document.body.clientWidth * 2) / 3,
           ),
         );
     },
-    [isResizing],
+    [isResizing, ref],
   );
 
   useEffect(() => {
@@ -76,11 +75,7 @@ const Sidebar = () => {
 
   if (isSidebarVisible) {
     return (
-      <SidebarContainer
-        className="sidebar"
-        ref={sidebarRef}
-        style={{ width: sidebarWidth }}
-      >
+      <SidebarContainer ref={ref} style={{ width: sidebarWidth }}>
         <Dragger onMouseDown={startResizing} />
         <CloseButton
           onClick={closeSidebar}
@@ -91,6 +86,6 @@ const Sidebar = () => {
       </SidebarContainer>
     );
   }
-};
+});
 
 export default Sidebar;

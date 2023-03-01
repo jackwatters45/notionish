@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { SidebarContext, TodosContext } from '../MainContent';
 import styled from 'styled-components';
@@ -29,6 +29,10 @@ const UrlProperty = (props) => {
   const goToLink = () => {
     if (html) window.location = html;
   };
+
+  useEffect(() => {
+    console.log(html === '');
+  });
 
   return (
     <StyledContentEditable

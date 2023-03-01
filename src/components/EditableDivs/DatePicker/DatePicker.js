@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import calendarDates, {
@@ -17,7 +17,6 @@ import { TodosContext } from '../../MainContent';
 
 const DropDown = styled.div`
   position: absolute;
-  margin: 30px 0px;
   width: 270px;
   background: var(--secondary-background-color);
   box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
@@ -123,7 +122,7 @@ const RegularCell = styled.div`
 `;
 
 // TODO double clicking makes bad!! + click off bs
-const DatePicker = ({ style, datePickerRef, todo, propId }) => {
+const DatePicker = forwardRef(({ style, todo, propId }, ref) => {
   const { setTodos, todos } = useContext(TodosContext);
 
   const [date, setDate] = useState('');
@@ -219,6 +218,7 @@ const DatePicker = ({ style, datePickerRef, todo, propId }) => {
   const getDefaultAttributes = (dateArr) => {
     return {
       onClick: handleDayClick,
+      className: 'calendarCell',
       key: dateArr,
       id: dateArr,
       style: {
@@ -231,7 +231,7 @@ const DatePicker = ({ style, datePickerRef, todo, propId }) => {
   };
 
   return (
-    <DropDown id="datePicker" ref={datePickerRef} style={style}>
+    <DropDown ref={ref} style={style}>
       <InputDiv>
         <StyledInput
           onChange={handleInput}
@@ -286,7 +286,7 @@ const DatePicker = ({ style, datePickerRef, todo, propId }) => {
       </CalendarContainer>
     </DropDown>
   );
-};
+});
 
 DatePicker.propTypes = {
   date: PropTypes.instanceOf(Date),

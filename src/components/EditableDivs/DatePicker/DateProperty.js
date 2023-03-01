@@ -1,40 +1,60 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../useEditableDiv';
 import { propertySharedStyle } from '../Theme';
 import DatePicker from './DatePicker';
+import { SidebarContext } from '../../MainContent';
 
 const DatePickerContainer = styled.div`
-  display: flex;
+  ${propertySharedStyle};
 `;
 
 const StyledContentEditable = styled(ContentEditable)`
-  ${propertySharedStyle};
   cursor: pointer;
 `;
 
 const DateProperty = (props) => {
-  const { id, innerRef, onClick: _, html, ...editableDivProps } = useEditableDiv(props);
+  const {
+    id,
+    innerRef: dateButtonRef,
+    onClick: _,
+    html,
+    style,
+    ...editableDivProps
+  } = useEditableDiv(props);
 
+  const { setIsPopupVisible } = useContext(SidebarContext);
   const datePickerRef = useRef();
   const [isDatePicker, setIsDatePicker] = useState(false);
-  const showDatePicker = () => setIsDatePicker(true);
-  const hideDatePicker = () => setIsDatePicker(false);
+
   const getRight = () => {
-    const pickerRightLoc = innerRef.current.getBoundingClientRect().left + 270;
+    const pickerRightLoc =
+      dateButtonRef.current.getBoundingClientRect().left + 270;
     // if greater than 0 nothing, if less right: 0
     return window.innerWidth - pickerRightLoc < 0 ? { right: 0 } : {};
   };
 
   useEffect(() => {
-    // TODO
+    const showDatePicker = () => {
+      setIsPopupVisible(true);
+      setIsDatePicker(true);
+    };
+    const hideDatePicker = () => {
+      setIsPopupVisible(false);
+      setIsDatePicker(false);
+    };
+
     const handleClick = (e) => {
-      // console.log(isDatePicker)
-      // console.log(e.target.closest('#datePicker'))
-      // if (isDatePicker && !e.target.closest('#datePicker'))
-      //   // return hideDatePicker();
-      if (e.target === innerRef.current) return showDatePicker();
+      if (e.target === dateButtonRef.current && !isDatePicker)
+        return showDatePicker();
+
+      if (
+        isDatePicker &&
+        !datePickerRef.current.contains(e.target) &&
+        !e.target.className.includes('calendarCell')
+      )
+        return hideDatePicker();
     };
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isDatePicker) hideDatePicker();
@@ -45,21 +65,22 @@ const DateProperty = (props) => {
       window.removeEventListener('click', handleClick);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [innerRef, isDatePicker]);
+  }, [dateButtonRef, isDatePicker, setIsPopupVisible]);
 
   return (
-    <DatePickerContainer>
+    <DatePickerContainer >
       <StyledContentEditable
         {...editableDivProps}
-        html={html.toDateString()}
+        html={html ? html.toDateString() : 'Empty'}
+        style={{ ...style, color: html ? '' : 'var(--empty-font-color)' }}
         disabled={true}
         hoverable={'true'}
-        innerRef={innerRef}
+        innerRef={dateButtonRef}
         id={id}
       />
       {isDatePicker ? (
         <DatePicker
-          datePickerRef={datePickerRef}
+          ref={datePickerRef}
           style={getRight()}
           todo={props.todo}
           propId={id}

@@ -63,7 +63,7 @@ const Project = ({ project, removeProject }) => {
         id: uniqid(),
         project: project,
         priority: '',
-        date: new Date(),
+        date: '',
         created: new Date(),
         notes: '',
       },

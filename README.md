@@ -1,6 +1,6 @@
 # Todo list I created a while back adapted to use react
 
-TODO
+Still todo
 
 - drag and drop
 - editing project (on click -> input??)
@@ -19,11 +19,9 @@ Random Notes
 - prevent paste maybe - oncopy="return false" oncut="return false" onpaste="return false">
 - for properties -> inline style and just get properties count for the repeat
 - view uses router (so does each todo but idk if necessary)
-  next
-- !ReactDOM.findDOMNode(this).contains(e.target)
+- may be better to use z-index for controlling clicks off popup and sidebar (if something needs to be closed etc) but for now just using state (main-context: line 68)
 
 Currently
 
 - created time (just a date thats disabled)
-- different types of components (date, select, notes)
-- date picker -> main content - 2nd overlay (useEffect in main content checks for state) use context - make sure escape works too (z index?)
+- different types of components (select, notes)

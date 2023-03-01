@@ -3,9 +3,11 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 
 const StyledContainer = styled.div`
-  margin: 5px 0;
+margin: 6px 8px 7px;
+
+  // margin: 5px 0;
   height: 30px;
-  align-self: start;
+  // align-self: start;
 `;
 
 const StyledIcon = styled(Icon)`
