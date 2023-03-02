@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import TextProperty from '../EditableDivs/TextProperty';
+import TextProperty from '../Properties/TextProperty';
 import { SidebarContext } from '../MainContent';
 import PropertyLabel from './PropertyLabel';
 import { tabPress } from '../utils/cursorHelpers';
@@ -13,10 +13,10 @@ import {
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
   mdiCalendarMonth as calendarIcon,
 } from '@mdi/js';
-import UrlProperty from '../EditableDivs/UrlProperty';
-import NotesProperty from '../EditableDivs/NotesProperty';
-import DateProperty from '../EditableDivs/DatePicker/DateProperty';
-import SelectProp from '../EditableDivs/Select/SelectProp';
+import UrlProperty from '../Properties/UrlProperty';
+import NotesProperty from '../Properties/NotesProperty';
+import DateProperty from '../Properties/Date/DateProperty';
+import SelectProp from '../Properties/Select/SelectProp';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;
@@ -58,11 +58,11 @@ const StyledUrlInput = styled(UrlProperty)`
 `;
 
 const StyledSelect = styled(SelectProp)`
-&:focus {
-  background: rgb(37, 37, 37);
-  box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
-    rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
-}
+  &:focus {
+    background: rgb(37, 37, 37);
+    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+  }
 `;
 
 const StyledDateInput = styled(DateProperty)`
@@ -100,11 +100,7 @@ const SidebarContents = () => {
   return (
     <SidebarContentContainer>
       <PropertiesContainer id="properties">
-        <TodoName
-          property={'name'}
-          todo={selectedTodo}
-          autoFocus
-        />
+        <TodoName property={'name'} todo={selectedTodo} autoFocus />
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
         <StyledSelect
           property={'project'}

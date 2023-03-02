@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
-import useEditableDiv from '../useEditableDiv';
-import { propertySharedStyle } from '../Theme';
+import useEditableDiv from '../utils/useEditableDiv';
+import { propertySharedStyle } from '../utils/Theme';
 import SelectDropdown from './SelectDropdown';
-import usePopupProperty from '../usePopupProperty';
+import usePopupProperty from '../utils/usePopupProperty';
 
 const SelectContainer = styled.div`
   ${propertySharedStyle};

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { SidebarContext } from '../MainContent';
+import { SidebarContext } from '../../MainContent';
 
 const usePopupProperty = (props, buttonRef) => {
   const { setIsPopupVisible } = useContext(SidebarContext);

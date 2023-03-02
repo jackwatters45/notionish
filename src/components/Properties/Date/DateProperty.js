@@ -1,10 +1,10 @@
 import React from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
-import useEditableDiv from '../useEditableDiv';
-import { propertySharedStyle } from '../Theme';
+import useEditableDiv from '../utils/useEditableDiv';
+import { propertySharedStyle } from '../utils/Theme';
 import DatePicker from './DatePicker';
-import usePopupProperty from '../usePopupProperty';
+import usePopupProperty from '../utils/usePopupProperty';
 
 const DatePickerContainer = styled.div`
   ${propertySharedStyle};
@@ -17,7 +17,6 @@ const StyledContentEditable = styled(ContentEditable)`
 
 const DateProperty = (props) => {
   const {
-    id,
     innerRef: dateButtonRef,
     onClick: _,
     html,
@@ -36,7 +35,6 @@ const DateProperty = (props) => {
         disabled={true}
         hoverable={'true'}
         innerRef={dateButtonRef}
-        id={id}
       />
       {isDropdown ? <DatePicker {...popupProps} /> : ''}
     </DatePickerContainer>

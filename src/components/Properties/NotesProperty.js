@@ -2,30 +2,29 @@ import React, { useContext } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { TodosContext } from '../MainContent';
 import styled from 'styled-components';
-import useEditableDiv from './useEditableDiv';
-import { propertySharedStyle } from './Theme';
+import useEditableDiv from './utils/useEditableDiv';
+import { propertySharedStyle } from './utils/Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle}
 `;
 
-// TODO make sure to check for notes stuff cause that will  be totally different
+// not complete rn but seems beyond the scope of this project for now (3/1/23)
 const NotesProperty = (props) => {
   const { todo } = props;
   const { setTodos, todos } = useContext(TodosContext);
   const { onKeyDown: _, ...editableDivProps } = useEditableDiv(props);
 
-  // TODO need to account for html
-  const handleChangePlainText = (e) => {
+  const handleChange = (e) => {
     const todosCopy = [...todos];
     const todoCopy = todosCopy.find(({ id }) => id === todo.id);
-    todoCopy[e.currentTarget.id] = e.currentTarget.innerText;
+    todoCopy[e.currentTarget.id] = e.currentTarget.innerHTML;
     setTodos(todosCopy);
   };
 
   return (
     <StyledContentEditable
-      onChange={handleChangePlainText}
+      onChange={handleChange}
       {...editableDivProps}
     />
   );

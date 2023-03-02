@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { SidebarContext } from './MainContent';
 import CardDone from './utils/CardDone';
-import TextProperty from './EditableDivs/TextProperty';
+import TextProperty from './Properties/TextProperty';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px 10px;

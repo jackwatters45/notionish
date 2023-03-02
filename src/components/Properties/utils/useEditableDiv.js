@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { cursorToEndLine } from '../utils/cursorHelpers';
+import { cursorToEndLine } from '../../utils/cursorHelpers';
 
 const useEditableDiv = (props) => {
   const {
@@ -27,7 +27,7 @@ const useEditableDiv = (props) => {
   const handlePaste = (e) => {
     e.preventDefault();
     const text = e.clipboardData.getData('text');
-    Document.execCommand('insertText', false, text);
+    document.execCommand('insertText', false, text);
   };
 
   // Focus -> moves to end of line

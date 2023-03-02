@@ -1,18 +1,20 @@
 import React, { useContext } from 'react';
 import ContentEditable from 'react-contenteditable';
-import { TodosContext } from '../MainContent';
+import { SidebarContext, TodosContext } from '../MainContent';
 import styled from 'styled-components';
-import useEditableDiv from './useEditableDiv';
-import { propertySharedStyle } from './Theme';
+import useEditableDiv from './utils/useEditableDiv';
+import { propertySharedStyle } from './utils/Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle}
 `;
 
 // Property name is unique so kinda like a key (active prop db)
-const NumberProperty = (props) => {
-  const { todo } = props;
+// for created - maybe add a type and if type = date that is how formatted
+const TextProperty = (props) => {
+  const { todo, property } = props;
   const { setTodos, todos } = useContext(TodosContext);
+  const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
   const editableDivProps = useEditableDiv(props);
 
   const handleChangePlainText = (e) => {
@@ -22,18 +24,17 @@ const NumberProperty = (props) => {
     setTodos(todosCopy);
   };
 
-  // Only numbers allowed
-  const onlyAllowNumbers = (e) => {
-    if (e.keyCode < 48 || e.keyCode > 57) e.preventDefault();
+  const handleBlurNameInput = () => {
+    if (!todo.name) handleRemoveTodoAndSidebar(todo.id);
   };
 
   return (
     <StyledContentEditable
-      onKeyDownCapture={onlyAllowNumbers}
       onChange={handleChangePlainText}
+      onBlur={property === 'name' ? handleBlurNameInput : null}
       {...editableDivProps}
     />
   );
 };
 
-export default NumberProperty;
+export default TextProperty;
