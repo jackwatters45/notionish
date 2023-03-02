@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
-import useEditableDiv from '../useEditableDiv';
-import { propertySharedStyle } from '../Theme';
+import useEditableDiv from '../utils/useEditableDiv';
+import { propertySharedStyle } from '../utils/Theme';
 import SelectDropdown from './SelectDropdown';
-import usePopupProperty from '../usePopupProperty';
+import usePopupProperty from '../utils/usePopupProperty';
 
 const SelectContainer = styled.div`
   ${propertySharedStyle};
@@ -29,13 +29,13 @@ const StyledContentEditable = styled(ContentEditable)`
   margin: 0 0 0 6px;
 `;
 
-const SelectProp = (props) => {
+const SelectProperty = (props) => {
   const {
     id,
     innerRef: selectButtonRef,
     html,
     ...editableDivProps
-  } = useEditableDiv(props);
+  } = useEditableDiv(props, {disabled: true});
 
   const { isDropdown, ...popupProps } = usePopupProperty(
     props,
@@ -68,4 +68,4 @@ const SelectProp = (props) => {
   );
 };
 
-export default SelectProp;
+export default SelectProperty;

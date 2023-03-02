@@ -210,9 +210,11 @@ const DatePicker = forwardRef(({ style, todo, propId }, ref) => {
   };
 
   const handleDayClick = (e) => {
-    const clickedDateIso = e.target.id.split(',');
-    const newDate = new Date(...clickedDateIso);
-    changeDate(newDate);
+    setTimeout(() => {
+      const clickedDateIso = e.target.id.split(',');
+      const newDate = new Date(...clickedDateIso);
+      changeDate(newDate);
+    });
   };
 
   // shared cell calendar attributes

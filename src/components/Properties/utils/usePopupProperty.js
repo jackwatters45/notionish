@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import { SidebarContext } from '../MainContent';
+import { SidebarContext } from '../../MainContent';
 
 const usePopupProperty = (props, buttonRef) => {
   const { setIsPopupVisible } = useContext(SidebarContext);
@@ -26,14 +26,11 @@ const usePopupProperty = (props, buttonRef) => {
     };
 
     const handleClick = (e) => {
-      if (
-        (e.target === buttonRef.current ||
-          buttonRef.current.contains(e.target)) &&
-        !isDropdown
-      )
+      // TODO if error, try add this -> e.target === buttonRef.current
+      if (buttonRef.current.contains(e.target) && !isDropdown)
         return showDatePicker();
 
-      if (isDropdown && !e.target.className.includes('calendarCell'))
+      if (isDropdown && !dropdownRef.current.contains(e.target))
         return hideDatePicker();
     };
     const handleEscape = (e) => {

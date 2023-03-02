@@ -11,6 +11,9 @@ Still todo
 
 Random Notes
 
+- eventually use draft js for notes section
+- drag or click styling
+- index file for exporting properties
 - when a new property is added all the todos need to be updated
 - notes hold a value and html?
 - depending on hov i do labels may run into problem with hover
@@ -18,12 +21,11 @@ Random Notes
 - for properties -> inline style and just get properties count for the repeat
 - view uses router (so does each todo but idk if necessary)
 - may be better to use z-index for controlling clicks off popup and sidebar (if something needs to be closed etc) but for now just using state (main-context: line 68)
+- hover is super inconsistent
 
 Currently
 
-- -> custom hook
-- notes (not too detailed - make it work not work well)
-
-- rename project (on click -> input??)
 - add property
 - delete property
+
+- rename property to name

@@ -4,11 +4,11 @@ import Icon from '@mdi/react';
 import { mdiPlus } from '@mdi/js';
 
 const StyledButton = styled.button`
-  gap: 2px;
+  gap: 6px;
   margin-top: 4px;
   color: var(--secondary-font-color);
   display: flex;
-  padding: 6px 2px;
+  padding: 6px 6px 6px 2px;
   height: fit-content;
 `;
 
@@ -17,9 +17,11 @@ const NewButton = ({ onClick, className, text, width = 248 }) => {
     <StyledButton
       className={className}
       onClick={onClick}
-      style={{ width: `${width}px` }}
+      style={{
+        width: typeof width === 'number' ? `${width}px` : 'fit-content',
+      }}
     >
-      <Icon path={mdiPlus} size={0.75} />
+      <Icon path={mdiPlus} size={.9} />
       <p>{text}</p>
     </StyledButton>
   );

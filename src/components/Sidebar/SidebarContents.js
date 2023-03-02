@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import TextProperty from '../EditableDivs/TextProperty';
+import TextProperty from '../Properties/TextProperty';
 import { SidebarContext } from '../MainContent';
 import PropertyLabel from './PropertyLabel';
 import { tabPress } from '../utils/cursorHelpers';
@@ -13,10 +13,12 @@ import {
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
   mdiCalendarMonth as calendarIcon,
 } from '@mdi/js';
-import UrlProperty from '../EditableDivs/UrlProperty';
-import NotesProperty from '../EditableDivs/NotesProperty';
-import DateProperty from '../EditableDivs/DatePicker/DateProperty';
-import SelectProp from '../EditableDivs/Select/SelectProp';
+import UrlProperty from '../Properties/UrlProperty';
+import NotesProperty from '../Properties/NotesProperty';
+import DateProperty from '../Properties/Date/DateProperty';
+import SelectProperty from '../Properties/Select/SelectProperty';
+import NewButton from '../utils/NewButton';
+import propertyData from '../Properties/utils/propertyHelpers';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;
@@ -27,7 +29,7 @@ const PropertiesContainer = styled.form`
   display: grid;
   height: 100%;
   grid-template-columns: 140px 1fr;
-  grid-template-rows: repeat(7, auto) 1fr;
+  grid-template-rows: repeat(8, auto) 1fr;
   & > * {
     display: flex;
     gap: 8px;
@@ -57,12 +59,12 @@ const StyledUrlInput = styled(UrlProperty)`
   ${PropertyStyle}
 `;
 
-const StyledSelect = styled(SelectProp)`
-&:focus {
-  background: rgb(37, 37, 37);
-  box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
-    rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
-}
+const StyledSelect = styled(SelectProperty)`
+  &:focus {
+    background: rgb(37, 37, 37);
+    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+  }
 `;
 
 const StyledDateInput = styled(DateProperty)`
@@ -77,6 +79,11 @@ const DoneButton = styled(Icon)`
   color: var(--main-font-color);
 `;
 
+const StyledNewButton = styled(NewButton)`
+  // grid-column: 1 / -1;
+  margin: 0 0 10px 0;
+`;
+
 const StyledHr = styled.hr`
   grid-column: 1 / -1;
 `;
@@ -88,6 +95,21 @@ const StyledNotes = styled(NotesProperty)`
   margin: 10px 0;
 `;
 
+
+
+const properties = [
+  { name: 'project', type: 'select' },
+  { name: 'priority', type: 'url' },
+  { name: 'date', type: 'date' },
+  { name: 'created', type: 'created' },
+  { name: 'done', type: 'checkbox' },
+];
+
+        {/* {properties.map((property) => {
+          const prop = propertyData[property.type]
+          console.log(prop)
+        })} */}
+
 const SidebarContents = () => {
   const { selectedTodo, handleRemoveTodoAndSidebar } =
     useContext(SidebarContext);
@@ -97,20 +119,20 @@ const SidebarContents = () => {
     return () => window.removeEventListener('keydown', tabPress);
   }, []);
 
+  // TODO
+  const addProperty = (e) => {
+    e.preventDefault();
+    // console.log(e)
+  };
+
+  // TODO add button should be different font color
   return (
     <SidebarContentContainer>
       <PropertiesContainer id="properties">
-        <TodoName
-          property={'name'}
-          todo={selectedTodo}
-          autoFocus
-        />
+        {/* <TodoName property={'name'} todo={selectedTodo} autoFocus /> */}
+
         <PropertyLabel icon={dropdownIcon} property={'Project'} />
-        <StyledSelect
-          property={'project'}
-          todo={selectedTodo}
-          disabled={true}
-        />
+        <StyledSelect property={'project'} todo={selectedTodo} />
         <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
         <StyledUrlInput property={'priority'} todo={selectedTodo} />
         <PropertyLabel icon={calendarIcon} property={'Date'} />
@@ -128,6 +150,11 @@ const SidebarContents = () => {
           path={emptyCheckboxIcon}
           size={0.85}
           onClick={handleRemoveTodoAndSidebar}
+        />
+        <StyledNewButton
+          text={'Add a property'}
+          width={''}
+          onClick={addProperty}
         />
         <StyledHr />
         <StyledNotes

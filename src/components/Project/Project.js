@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import Todo from './Todo';
+import Todo from '../Todo';
 import Icon from '@mdi/react';
 import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
-import { TodosContext } from './MainContent';
-import NewButton from './utils/NewButton';
+import { ProjectsContext, TodosContext } from '../MainContent';
+import NewButton from '../utils/NewButton';
+import ProjectTitle from './ProjectTitle';
 
 const ProjectContainer = styled.div`
   margin: 4px;
@@ -20,26 +21,19 @@ const ProjectContainer = styled.div`
 `;
 
 const Header = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 24px;
+  display: flex;
+  justify-content: space-between;
   width: inherit;
   align-items: center;
-  padding: 4px;
+  padding: 2px;
   margin-bottom: 2px;
-`;
-
-const ProjectTitle = styled.p`
-  width: fit-content;
-  border-radius: 4px;
-  background-color: var(--card-background-color);
-  padding: 0 6px;
 `;
 
 const TrashIcon = styled(Icon)`
   color: var(--secondary-font-color);
   padding: 1px;
   border-radius: 4px;
-
+  margin-right: 8px;
   &:hover {
     background-color: var(--card-hover-background-color);
   }
@@ -51,10 +45,11 @@ const TodosContainer = styled.div`
   gap: 6px;
 `;
 
-const Project = ({ project, removeProject }) => {
+const Project = ({ project }) => {
+  const { removeProject } = useContext(ProjectsContext);
   const { todos, setTodos } = useContext(TodosContext);
 
-  // TODO
+  // TODO loop through properties and initialize
   const handleAddTodo = () =>
     setTodos([
       ...todos,
@@ -79,7 +74,7 @@ const Project = ({ project, removeProject }) => {
       onMouseLeave={handleMouseLeave}
     >
       <Header>
-        <ProjectTitle>{project.name}</ProjectTitle>
+        <ProjectTitle project={project} />
         <TrashIcon
           style={{ display: trashIconStatus }}
           path={mdiDeleteOutline}
@@ -96,10 +91,6 @@ const Project = ({ project, removeProject }) => {
           )}
       </TodosContainer>
       <NewButton onClick={handleAddTodo} text={'New'} />
-      {/* <NewTodoButton onClick={handleAddTodo}>
-        <Icon path={mdiPlus} size={0.75} />
-        <p>New</p>
-      </NewTodoButton> */}
     </ProjectContainer>
   );
 };

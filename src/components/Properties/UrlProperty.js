@@ -2,20 +2,18 @@ import React, { useContext } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { SidebarContext, TodosContext } from '../MainContent';
 import styled from 'styled-components';
-import useEditableDiv from './useEditableDiv';
-import { propertySharedStyle } from './Theme';
+import useEditableDiv from './utils/useEditableDiv';
+import { propertySharedStyle } from './utils/Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
-  ${propertySharedStyle}
+  ${propertySharedStyle};
 `;
 
-// Property name is unique so kinda like a key (active prop db)
-// for created - maybe add a type and if type = date that is how formatted
-const TextProperty = (props) => {
+const UrlProperty = (props) => {
   const { todo, property } = props;
   const { setTodos, todos } = useContext(TodosContext);
   const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
-  const editableDivProps = useEditableDiv(props);
+  const { html, style, ...editableDivProps } = useEditableDiv(props);
 
   const handleChangePlainText = (e) => {
     const todosCopy = [...todos];
@@ -28,13 +26,20 @@ const TextProperty = (props) => {
     if (!todo.name) handleRemoveTodoAndSidebar(todo.id);
   };
 
+  const goToLink = () => {
+    if (html) window.location = html;
+  };
+
   return (
     <StyledContentEditable
+      html={html}
+      style={{ ...style, textDecoration: html ? 'underline' : 'none' }}
       onChange={handleChangePlainText}
+      onDoubleClick={goToLink}
       onBlur={property === 'name' ? handleBlurNameInput : null}
       {...editableDivProps}
     />
   );
 };
 
-export default TextProperty;
+export default UrlProperty;
