@@ -24,8 +24,6 @@ Random Notes
 
 Currently
 
-- notes (not too detailed - make it work not work well)
-
 - rename project (on click -> input??)
 - add property
 - delete property

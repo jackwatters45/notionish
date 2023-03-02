@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import Todo from './Todo';
+import Todo from '../Todo';
 import Icon from '@mdi/react';
 import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
-import { TodosContext } from './MainContent';
-import NewButton from './utils/NewButton';
+import { TodosContext } from '../MainContent';
+import NewButton from '../utils/NewButton';
+import ProjectTitle from './ProjectTitle';
 
 const ProjectContainer = styled.div`
   margin: 4px;
@@ -28,12 +29,7 @@ const Header = styled.div`
   margin-bottom: 2px;
 `;
 
-const ProjectTitle = styled.p`
-  width: fit-content;
-  border-radius: 4px;
-  background-color: var(--card-background-color);
-  padding: 0 6px;
-`;
+
 
 const TrashIcon = styled(Icon)`
   color: var(--secondary-font-color);
@@ -79,7 +75,7 @@ const Project = ({ project, removeProject }) => {
       onMouseLeave={handleMouseLeave}
     >
       <Header>
-        <ProjectTitle>{project.name}</ProjectTitle>
+        <ProjectTitle name={project.name} />
         <TrashIcon
           style={{ display: trashIconStatus }}
           path={mdiDeleteOutline}

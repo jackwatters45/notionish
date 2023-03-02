@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import AddProject from './utils/AddProject';
-import Project from './Project';
+import Project from './Project/Project';
 import Sidebar from './Sidebar/Sidebar';
 
 const MainContentContainer = styled.div`
