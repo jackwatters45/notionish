@@ -4,10 +4,9 @@ Still todo
 
 - drag and drop
 - views
-
-- backend
 - sort
 - filter
+- backend
 
 Random Notes
 
@@ -21,9 +20,15 @@ Random Notes
 - for properties -> inline style and just get properties count for the repeat
 - view uses router (so does each todo but idk if necessary)
 - may be better to use z-index for controlling clicks off popup and sidebar (if something needs to be closed etc) but for now just using state (main-context: line 68)
+- property is upper case (not guaranteed) and is being converted to lowercase in the custom hooks. Probably a bad way to do this
 
 Currently
 
-- rename project (on click -> input??)
+- add button
+- turn into row obj
+- styling
+- when add property make sure it is added to todo 'constructor' as well
+
 - add property
 - delete property
+- fix tab bs

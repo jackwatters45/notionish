@@ -13,41 +13,60 @@ import NumberProperty from '../NumberProperty';
 import UrlProperty from '../UrlProperty';
 import SelectProperty from '../Select/SelectProperty';
 import DateProperty from '../Date/DateProperty';
+import CreatedProperty from '../CreatedProperty';
 
-const getTextProperty = (name) => <TextProperty property={name} />;
-const getNumberProperty = (name) => <NumberProperty property={name} />;
-const getUrlProperty = (name) => <UrlProperty property={name} />;
-const getDateProperty = (name) => <DateProperty property={name} />;
-const getSelectProperty = (name) => <SelectProperty property={name} />;
-const getCreatedProperty = (name) => (
-  <TextProperty property={name} disabled={true} />
+const getTextProperty = (name, todo) => (
+  <TextProperty property={name} todo={todo} />
+);
+
+const getNumberProperty = (name, todo) => (
+  <NumberProperty property={name} todo={todo} />
+);
+const getUrlProperty = (name, todo) => (
+  <UrlProperty property={name} todo={todo} />
+);
+const getDateProperty = (name, todo) => (
+  <DateProperty property={name} todo={todo} />
+);
+const getSelectProperty = (name, todo) => (
+  <SelectProperty property={name} todo={todo} />
+);
+const getCreatedProperty = (name, todo) => (
+  <CreatedProperty property={name} todo={todo} />
 );
 
 const propertyData = {
   text: {
     getComponent: getTextProperty,
-    icon: <Icon path={mdiTextLong} size={0.85} />,
+    icon: mdiTextLong,
   },
   number: {
     getComponent: getNumberProperty,
-    icon: <Icon path={mdiPound} size={0.85} />,
+    icon: mdiPound,
   },
   url: {
     getComponent: getUrlProperty,
-    icon: <Icon path={mdiLinkVariant} size={0.85} />,
+    icon: mdiLinkVariant,
   },
   date: {
     getComponent: getDateProperty,
-    icon: <Icon path={mdiCalendarMonth} size={0.85} />,
+    icon: mdiCalendarMonth,
   },
   select: {
     getComponent: getSelectProperty,
-    icon: <Icon path={mdiArrowDownDropCircleOutline} size={0.85} />,
+    icon: mdiArrowDownDropCircleOutline,
   },
   created: {
     getComponent: getCreatedProperty,
-    icon: <Icon path={mdiClockTimeNineOutline} size={0.85} />,
+    icon: mdiClockTimeNineOutline,
   },
 };
 
 export default propertyData;
+
+export const properties = [
+  { name: 'Priority', type: 'text' },
+  { name: 'Date', type: 'date' },
+  { name: 'Time Created', type: 'created' },
+  { name: 'Project', type: 'select' },
+];

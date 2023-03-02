@@ -52,6 +52,8 @@ const SelectProperty = (props) => {
     if (!isDropdown) setHover(false);
   };
 
+  console.log(html)
+
   return (
     <SelectContainer>
       <SelectButtonBackground

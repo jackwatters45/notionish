@@ -48,7 +48,7 @@ const usePopupProperty = (props, buttonRef) => {
     isDropdown,
     style: getRight(),
     ref: dropdownRef,
-    propId: property,
+    propId: property.toLowerCase(),
     todo: todo,
   };
 };

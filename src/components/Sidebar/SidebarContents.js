@@ -17,6 +17,7 @@ import UrlProperty from '../Properties/UrlProperty';
 import NotesProperty from '../Properties/NotesProperty';
 import DateProperty from '../Properties/Date/DateProperty';
 import SelectProp from '../Properties/Select/SelectProperty';
+import propertyData, { properties } from '../Properties/utils/propertyHelpers';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;
@@ -101,7 +102,19 @@ const SidebarContents = () => {
     <SidebarContentContainer>
       <PropertiesContainer id="properties">
         <TodoName property={'name'} todo={selectedTodo} autoFocus />
-        <PropertyLabel icon={dropdownIcon} property={'Project'} />
+
+        {properties.map((property) => {
+          const { icon, getComponent } = propertyData[property.type];
+          const component = getComponent(property.name, selectedTodo);
+          return (
+            <>
+              <PropertyLabel icon={icon} property={property.name} />
+              {component}
+            </>
+          );
+        })}
+
+        {/* <PropertyLabel icon={dropdownIcon} property={'Project'} />
         <StyledSelect
           property={'project'}
           todo={selectedTodo}
@@ -119,6 +132,7 @@ const SidebarContents = () => {
           todo={selectedTodo}
           disabled={true}
         />
+      */}
         <PropertyLabel icon={checkboxIcon} property={'Done?'} />
         <DoneButton
           path={emptyCheckboxIcon}

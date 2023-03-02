@@ -4,14 +4,16 @@ import { cursorToEndLine } from '../../utils/cursorHelpers';
 const useEditableDiv = (props) => {
   const {
     todo,
-    styledValue,
-    property,
     autoFocus,
     disabled,
     className,
     placeholder = 'Empty',
     hoverable = false,
   } = props;
+
+  let { property } = props;
+  const formatProperty = () => (property = property.toLowerCase());
+  formatProperty();
 
   const editableRef = useRef();
 
@@ -57,7 +59,7 @@ const useEditableDiv = (props) => {
       : {};
 
   return {
-    html: styledValue ? styledValue : todo[property],
+    html: todo[property] || '',
     onKeyDown: disableNewlines,
     onPaste: handlePaste,
     className: className,
