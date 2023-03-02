@@ -29,13 +29,13 @@ const StyledContentEditable = styled(ContentEditable)`
   margin: 0 0 0 6px;
 `;
 
-const SelectProp = (props) => {
+const SelectProperty = (props) => {
   const {
     id,
     innerRef: selectButtonRef,
     html,
     ...editableDivProps
-  } = useEditableDiv(props);
+  } = useEditableDiv(props, { disabled: true });
 
   const { isDropdown, ...popupProps } = usePopupProperty(
     props,
@@ -68,4 +68,4 @@ const SelectProp = (props) => {
   );
 };
 
-export default SelectProp;
+export default SelectProperty;

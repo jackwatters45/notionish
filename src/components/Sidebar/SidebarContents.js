@@ -16,7 +16,7 @@ import {
 import UrlProperty from '../Properties/UrlProperty';
 import NotesProperty from '../Properties/NotesProperty';
 import DateProperty from '../Properties/Date/DateProperty';
-import SelectProp from '../Properties/Select/SelectProp';
+import SelectProp from '../Properties/Select/SelectProperty';
 
 const SidebarContentContainer = styled.div`
   padding: 48px 48px 0 48px;

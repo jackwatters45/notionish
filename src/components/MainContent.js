@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import AddProject from './utils/AddProject';
-import Project from './Project';
+import Project from './Project/Project';
 import Sidebar from './Sidebar/Sidebar';
 
 const MainContentContainer = styled.div`
@@ -33,7 +33,7 @@ const testProjects = [
 
 const MainContent = () => {
   const sidebarRef = useRef();
-  const mainContentContainerRef = useRef();
+
   const [projects, setProjects] = useState(testProjects); // TODO replace initial
   const removeProject = (projectId) => {
     setProjects(projects.filter(({ id }) => id !== projectId));
@@ -87,40 +87,40 @@ const MainContent = () => {
 
   return (
     <>
-      <TodosContext.Provider
-        value={{ todos, setTodos, handleRemoveTodo, projects }}
+      <ProjectsContext.Provider
+        value={{ removeProject, projects, setProjects }}
       >
-        <SidebarContext.Provider
-          value={{
-            isSidebarVisible,
-            closeSidebar,
-            handleRemoveTodoAndSidebar,
-            selectedTodo,
-            toggleSidebar,
-            setIsPopupVisible,
-          }}
+        <TodosContext.Provider
+          value={{ todos, setTodos, handleRemoveTodo, projects }}
         >
-          <MainContentContainer ref={mainContentContainerRef}>
-            <ProjectContainer>
-              {projects &&
-                projects.map((project) => (
-                  <Project
-                    project={project}
-                    key={project.id}
-                    removeProject={removeProject}
-                  />
-                ))}
-            </ProjectContainer>
-            <AddProject projects={projects} setProjects={setProjects} />
-          </MainContentContainer>
-          <Sidebar
-            ref={sidebarRef}
-            isSidebarVisible={isSidebarVisible}
-            closeSidebar={closeSidebar}
-            todo={selectedTodo}
-          />
-        </SidebarContext.Provider>
-      </TodosContext.Provider>{' '}
+          <SidebarContext.Provider
+            value={{
+              isSidebarVisible,
+              closeSidebar,
+              handleRemoveTodoAndSidebar,
+              selectedTodo,
+              toggleSidebar,
+              setIsPopupVisible,
+            }}
+          >
+            <MainContentContainer>
+              <ProjectContainer>
+                {projects &&
+                  projects.map((project) => (
+                    <Project project={project} key={project.id} />
+                  ))}
+              </ProjectContainer>
+              <AddProject projects={projects} setProjects={setProjects} />
+            </MainContentContainer>
+            <Sidebar
+              ref={sidebarRef}
+              isSidebarVisible={isSidebarVisible}
+              closeSidebar={closeSidebar}
+              todo={selectedTodo}
+            />
+          </SidebarContext.Provider>
+        </TodosContext.Provider>
+      </ProjectsContext.Provider>
     </>
   );
 };

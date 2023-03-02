@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
+import { ProjectsContext } from '../MainContent';
 import NewButton from './NewButton';
 
 const AddProjectForm = styled.form`
@@ -19,12 +20,19 @@ const ProjectInput = styled.input`
   width: 100%;
 `;
 
-const AddProject = ({ projects, setProjects }) => {
+const StyledNewButton = styled(NewButton)`
+  background-color: var(--section-background-color);
+`;
+
+const AddProject = () => {
+  const { projects, setProjects } = useContext(ProjectsContext);
   const [isAddingProject, setIsAddingProject] = useState(false);
   const handleClickAddProjectBtn = () => setIsAddingProject(true);
 
   const [project, setProject] = useState({ id: uniqid() });
-  const handleChange = (e) => setProject({ ...project, name: e.target.value });
+  const handleChange = (e) => {
+    setProject({ ...project, name: e.target.value });
+  };
   const addProject = () => setProjects([...projects, project]);
   const handleSubmit = () => {
     addProject();
@@ -41,7 +49,10 @@ const AddProject = ({ projects, setProjects }) => {
       />
     </AddProjectForm>
   ) : (
-    <NewButton onClick={handleClickAddProjectBtn} text={'Add New Project'} />
+    <StyledNewButton
+      onClick={handleClickAddProjectBtn}
+      text={'Add New Project'}
+    />
   );
 };
 
