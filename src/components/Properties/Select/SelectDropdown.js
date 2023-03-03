@@ -75,7 +75,7 @@ const SelectDropdown = forwardRef(({ style, todo, propId }, ref) => {
   };
 
   return (
-    <DropdownContainer id="datePicker" ref={ref} style={style}>
+    <DropdownContainer ref={ref} style={style}>
       <Current>
         <CategoryName>{todo.project.name}</CategoryName>
       </Current>

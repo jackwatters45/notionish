@@ -1,18 +1,31 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
+import { TodosContext } from '../../MainContent';
 import { cursorToEndLine } from '../../utils/cursorHelpers';
 
 const useEditableDiv = (props) => {
   const {
     todo,
-    property,
     autoFocus,
     disabled,
     className,
     placeholder = 'Empty',
     hoverable = false,
   } = props;
+  const { todos, setTodos } = useContext(TodosContext);
+
+  let { property } = props;
+  const formatProperty = () => (property = property.toLowerCase());
+  formatProperty();
 
   const editableRef = useRef();
+
+  // Default change handler
+  const handleChange = (e) => {
+    const todosCopy = [...todos];
+    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
+    todoCopy[e.currentTarget.id] = e.currentTarget.innerText;
+    setTodos(todosCopy);
+  };
 
   // Enter -> blur property
   const disableNewlines = (e) => {
@@ -56,7 +69,8 @@ const useEditableDiv = (props) => {
       : {};
 
   return {
-    html: todo[property],
+    html: todo[property] || '',
+    onChange: handleChange,
     onKeyDown: disableNewlines,
     onPaste: handlePaste,
     className: className,

@@ -5,7 +5,7 @@ import useEditableDiv from './utils/useEditableDiv';
 import { propertySharedStyle } from './utils/Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
-  ${propertySharedStyle};
+  ${propertySharedStyle}
   padding: 6px 8px 7px;
   height: fit-content;
   &:focus {
@@ -15,21 +15,14 @@ const StyledContentEditable = styled(ContentEditable)`
   }
 `;
 
-const UrlProperty = (props) => {
-  const { html, style, ...editableDivProps } = useEditableDiv(props);
+// pretty much a disabled text property with the date formatted
+const CreatedProperty = (props) => {
+  props = { ...props, disabled: true };
+  const { html: _, ...editableDivProps } = useEditableDiv(props);
 
-  const goToLink = () => {
-    if (html) window.location = html;
-  };
+  const formatDate = () => props.todo.created.toDateString();
 
-  return (
-    <StyledContentEditable
-      html={html}
-      style={{ ...style, textDecoration: html ? 'underline' : 'none' }}
-      onDoubleClick={goToLink}
-      {...editableDivProps}
-    />
-  );
+  return <StyledContentEditable html={formatDate()} {...editableDivProps} />;
 };
 
-export default UrlProperty;
+export default CreatedProperty;

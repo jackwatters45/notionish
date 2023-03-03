@@ -2,12 +2,11 @@
 
 Still todo
 
-- drag and drop
 - views
-
-- backend
 - sort
 - filter
+- drag and drop
+- backend
 
 Random Notes
 
@@ -21,11 +20,14 @@ Random Notes
 - for properties -> inline style and just get properties count for the repeat
 - view uses router (so does each todo but idk if necessary)
 - may be better to use z-index for controlling clicks off popup and sidebar (if something needs to be closed etc) but for now just using state (main-context: line 68)
-- hover is super inconsistent
+- property is upper case (not guaranteed) and is being converted to lowercase in the custom hooks. Probably a bad way to do this
+- popup positioning is meh
 
 Currently
 
-- add property
-- delete property
+- main content hook
+- add properties to state
+- when add property make sure it is added to todo 'constructor' as well
+- fix tab bs
 
-- rename property to name
+- use useContext for now but I think this is bad and dumb and all the data should just be backend idk

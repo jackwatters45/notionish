@@ -17,7 +17,7 @@ import { TodosContext } from '../../MainContent';
 
 const DropDown = styled.div`
   position: absolute;
-  margin: 30px 0px;
+  // margin: 30px 0px;
   width: 270px;
   background: var(--secondary-background-color);
   box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
@@ -122,7 +122,6 @@ const RegularCell = styled.div`
   }
 `;
 
-// TODO double clicking makes bad!! + click off bs
 const DatePicker = forwardRef(({ style, todo, propId }, ref) => {
   const { setTodos, todos } = useContext(TodosContext);
 

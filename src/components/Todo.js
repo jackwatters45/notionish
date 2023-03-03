@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { SidebarContext } from './MainContent';
 import CardDone from './utils/CardDone';
-import TextProperty from './Properties/TextProperty';
+import NameProperty from './Properties/NameProperty';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px 10px;
@@ -20,7 +20,7 @@ const TodoContainer = styled.div`
   cursor: pointer;
 `;
 
-const StyledNameProp = styled(TextProperty)`
+const StyledNameProp = styled(NameProperty)`
   background-color: var(--card-background-color);
   padding: 0 0 6px 0;
 `;

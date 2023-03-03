@@ -8,9 +8,11 @@ import usePopupProperty from '../utils/usePopupProperty';
 
 const DatePickerContainer = styled.div`
   ${propertySharedStyle};
-`;
-
-const StyledContentEditable = styled(ContentEditable)`
+  height: fit-content;
+  `;
+  
+  const StyledContentEditable = styled(ContentEditable)`
+  padding: 6px 8px 7px;
   cursor: pointer;
   width: 100%;
 `;
