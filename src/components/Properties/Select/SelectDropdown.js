@@ -70,14 +70,12 @@ const SelectDropdown = forwardRef(({ style, todo, propId }, ref) => {
   const handleClick = (project) => {
     const todosCopy = [...todos];
     const todoCopy = todosCopy.find(({ id }) => id === todo.id);
-    console.log(propId)
-    console.log(project)
     todoCopy[propId] = project;
     setTodos(todosCopy);
   };
 
   return (
-    <DropdownContainer id="datePicker" ref={ref} style={style}>
+    <DropdownContainer ref={ref} style={style}>
       <Current>
         <CategoryName>{todo.project.name}</CategoryName>
       </Current>

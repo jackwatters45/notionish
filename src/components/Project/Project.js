@@ -56,11 +56,12 @@ const Project = ({ project }) => {
       {
         name: '',
         id: uniqid(),
-        project: project,
-        priority: '',
-        date: '',
-        created: new Date(),
         notes: '',
+        project: project,
+        date: '',
+        priority: '',
+        created: new Date(),
+        // {...properties},
       },
     ]);
 

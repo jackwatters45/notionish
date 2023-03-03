@@ -1,74 +1,39 @@
 import React, { useContext, useEffect } from 'react';
-import styled, { css } from 'styled-components';
-import TextProperty from '../Properties/TextProperty';
+import styled from 'styled-components';
 import { SidebarContext } from '../MainContent';
-import PropertyLabel from './PropertyLabel';
+import PropertyLabel from '../Properties/Labels/PropertyLabel';
 import { tabPress } from '../utils/cursorHelpers';
 import Icon from '@mdi/react';
 import {
-  mdiArrowDownDropCircleOutline as dropdownIcon,
-  mdiFormatListBulleted as bulletedListIcon,
-  mdiClockTimeNineOutline as clockIcon,
   mdiCheckboxOutline as checkboxIcon,
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
-  mdiCalendarMonth as calendarIcon,
 } from '@mdi/js';
-import UrlProperty from '../Properties/UrlProperty';
 import NotesProperty from '../Properties/NotesProperty';
-import DateProperty from '../Properties/Date/DateProperty';
-import SelectProp from '../Properties/Select/SelectProperty';
-import propertyData, { properties } from '../Properties/utils/propertyHelpers';
+import propertyData, {
+  defaultProperties,
+} from '../Properties/utils/propertyHelpers';
+import NewButton from '../utils/NewButton';
+import NameProperty from '../Properties/NameProperty';
 
-const SidebarContentContainer = styled.div`
-  padding: 48px 48px 0 48px;
-`;
-
-// TODO once I start adding properties -> make rows responsive (flex)
 const PropertiesContainer = styled.form`
-  display: grid;
+  padding: 32px 48px 0 48px;
   height: 100%;
-  grid-template-columns: 140px 1fr;
-  grid-template-rows: repeat(7, auto) 1fr;
-  & > * {
-    display: flex;
-    gap: 8px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 `;
 
-const TodoName = styled(TextProperty)`
-  margin: 0 0 10px 0;
+const PropertyRow = styled.div`
+  margin: 4px 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+`;
+
+const TodoName = styled(NameProperty)`
   font-size: 30px;
   font-weight: 700;
   grid-column: 1 / -1;
-`;
-
-const PropertyStyle = css`
-  padding: 6px 8px 7px;
-  height: fit-content;
-  &:focus {
-    background: rgb(37, 37, 37);
-    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
-      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
-  }
-`;
-const StyledTextInput = styled(TextProperty)`
-  ${PropertyStyle}
-`;
-const StyledUrlInput = styled(UrlProperty)`
-  ${PropertyStyle}
-`;
-
-const StyledSelect = styled(SelectProp)`
-  &:focus {
-    background: rgb(37, 37, 37);
-    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
-      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
-  }
-`;
-
-const StyledDateInput = styled(DateProperty)`
-  padding: 6px 8px 7px;
-  height: fit-content;
 `;
 
 const DoneButton = styled(Icon)`
@@ -78,8 +43,9 @@ const DoneButton = styled(Icon)`
   color: var(--main-font-color);
 `;
 
-const StyledHr = styled.hr`
-  grid-column: 1 / -1;
+const StyledNewButton = styled(NewButton)`
+  color: var(--empty-font-color);
+  margin: 0 0 10px 5px;
 `;
 
 const StyledNotes = styled(NotesProperty)`
@@ -99,22 +65,42 @@ const SidebarContents = () => {
   }, []);
 
   return (
-    <SidebarContentContainer>
-      <PropertiesContainer id="properties">
-        <TodoName property={'name'} todo={selectedTodo} autoFocus />
+    <PropertiesContainer id="properties">
+      <TodoName property={'name'} todo={selectedTodo} autoFocus />
+      {defaultProperties.map((property) => {
+        const { icon, getComponent } = propertyData[property.type];
+        const component = getComponent(property.name, selectedTodo);
+        return (
+          <PropertyRow key={property.name}>
+            <PropertyLabel icon={icon} property={property.name} />
+            {component}
+          </PropertyRow>
+        );
+      })}
+      <PropertyRow>
+        <PropertyLabel icon={checkboxIcon} property={'Done?'} />
+        <DoneButton
+          path={emptyCheckboxIcon}
+          size={0.85}
+          onClick={handleRemoveTodoAndSidebar}
+        />
+      </PropertyRow>
+      <StyledNewButton text="Add a property" width={''} />
+      <hr />
+      <StyledNotes
+        property={'notes'}
+        todo={selectedTodo}
+        placeholder={'Add notes here...'}
+      />
+    </PropertiesContainer>
+  );
+};
 
-        {properties.map((property) => {
-          const { icon, getComponent } = propertyData[property.type];
-          const component = getComponent(property.name, selectedTodo);
-          return (
-            <>
-              <PropertyLabel icon={icon} property={property.name} />
-              {component}
-            </>
-          );
-        })}
+export default SidebarContents;
 
-        {/* <PropertyLabel icon={dropdownIcon} property={'Project'} />
+// eslint-disable-next-line no-lone-blocks
+{
+  /* <PropertyLabel icon={dropdownIcon} property={'Project'} />
         <StyledSelect
           property={'project'}
           todo={selectedTodo}
@@ -132,22 +118,5 @@ const SidebarContents = () => {
           todo={selectedTodo}
           disabled={true}
         />
-      */}
-        <PropertyLabel icon={checkboxIcon} property={'Done?'} />
-        <DoneButton
-          path={emptyCheckboxIcon}
-          size={0.85}
-          onClick={handleRemoveTodoAndSidebar}
-        />
-        <StyledHr />
-        <StyledNotes
-          property={'notes'}
-          todo={selectedTodo}
-          placeholder={'Add notes here...'}
-        />
-      </PropertiesContainer>
-    </SidebarContentContainer>
-  );
-};
-
-export default SidebarContents;
+      */
+}

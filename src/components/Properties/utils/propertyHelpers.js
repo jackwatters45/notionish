@@ -1,4 +1,3 @@
-import Icon from '@mdi/react';
 import {
   mdiTextLong,
   mdiPound,
@@ -7,7 +6,6 @@ import {
   mdiCalendarMonth,
   mdiClockTimeNineOutline,
 } from '@mdi/js';
-
 import TextProperty from '../TextProperty';
 import NumberProperty from '../NumberProperty';
 import UrlProperty from '../UrlProperty';
@@ -64,7 +62,7 @@ const propertyData = {
 
 export default propertyData;
 
-export const properties = [
+export const defaultProperties = [
   { name: 'Priority', type: 'text' },
   { name: 'Date', type: 'date' },
   { name: 'Time Created', type: 'created' },

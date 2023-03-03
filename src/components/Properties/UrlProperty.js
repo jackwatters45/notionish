@@ -1,30 +1,22 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import ContentEditable from 'react-contenteditable';
-import { SidebarContext, TodosContext } from '../MainContent';
 import styled from 'styled-components';
 import useEditableDiv from './utils/useEditableDiv';
 import { propertySharedStyle } from './utils/Theme';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle};
+  padding: 6px 8px 7px;
+  height: fit-content;
+  &:focus {
+    background: rgb(37, 37, 37);
+    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+  }
 `;
 
 const UrlProperty = (props) => {
-  const { todo, property } = props;
-  const { setTodos, todos } = useContext(TodosContext);
-  const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
   const { html, style, ...editableDivProps } = useEditableDiv(props);
-
-  const handleChangePlainText = (e) => {
-    const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
-    todoCopy[e.currentTarget.id] = e.currentTarget.innerText;
-    setTodos(todosCopy);
-  };
-
-  const handleBlurNameInput = () => {
-    if (!todo.name) handleRemoveTodoAndSidebar(todo.id);
-  };
 
   const goToLink = () => {
     if (html) window.location = html;
@@ -34,9 +26,7 @@ const UrlProperty = (props) => {
     <StyledContentEditable
       html={html}
       style={{ ...style, textDecoration: html ? 'underline' : 'none' }}
-      onChange={handleChangePlainText}
       onDoubleClick={goToLink}
-      onBlur={property === 'name' ? handleBlurNameInput : null}
       {...editableDivProps}
     />
   );

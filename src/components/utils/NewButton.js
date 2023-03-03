@@ -8,7 +8,7 @@ const StyledButton = styled.button`
   margin-top: 4px;
   color: var(--secondary-font-color);
   display: flex;
-  padding: 6px 6px 6px 2px;
+  padding: 6px 8px 6px 2px;
   height: fit-content;
 `;
 
@@ -22,7 +22,7 @@ const NewButton = ({ onClick, className, text, width = 248 }) => {
       }}
     >
       <Icon path={mdiPlus} size={.9} />
-      <p>{text}</p>
+      <p style={{marginTop: '2px'}}>{text}</p>
     </StyledButton>
   );
 };

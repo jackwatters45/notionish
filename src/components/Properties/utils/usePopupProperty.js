@@ -16,11 +16,11 @@ const usePopupProperty = (props, buttonRef) => {
   };
 
   useEffect(() => {
-    const showDatePicker = () => {
+    const showPopup = () => {
       setIsPopupVisible(true);
       setIsDropdown(true);
     };
-    const hideDatePicker = () => {
+    const hidePopup = () => {
       setIsPopupVisible(false);
       setIsDropdown(false);
     };
@@ -28,13 +28,21 @@ const usePopupProperty = (props, buttonRef) => {
     const handleClick = (e) => {
       // TODO if error, try add this -> e.target === buttonRef.current
       if (buttonRef.current.contains(e.target) && !isDropdown)
-        return showDatePicker();
+        return showPopup();
 
-      if (isDropdown && !dropdownRef.current.contains(e.target))
-        return hideDatePicker();
+      if (!dropdownRef.current) return;
+      // console.log(e.target);
+      // console.log(e.target);
+      // console.log(!dropdownRef.current.contains(e.target));
+
+      if (
+        isDropdown &&
+        !dropdownRef.current.contains(e.target)
+      )
+        return hidePopup();
     };
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isDropdown) hideDatePicker();
+      if (e.key === 'Escape' && isDropdown) hidePopup();
     };
     window.addEventListener('click', handleClick);
     document.addEventListener('keydown', handleEscape);

@@ -31,9 +31,9 @@ const StyledContentEditable = styled(ContentEditable)`
 
 const SelectProperty = (props) => {
   const {
-    id,
     innerRef: selectButtonRef,
     html,
+    style: _,
     ...editableDivProps
   } = useEditableDiv(props, { disabled: true });
 
@@ -52,8 +52,6 @@ const SelectProperty = (props) => {
     if (!isDropdown) setHover(false);
   };
 
-  console.log(html)
-
   return (
     <SelectContainer>
       <SelectButtonBackground
@@ -63,7 +61,7 @@ const SelectProperty = (props) => {
         style={{ backgroundColor: hover ? 'rgba(255, 255, 255, 0.055)' : '' }}
         ref={selectButtonRef}
       >
-        <StyledContentEditable {...editableDivProps} html={html.name} id={id} />
+        <StyledContentEditable {...editableDivProps} html={html.name} />
       </SelectButtonBackground>
       {isDropdown ? <SelectDropdown {...popupProps} /> : ''}
     </SelectContainer>

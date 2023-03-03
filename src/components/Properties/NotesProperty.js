@@ -13,7 +13,11 @@ const StyledContentEditable = styled(ContentEditable)`
 const NotesProperty = (props) => {
   const { todo } = props;
   const { setTodos, todos } = useContext(TodosContext);
-  const { onKeyDown: _, ...editableDivProps } = useEditableDiv(props);
+  const {
+    onKeyDown: _,
+    handleChange: __,
+    ...editableDivProps
+  } = useEditableDiv(props);
 
   const handleChange = (e) => {
     const todosCopy = [...todos];
@@ -23,10 +27,7 @@ const NotesProperty = (props) => {
   };
 
   return (
-    <StyledContentEditable
-      onChange={handleChange}
-      {...editableDivProps}
-    />
+    <StyledContentEditable onChange={handleChange} {...editableDivProps} />
   );
 };
 
