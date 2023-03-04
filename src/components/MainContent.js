@@ -21,6 +21,7 @@ const ProjectContainer = styled.div`
 export const ProjectsContext = createContext({});
 export const TodosContext = createContext({});
 export const SidebarContext = createContext({});
+export const PropertiesContext = createContext({});
 
 const testProjects = [
   {
@@ -36,26 +37,33 @@ const testProjects = [
 const MainContent = () => {
   const sidebarRef = useRef();
 
-  const properties = useArrayOfObjects(defaultProperties)
-  // const projects = useArrayOfObjects(testProjects)
-  const [projects, setProjects] = useState(testProjects); // TODO replace initial
-  const removeProject = (projectId) => {
-    setProjects(projects.filter(({ id }) => id !== projectId));
-  };
+  const [projects, setProjects, removeProject, addProject] =
+    useArrayOfObjects(testProjects); // TODO replace initial
 
-  // const todos = useArrayOfObjects('')
-  const [todos, setTodos] = useState('');
-  const handleRemoveTodo = (id) =>
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const [todos, setTodos, removeTodo, addTodo] = useArrayOfObjects();
+
+  const [properties, setProperties, removeProperty, addProperty] =
+    useArrayOfObjects(defaultProperties);
+
+  // const [projects, setProjects] = useState(testProjects);
+  // const removeProject = (projectId) => {
+  //   setProjects(projects.filter(({ id }) => id !== projectId));
+  // };
+
+  // const todos = useArrayOfObjects()
+  // const [todos, setTodos] = useState('');
+
+  // const handleRemoveTodo = (id) =>
+  //   setTodos(todos.filter((todo) => todo.id !== id));
 
   const [selectedTodo, setSelectedTodo] = useState();
+  // TODO can i make use the popup hook for this pls - idk this is just ugly
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const closeSidebar = () => setIsSidebarVisible(false);
   const handleRemoveTodoAndSidebar = () => {
-    if (selectedTodo) handleRemoveTodo(selectedTodo.id);
+    if (selectedTodo) removeTodo(selectedTodo.id);
     closeSidebar();
   };
-  // TODO move inside somewhere idk - use refs
   const toggleSidebar = (e, todo) => {
     const isCurrentlyOpen = () =>
       isSidebarVisible &&
@@ -76,8 +84,9 @@ const MainContent = () => {
         !isPopupVisible &&
         !sidebarRef.current.contains(e.target) &&
         !e.target.className.includes('card')
-      )
+      ) {
         closeSidebar();
+      }
     };
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isSidebarVisible && !isPopupVisible)
@@ -94,37 +103,39 @@ const MainContent = () => {
   return (
     <>
       <ProjectsContext.Provider
-        value={{ removeProject, projects, setProjects }}
+        value={{ projects, setProjects, removeProject, addProject }}
       >
-        <TodosContext.Provider
-          value={{ todos, setTodos, handleRemoveTodo, projects }}
-        >
-          <SidebarContext.Provider
-            value={{
-              isSidebarVisible,
-              closeSidebar,
-              handleRemoveTodoAndSidebar,
-              selectedTodo,
-              toggleSidebar,
-              setIsPopupVisible,
-            }}
+        <TodosContext.Provider value={{ todos, setTodos, removeTodo, addTodo }}>
+          <PropertiesContext.Provider
+            value={{ properties, setProperties, removeProperty, addProperty }}
           >
-            <MainContentContainer>
-              <ProjectContainer>
-                {projects &&
-                  projects.map((project) => (
-                    <Project project={project} key={project.id} />
-                  ))}
-              </ProjectContainer>
-              <AddProject projects={projects} setProjects={setProjects} />
-            </MainContentContainer>
-            <Sidebar
-              ref={sidebarRef}
-              isSidebarVisible={isSidebarVisible}
-              closeSidebar={closeSidebar}
-              todo={selectedTodo}
-            />
-          </SidebarContext.Provider>
+            <SidebarContext.Provider
+              value={{
+                isSidebarVisible,
+                closeSidebar,
+                handleRemoveTodoAndSidebar,
+                selectedTodo,
+                toggleSidebar,
+                setIsPopupVisible,
+              }}
+            >
+              <MainContentContainer>
+                <ProjectContainer>
+                  {projects &&
+                    projects.map((project) => (
+                      <Project project={project} key={project.id} />
+                    ))}
+                </ProjectContainer>
+                <AddProject projects={projects} setProjects={setProjects} />
+              </MainContentContainer>
+              <Sidebar
+                ref={sidebarRef}
+                isSidebarVisible={isSidebarVisible}
+                closeSidebar={closeSidebar}
+                todo={selectedTodo}
+              />
+            </SidebarContext.Provider>
+          </PropertiesContext.Provider>
         </TodosContext.Provider>
       </ProjectsContext.Provider>
     </>

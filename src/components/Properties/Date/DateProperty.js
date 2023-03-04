@@ -9,16 +9,16 @@ import usePopupProperty from '../utils/usePopupProperty';
 const DatePickerContainer = styled.div`
   ${propertySharedStyle};
   height: fit-content;
-  `;
-  
-  const StyledContentEditable = styled(ContentEditable)`
+`;
+
+const StyledContentEditable = styled(ContentEditable)`
   padding: 6px 8px 7px;
   cursor: pointer;
   width: 100%;
 `;
 
 const DateProperty = (props) => {
-  // props = {...props, disabled: true}
+  props = { ...props, disabled: true, hoverable: true };
   const {
     innerRef: dateButtonRef,
     onClick: _,
@@ -29,15 +29,12 @@ const DateProperty = (props) => {
 
   const { isDropdown, ...popupProps } = usePopupProperty(props, dateButtonRef);
 
-  console.log(html)
   return (
     <DatePickerContainer>
       <StyledContentEditable
         {...editableDivProps}
         html={html ? html.toDateString() : 'Empty'}
         style={{ ...style, color: html ? '' : 'var(--empty-font-color)' }}
-        // disabled={true}
-        hoverable={'true'}
         innerRef={dateButtonRef}
       />
       {isDropdown ? <DatePicker {...popupProps} /> : ''}

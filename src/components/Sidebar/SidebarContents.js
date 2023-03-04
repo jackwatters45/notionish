@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import { SidebarContext } from '../MainContent';
+import { PropertiesContext, SidebarContext } from '../MainContent';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
 import { tabPress } from '../utils/cursorHelpers';
 import Icon from '@mdi/react';
@@ -9,11 +9,9 @@ import {
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
 } from '@mdi/js';
 import NotesProperty from '../Properties/NotesProperty';
-import propertyData, {
-  defaultProperties,
-} from '../Properties/utils/propertyHelpers';
-import NewButton from '../utils/NewButton';
+import propertyData from '../Properties/utils/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
+import AddNewProperty from './AddNewProperty';
 
 const PropertiesContainer = styled.form`
   padding: 32px 48px 0 48px;
@@ -43,11 +41,6 @@ const DoneButton = styled(Icon)`
   color: var(--main-font-color);
 `;
 
-const StyledNewButton = styled(NewButton)`
-  color: var(--empty-font-color);
-  margin: 0 0 10px 5px;
-`;
-
 const StyledNotes = styled(NotesProperty)`
   height: 100%;
   width: 100%;
@@ -55,22 +48,9 @@ const StyledNotes = styled(NotesProperty)`
   margin: 10px 0;
 `;
 
-
-
-const properties = [
-  { name: 'project', type: 'select' },
-  { name: 'priority', type: 'url' },
-  { name: 'date', type: 'date' },
-  { name: 'created', type: 'created' },
-  { name: 'done', type: 'checkbox' },
-];
-
-        {/* {properties.map((property) => {
-          const prop = propertyData[property.type]
-          console.log(prop)
-        })} */}
-
+// TODO create property -> donny forget id
 const SidebarContents = () => {
+  const { properties } = useContext(PropertiesContext);
   const { selectedTodo, handleRemoveTodoAndSidebar } =
     useContext(SidebarContext);
 
@@ -79,23 +59,15 @@ const SidebarContents = () => {
     return () => window.removeEventListener('keydown', tabPress);
   }, []);
 
-  // TODO
-  const addProperty = (e) => {
-    e.preventDefault();
-    // console.log(e)
-  };
-
-  // TODO add button should be different font color
   return (
     <PropertiesContainer id="properties">
       <TodoName property={'name'} todo={selectedTodo} autoFocus />
-      {defaultProperties.map((property) => {
-        const { icon, getComponent } = propertyData[property.type];
-        const component = getComponent(property.name, selectedTodo);
+      {properties.map(({ name, type }) => {
+        const { icon, getComponent } = propertyData[type];
         return (
-          <PropertyRow key={property.name}>
-            <PropertyLabel icon={icon} property={property.name} />
-            {component}
+          <PropertyRow key={name}>
+            <PropertyLabel icon={icon} property={name} />
+            {getComponent(name, selectedTodo)}
           </PropertyRow>
         );
       })}
@@ -107,7 +79,7 @@ const SidebarContents = () => {
           onClick={handleRemoveTodoAndSidebar}
         />
       </PropertyRow>
-      <StyledNewButton text="Add a property" width={''} />
+      <AddNewProperty />
       <hr />
       <StyledNotes
         property={'notes'}
@@ -119,26 +91,3 @@ const SidebarContents = () => {
 };
 
 export default SidebarContents;
-
-// eslint-disable-next-line no-lone-blocks
-{
-  /* <PropertyLabel icon={dropdownIcon} property={'Project'} />
-        <StyledSelect
-          property={'project'}
-          todo={selectedTodo}
-          disabled={true}
-        />
-        <PropertyLabel icon={bulletedListIcon} property={'Priority'} />
-        <StyledUrlInput property={'priority'} todo={selectedTodo} />
-        <PropertyLabel icon={calendarIcon} property={'Date'} />
-        <StyledDateInput property={'date'} type={'date'} todo={selectedTodo} />
-        <PropertyLabel icon={clockIcon} property={'Time Created'} />
-        <StyledTextInput
-          property={'created'}
-          type={'date'}
-          styledValue={selectedTodo.created.toDateString()}
-          todo={selectedTodo}
-          disabled={true}
-        />
-      */
-}

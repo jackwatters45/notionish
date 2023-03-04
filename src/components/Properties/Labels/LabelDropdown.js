@@ -1,7 +1,8 @@
 import { mdiDeleteOutline, mdiRenameBoxOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { PropertiesContext } from '../../MainContent';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -38,39 +39,59 @@ const Row = styled.div`
 
 const InputRow = styled.div`
   display: flex;
+  flex-direction: column;
   transition: background 20ms ease-in 0s;
   margin: 0 4px;
   padding: 0 8px;
-  height: 28px;
+  min-height: 28px;
   align-items: center;
   border-radius: 4px;
 `;
 
-const LabelDropdown = forwardRef(({ style, propId }, ref) => {
-  // need to import properties array
-  const properties = [];
-  const setProperties = () => {};
+const StyledInput = styled.input`
+  padding: 8px 4px;
+`;
 
-  const removeProperty = () =>
-    setProperties(properties.filter((property) => property.name !== propId));
+const ErrorMsg = styled.span`
+  padding: 4px 4px 0;
+  font-size: 12px;
+  color: rgb(235, 87, 87);
+`;
+
+// maybe add ability to change prop type eventually but for now nah
+const LabelDropdown = forwardRef(({ style, propId }, ref) => {
+  const { properties, setProperties, removeProperty } =
+    useContext(PropertiesContext);
 
   const [isRenaming, setIsRenaming] = useState(false);
   const handleClickRename = () => {
     setTimeout(() => setIsRenaming(true));
   };
 
-  // TODO add input state
-  const renameProperty = (e) => {
-    if (e.key !== 'Enter') return;
+  const [nameInput, setNameInput] = useState('');
+  const [isErrorMsg, setIsErrorMsg] = useState(false);
+  const handleChange = (e) => setNameInput(e.target.value);
 
-    console.log(e.target.value)
+  const handleKeyDown = (e) => {
+    if (e.key !== 'Enter') return;
+    renameProperty(e);
+  };
+
+  const renameProperty = (e) => {
+    e.preventDefault();
+    if (isErrorMsg || !nameInput) return;
+
     const propertiesCopy = [...properties];
-    const property = propertiesCopy.find(
-      (property) => property.name === propId,
-    );
-    property.name = e.target.value;
+    const property = propertiesCopy.find(({ id }) => id === propId);
+
+    property.name = nameInput;
+    property.id = nameInput.toLowerCase();
     setProperties(propertiesCopy);
   };
+
+  useEffect(() => {
+    setIsErrorMsg(properties.find(({ id }) => id === nameInput) ? true : false);
+  }, [properties, nameInput]);
 
   return (
     <DropdownContainer ref={ref} style={style}>
@@ -88,7 +109,20 @@ const LabelDropdown = forwardRef(({ style, propId }, ref) => {
       ) : (
         <>
           <InputRow>
-            <input autoFocus onKeyDown={renameProperty} />
+            <StyledInput
+              autoFocus
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+            />
+            {isErrorMsg ? (
+              <>
+              <hr />
+              <ErrorMsg>
+                A property named {nameInput} already exists in this database.
+              </ErrorMsg></>
+            ) : (
+              ''
+            )}
           </InputRow>
         </>
       )}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiPlus } from '@mdi/js';
@@ -12,19 +12,22 @@ const StyledButton = styled.button`
   height: fit-content;
 `;
 
-const NewButton = ({ onClick, className, text, width = 248 }) => {
-  return (
-    <StyledButton
-      className={className}
-      onClick={onClick}
-      style={{
-        width: typeof width === 'number' ? `${width}px` : 'fit-content',
-      }}
-    >
-      <Icon path={mdiPlus} size={.9} />
-      <p style={{marginTop: '2px'}}>{text}</p>
-    </StyledButton>
-  );
-};
+const NewButton = forwardRef(
+  ({ onClick, className, text, width = 248 }, ref) => {
+    return (
+      <StyledButton
+        ref={ref}
+        className={className}
+        onClick={onClick}
+        style={{
+          width: typeof width === 'number' ? `${width}px` : 'fit-content',
+        }}
+      >
+        <Icon path={mdiPlus} size={0.9} />
+        <p style={{ marginTop: '2px' }}>{text}</p>
+      </StyledButton>
+    );
+  },
+);
 
 export default NewButton;

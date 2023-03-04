@@ -35,26 +35,32 @@ const getCreatedProperty = (name, todo) => (
 
 const propertyData = {
   text: {
+    name: 'Text',
     getComponent: getTextProperty,
     icon: mdiTextLong,
   },
   number: {
+    name: 'Number',
     getComponent: getNumberProperty,
     icon: mdiPound,
   },
   url: {
+    name: 'Url',
     getComponent: getUrlProperty,
     icon: mdiLinkVariant,
   },
   date: {
+    name: 'Date',
     getComponent: getDateProperty,
     icon: mdiCalendarMonth,
   },
   select: {
+    name: 'Select',
     getComponent: getSelectProperty,
     icon: mdiArrowDownDropCircleOutline,
   },
   created: {
+    name: 'Created Time',
     getComponent: getCreatedProperty,
     icon: mdiClockTimeNineOutline,
   },
@@ -63,8 +69,8 @@ const propertyData = {
 export default propertyData;
 
 export const defaultProperties = [
-  { name: 'Priority', type: 'text' },
-  { name: 'Date', type: 'date' },
-  { name: 'Time Created', type: 'created' },
-  { name: 'Project', type: 'select' },
+  { name: 'Priority', id: 'priority', type: 'text' },
+  { name: 'Date', id: 'date', type: 'date' },
+  { name: 'Time Created', id: 'time created', type: 'created' },
+  { name: 'Project', id: 'project', type: 'select' },
 ];

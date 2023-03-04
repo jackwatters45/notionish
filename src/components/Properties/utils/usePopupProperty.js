@@ -26,19 +26,12 @@ const usePopupProperty = (props, buttonRef) => {
     };
 
     const handleClick = (e) => {
-      // TODO if error, try add this -> e.target === buttonRef.current
       if (buttonRef.current.contains(e.target) && !isDropdown)
         return showPopup();
 
       if (!dropdownRef.current) return;
-      // console.log(e.target);
-      // console.log(e.target);
-      // console.log(!dropdownRef.current.contains(e.target));
 
-      if (
-        isDropdown &&
-        !dropdownRef.current.contains(e.target)
-      )
+      if (isDropdown && !dropdownRef.current.contains(e.target))
         return hidePopup();
     };
     const handleEscape = (e) => {

@@ -22,12 +22,13 @@ Random Notes
 - may be better to use z-index for controlling clicks off popup and sidebar (if something needs to be closed etc) but for now just using state (main-context: line 68)
 - property is upper case (not guaranteed) and is being converted to lowercase in the custom hooks. Probably a bad way to do this
 - popup positioning is meh
+- eventually done needs to just be turned into a checkbox property
 
 Currently
 
-- main content hook
-- add properties to state
+- add property
 - when add property make sure it is added to todo 'constructor' as well
 - fix tab bs
 
 - use useContext for now but I think this is bad and dumb and all the data should just be backend idk
+- context file

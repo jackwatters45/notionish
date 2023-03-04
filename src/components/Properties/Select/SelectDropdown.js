@@ -1,6 +1,6 @@
 import React, { forwardRef, useContext } from 'react';
 import styled from 'styled-components';
-import { TodosContext } from '../../MainContent';
+import { ProjectsContext, TodosContext } from '../../MainContent';
 import Icon from '@mdi/react';
 import { mdiDrag } from '@mdi/js';
 
@@ -64,7 +64,7 @@ const DropdownRow = styled.div`
 `;
 
 const SelectDropdown = forwardRef(({ style, todo, propId }, ref) => {
-  const { projects } = useContext(TodosContext);
+  const { projects } = useContext(ProjectsContext);
   const { setTodos, todos } = useContext(TodosContext);
 
   const handleClick = (project) => {
