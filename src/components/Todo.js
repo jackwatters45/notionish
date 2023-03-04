@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { SidebarContext } from './MainContent';
-import CardDone from './utils/CardDone';
+import CardDone from './utils/components/CardDone';
 import NameProperty from './Properties/NameProperty';
 
 const TodoContainer = styled.div`

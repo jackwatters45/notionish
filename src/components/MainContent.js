@@ -2,9 +2,9 @@ import React, { createContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import AddProject from './Project/AddProject';
 import Project from './Project/Project';
-import { defaultProperties } from './Properties/utils/propertyHelpers';
+import { defaultProperties } from './utils/propertyHelpers';
 import Sidebar from './Sidebar/Sidebar';
-import useArrayOfObjects from './utils/useArrayOfObjects';
+import useArrayOfObjects from './utils/custom/useArrayOfObjects';
 
 const MainContentContainer = styled.div`
   display: flex;

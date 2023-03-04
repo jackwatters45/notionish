@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import usePopupProperty from '../utils/usePopupProperty';
+import usePopupProperty from '../../utils/custom/usePopupProperty';
 import LabelDropdown from './LabelDropdown';
 
 const Label = styled.div`
@@ -35,12 +35,10 @@ const PropertyLabel = (props) => {
   };
 
   // TODO
-  useEffect(() => {
-  }, [isDropdown]);
-
+  useEffect(() => {}, [isDropdown]);
 
   return (
-    <div >
+    <div>
       <Label
         ref={buttonRef}
         onMouseEnter={toggleHoverOn}

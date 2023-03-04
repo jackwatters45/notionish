@@ -5,7 +5,7 @@ import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
 import { ProjectsContext, TodosContext } from '../MainContent';
-import NewButton from '../utils/NewButton';
+import NewButton from '../utils/components/NewButton';
 import ProjectTitle from './ProjectTitle';
 
 const ProjectContainer = styled.div`

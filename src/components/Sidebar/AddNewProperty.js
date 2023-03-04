@@ -1,9 +1,15 @@
 import Icon from '@mdi/react';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import { PropertiesContext, SidebarContext } from '../MainContent';
-import propertyData from '../Properties/utils/propertyHelpers';
-import NewButton from '../utils/NewButton';
+import propertyData from '../utils/propertyHelpers';
+import NewButton from '../utils/components/NewButton';
 
 const StyledNewButton = styled(NewButton)`
   color: var(--empty-font-color);
@@ -57,6 +63,7 @@ const ErrorMsg = styled.span`
   color: rgb(235, 87, 87);
 `;
 
+// kinda busy - might make sense to clean up
 const AddNewProperty = () => {
   const { properties, setProperties } = useContext(PropertiesContext);
   const { setIsPopupVisible } = useContext(SidebarContext);
@@ -76,6 +83,12 @@ const AddNewProperty = () => {
   const [type, setType] = useState('text');
   const handleClickType = (propertyType) => setType(propertyType);
 
+  const resetAddingNew = useCallback(() => {
+    setIsPopupVisible(false);
+    setIsAddingNew(false);
+    setIsErrorMsg(false);
+    setType('text');
+  }, [setIsPopupVisible]);
   const handleKeyDown = (e) => {
     if (e.key !== 'Enter') return;
     addProperty(e);
@@ -94,13 +107,6 @@ const AddNewProperty = () => {
     setProperties([...properties, newProperty]);
     resetAddingNew();
   };
-
-  const resetAddingNew = useCallback(() => {
-    setIsPopupVisible(false);
-    setIsAddingNew(false);
-    setIsErrorMsg(false);
-    setType('text');
-  }, [setIsPopupVisible]);
 
   const [isErrorMsg, setIsErrorMsg] = useState(false);
   useEffect(() => {

@@ -2,12 +2,13 @@ import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
 import { ProjectsContext } from '../MainContent';
-import NewButton from '../utils/NewButton';
+import NewButton from '../utils/components/NewButton';
 
 const AddProjectForm = styled.form`
   height: 30px;
   margin-top: 4px;
   width: 248px;
+  overflow: hidden;
   border-radius: 4px;
   padding: 6px 2px;
   background-color: var(--section-background-color);
@@ -28,7 +29,7 @@ const AddProject = () => {
   const { projects, setProjects } = useContext(ProjectsContext);
   const [isAddingProject, setIsAddingProject] = useState(false);
   const handleClickAddProjectBtn = () => setIsAddingProject(true);
-  
+
   const addProject = () => setProjects([...projects, project]);
 
   const [project, setProject] = useState({ id: uniqid() });

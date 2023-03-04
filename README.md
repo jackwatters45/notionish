@@ -2,14 +2,16 @@
 
 Still todo
 
-- views
 - sort
 - filter
+- fix tab bs
 - drag and drop
 - backend
 
 Random Notes
 
+- use useContext for now but I think this is bad and dumb and all the data should just be backend idk
+- context file
 - eventually use draft js for notes section
 - drag or click styling
 - index file for exporting properties
@@ -26,9 +28,7 @@ Random Notes
 
 Currently
 
-- add property
-- when add property make sure it is added to todo 'constructor' as well
-- fix tab bs
-
-- use useContext for now but I think this is bad and dumb and all the data should just be backend idk
-- context file
+- views
+- add state
+- tabs
+- build table view

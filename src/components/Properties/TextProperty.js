@@ -1,8 +1,8 @@
 import React from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
-import useEditableDiv from './utils/useEditableDiv';
-import { propertySharedStyle } from './utils/Theme';
+import useEditableDiv from '../utils/custom/useEditableDiv';
+import { propertySharedStyle } from '../utils/theme';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle}

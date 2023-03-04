@@ -9,7 +9,7 @@ import {
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
 } from '@mdi/js';
 import NotesProperty from '../Properties/NotesProperty';
-import propertyData from '../Properties/utils/propertyHelpers';
+import propertyData from '../utils/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
 import AddNewProperty from './AddNewProperty';
 

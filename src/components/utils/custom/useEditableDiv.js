@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { TodosContext } from '../../MainContent';
-import { cursorToEndLine } from '../../utils/cursorHelpers';
+import { cursorToEndLine } from '../cursorHelpers';
 
 const useEditableDiv = (props) => {
   const {

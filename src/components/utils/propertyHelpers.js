@@ -6,12 +6,12 @@ import {
   mdiCalendarMonth,
   mdiClockTimeNineOutline,
 } from '@mdi/js';
-import TextProperty from '../TextProperty';
-import NumberProperty from '../NumberProperty';
-import UrlProperty from '../UrlProperty';
-import SelectProperty from '../Select/SelectProperty';
-import DateProperty from '../Date/DateProperty';
-import CreatedProperty from '../CreatedProperty';
+import TextProperty from '../Properties/TextProperty';
+import NumberProperty from '../Properties/NumberProperty';
+import UrlProperty from '../Properties/UrlProperty';
+import SelectProperty from '../Properties/Select/SelectProperty';
+import DateProperty from '../Properties/Date/DateProperty';
+import CreatedProperty from '../Properties/CreatedProperty';
 
 const getTextProperty = (name, todo) => (
   <TextProperty property={name} todo={todo} />
