@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { TodosContext } from '../../MainContent';
-import { cursorToEndLine } from '../cursorHelpers';
+import { cursorToEndLine } from '../helpers/cursorHelpers';
 
 const useEditableDiv = (props) => {
   const {
-    todo,
+    data,
     autoFocus,
     disabled,
     className,
@@ -13,8 +13,8 @@ const useEditableDiv = (props) => {
   } = props;
   const { todos, setTodos } = useContext(TodosContext);
 
-  let { property } = props;
-  const formatProperty = () => (property = property.toLowerCase());
+  let { name } = props;
+  const formatProperty = () => (name = name.toLowerCase());
   formatProperty();
 
   const editableRef = useRef();
@@ -22,7 +22,7 @@ const useEditableDiv = (props) => {
   // Default change handler
   const handleChange = (e) => {
     const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
+    const todoCopy = todosCopy.find(({ id }) => id === data.id);
     todoCopy[e.currentTarget.id] = e.currentTarget.innerText;
     setTodos(todosCopy);
   };
@@ -52,11 +52,11 @@ const useEditableDiv = (props) => {
   // when active remove hover
   const handleClick = () => setHover(false);
   const toggleHoverOn = () => {
-    if (property === 'notes' || property === 'name') return;
+    if (name === 'notes' || name === 'name') return;
     if (!disabled || hoverable) setHover(true);
   };
   const toggleHoverOff = () => {
-    if (property === 'notes' || property === 'name') return;
+    if (name === 'notes' || name === 'name') return;
     if (!disabled || hoverable) setHover(false);
   };
 
@@ -69,13 +69,13 @@ const useEditableDiv = (props) => {
       : {};
 
   return {
-    html: todo[property] || '',
+    html: data[name] || '',
     onChange: handleChange,
     onKeyDown: disableNewlines,
     onPaste: handlePaste,
     className: className,
     innerRef: editableRef,
-    id: property,
+    id: name,
     disabled,
     placeholder,
     onMouseEnter: toggleHoverOn,

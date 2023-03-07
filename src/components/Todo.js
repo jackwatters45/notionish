@@ -35,9 +35,9 @@ const Todo = ({ todo }) => {
       draggable="true"
     >
       <StyledNameProp
-        property={'name'}
+        name={'name'}
         className="card"
-        todo={todo}
+        data={todo}
         autoFocus
         placeholder="Type a name..."
       />

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import './App.css';
-import Footer from './components/Footer';
+import Footer from './components/utils/components/Footer';
 import MainContent from './components/MainContent';
 
 const AppContainer = styled.div`
@@ -19,14 +19,14 @@ const Header = styled.h1`
   padding: 10px 0px;
 `;
 
-const  App = () => {
+const App = () => {
   return (
     <AppContainer>
-      <Header>Notion Clone</Header>
+      <Header>Notion Todo Clone</Header>
       <MainContent />
       <Footer />
     </AppContainer>
   );
-}
+};
 
 export default App;

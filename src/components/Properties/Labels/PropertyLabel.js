@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import usePopupProperty from '../../utils/custom/usePopupProperty';
@@ -20,7 +20,7 @@ const StyledIcon = styled(Icon)`
 
 const PropertyLabel = (props) => {
   const buttonRef = useRef();
-  const { icon, property } = props;
+  const { icon, name } = props;
 
   const { isDropdown, ...popupProps } = usePopupProperty(props, buttonRef);
 
@@ -34,9 +34,6 @@ const PropertyLabel = (props) => {
     if (!isDropdown) setHover(false);
   };
 
-  // TODO
-  useEffect(() => {}, [isDropdown]);
-
   return (
     <div>
       <Label
@@ -47,9 +44,9 @@ const PropertyLabel = (props) => {
         style={{ backgroundColor: hover ? 'rgba(255, 255, 255, 0.055)' : '' }}
       >
         <StyledIcon path={icon} size={0.75} />
-        <p>{property}</p>
+        <p>{name}</p>
       </Label>
-      {isDropdown ? <LabelDropdown {...popupProps} /> : ''}
+      {isDropdown ? <LabelDropdown {...popupProps}  /> : ''}
     </div>
   );
 };

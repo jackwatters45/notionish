@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { PropertiesContext, SidebarContext } from '../MainContent';
-import propertyData from '../utils/propertyHelpers';
+import propertyData from '../utils/helpers/propertyHelpers';
 import NewButton from '../utils/components/NewButton';
 
 const StyledNewButton = styled(NewButton)`
@@ -63,7 +63,7 @@ const ErrorMsg = styled.span`
   color: rgb(235, 87, 87);
 `;
 
-// kinda busy - might make sense to clean up
+// TODO should use usePopup?
 const AddNewProperty = () => {
   const { properties, setProperties } = useContext(PropertiesContext);
   const { setIsPopupVisible } = useContext(SidebarContext);

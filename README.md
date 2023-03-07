@@ -2,14 +2,15 @@
 
 Still todo
 
-- sort
-- filter
 - fix tab bs
 - drag and drop
 - backend
+- clean up
 
 Random Notes
 
+- trying to edit the is done property totally messes it up
+- eventually rename to not be todo oriented
 - use useContext for now but I think this is bad and dumb and all the data should just be backend idk
 - context file
 - eventually use draft js for notes section
@@ -28,7 +29,7 @@ Random Notes
 
 Currently
 
-- views
-- add state
-- tabs
+- finish view crap
+- sort
+- filter
 - build table view

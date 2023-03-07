@@ -6,31 +6,29 @@ import {
   mdiCalendarMonth,
   mdiClockTimeNineOutline,
 } from '@mdi/js';
-import TextProperty from '../Properties/TextProperty';
-import NumberProperty from '../Properties/NumberProperty';
-import UrlProperty from '../Properties/UrlProperty';
-import SelectProperty from '../Properties/Select/SelectProperty';
-import DateProperty from '../Properties/Date/DateProperty';
-import CreatedProperty from '../Properties/CreatedProperty';
+import TextProperty from '../../Properties/TextProperty';
+import NumberProperty from '../../Properties/NumberProperty';
+import UrlProperty from '../../Properties/UrlProperty';
+import SelectProperty from '../../Properties/Select/SelectProperty';
+import DateProperty from '../../Properties/Date/DateProperty';
+import CreatedProperty from '../../Properties/CreatedProperty';
 
 const getTextProperty = (name, todo) => (
-  <TextProperty property={name} todo={todo} />
+  <TextProperty name={name} data={todo} />
 );
 
 const getNumberProperty = (name, todo) => (
-  <NumberProperty property={name} todo={todo} />
+  <NumberProperty name={name} data={todo} />
 );
-const getUrlProperty = (name, todo) => (
-  <UrlProperty property={name} todo={todo} />
-);
+const getUrlProperty = (name, todo) => <UrlProperty name={name} data={todo} />;
 const getDateProperty = (name, todo) => (
-  <DateProperty property={name} todo={todo} />
+  <DateProperty name={name} data={todo} />
 );
 const getSelectProperty = (name, todo) => (
-  <SelectProperty property={name} todo={todo} />
+  <SelectProperty name={name} data={todo} />
 );
 const getCreatedProperty = (name, todo) => (
-  <CreatedProperty property={name} todo={todo} />
+  <CreatedProperty name={name} data={todo} />
 );
 
 const propertyData = {

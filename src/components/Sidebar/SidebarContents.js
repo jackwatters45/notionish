@@ -2,14 +2,14 @@ import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { PropertiesContext, SidebarContext } from '../MainContent';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
-import { tabPress } from '../utils/cursorHelpers';
+import { tabPress } from '../utils/helpers/cursorHelpers';
 import Icon from '@mdi/react';
 import {
   mdiCheckboxOutline as checkboxIcon,
   mdiCheckboxBlankOutline as emptyCheckboxIcon,
 } from '@mdi/js';
 import NotesProperty from '../Properties/NotesProperty';
-import propertyData from '../utils/propertyHelpers';
+import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
 import AddNewProperty from './AddNewProperty';
 
@@ -61,18 +61,18 @@ const SidebarContents = () => {
 
   return (
     <PropertiesContainer id="properties">
-      <TodoName property={'name'} todo={selectedTodo} autoFocus />
+      <TodoName name={'name'} data={selectedTodo} autoFocus />
       {properties.map(({ name, type }) => {
         const { icon, getComponent } = propertyData[type];
         return (
           <PropertyRow key={name}>
-            <PropertyLabel icon={icon} property={name} />
+            <PropertyLabel icon={icon} data={selectedTodo} name={name} />
             {getComponent(name, selectedTodo)}
           </PropertyRow>
         );
       })}
       <PropertyRow>
-        <PropertyLabel icon={checkboxIcon} property={'Done?'} />
+        <PropertyLabel icon={checkboxIcon} data={{ name: 'Done?' }} />
         <DoneButton
           path={emptyCheckboxIcon}
           size={0.85}
@@ -82,8 +82,8 @@ const SidebarContents = () => {
       <AddNewProperty />
       <hr />
       <StyledNotes
-        property={'notes'}
-        todo={selectedTodo}
+        name={'notes'}
+        data={selectedTodo}
         placeholder={'Add notes here...'}
       />
     </PropertiesContainer>

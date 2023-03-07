@@ -3,7 +3,6 @@ import { SidebarContext } from '../../MainContent';
 
 const usePopupProperty = (props, buttonRef) => {
   const { setIsPopupVisible } = useContext(SidebarContext);
-  const { property, todo } = props;
   const dropdownRef = useRef();
 
   const [isDropdown, setIsDropdown] = useState(false);
@@ -24,8 +23,9 @@ const usePopupProperty = (props, buttonRef) => {
       setIsPopupVisible(false);
       setIsDropdown(false);
     };
-
     const handleClick = (e) => {
+      // not sure why the show logic would be in here?
+      if (!buttonRef.current) return;
       if (buttonRef.current.contains(e.target) && !isDropdown)
         return showPopup();
 
@@ -45,13 +45,15 @@ const usePopupProperty = (props, buttonRef) => {
     };
   }, [isDropdown, buttonRef, setIsPopupVisible]);
 
-  return {
-    isDropdown,
-    style: getRight(),
-    ref: dropdownRef,
-    propId: property.toLowerCase(),
-    todo: todo,
-  };
+  return props.data
+    ? {
+        isDropdown,
+        style: getRight(),
+        ref: dropdownRef,
+        propId: props.data.name.toLowerCase(),
+        data: props.data,
+      }
+    : { isDropdown, style: getRight(), ref: dropdownRef, setIsDropdown };
 };
 
 export default usePopupProperty;

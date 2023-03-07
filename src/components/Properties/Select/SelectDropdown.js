@@ -63,13 +63,13 @@ const DropdownRow = styled.div`
   }
 `;
 
-const SelectDropdown = forwardRef(({ style, todo, propId }, ref) => {
+const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
   const { projects } = useContext(ProjectsContext);
   const { setTodos, todos } = useContext(TodosContext);
 
   const handleClick = (project) => {
     const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
+    const todoCopy = todosCopy.find(({ id }) => id === data.id);
     todoCopy[propId] = project;
     setTodos(todosCopy);
   };
@@ -77,7 +77,7 @@ const SelectDropdown = forwardRef(({ style, todo, propId }, ref) => {
   return (
     <DropdownContainer ref={ref} style={style}>
       <Current>
-        <CategoryName>{todo.project.name}</CategoryName>
+        <CategoryName>{data.project.name}</CategoryName>
       </Current>
       <Categories>
         {projects.map((project) => (

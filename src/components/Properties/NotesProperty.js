@@ -11,7 +11,7 @@ const StyledContentEditable = styled(ContentEditable)`
 
 // not complete rn but seems beyond the scope of this project for now (3/1/23)
 const NotesProperty = (props) => {
-  const { todo } = props;
+  const { data: todo } = props;
   const { setTodos, todos } = useContext(TodosContext);
   const {
     onKeyDown: _,
