@@ -2,14 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiPlus } from '@mdi/js';
-import usePopupProperty from '../utils/custom/usePopupProperty';
-import { ViewsContext } from '../MainContent';
-import viewsData from '../utils/helpers/viewHelpers';
+import usePopup from '../../utils/custom/usePopup';
+import { ViewsContext } from '../../MainContent';
+import viewsData from '../../utils/helpers/viewHelpers';
 
 const StyledIcon = styled(Icon)`
-  margin-bottom: 4px;
-  margin-top: 2px;
   padding: 1px;
+  margin-bottom: 2px;
   &:hover {
     background-color: rgba(255, 255, 255, 0.055);
     border-radius: 4px;
@@ -65,15 +64,11 @@ const ErrorMsg = styled.span`
 
 const NewViewPopup = (props) => {
   const buttonRef = useRef();
-  const { isDropdown, setIsDropdown, ...popupProps } = usePopupProperty(
+  const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
     props,
     buttonRef,
   );
-  const { setIsAddingNew } = props;
   const { views, setViews } = useContext(ViewsContext);
-
-  // const [isAddingNewPopup, setIsAddingNewPopup] = useState(false);
-  // const handleClickAddNew = () => setIsAddingNewPopup(true);
 
   const [input, setInput] = useState('');
   const handleNameChange = (e) => setInput(e.target.value);
@@ -81,7 +76,6 @@ const NewViewPopup = (props) => {
   const handleClickType = (propertyType) => setType(propertyType);
 
   const resetAddingNew = () => {
-    setIsAddingNew(false);
     setIsDropdown(false);
     setIsErrorMsg(false);
     setType('board');
@@ -113,12 +107,7 @@ const NewViewPopup = (props) => {
 
   return (
     <div>
-      <StyledIcon
-        ref={buttonRef}
-        path={mdiPlus}
-        size={0.9}
-        onClick={() => setIsAddingNew(true)}
-      />
+      <StyledIcon ref={buttonRef} path={mdiPlus} size={0.9} />
       {isDropdown ? (
         <DropdownContainer {...popupProps} onKeyDown={handleKeyDown}>
           <StyledInput

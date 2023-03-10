@@ -11,6 +11,10 @@ import { PropertiesContext, SidebarContext } from '../MainContent';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NewButton from '../utils/components/NewButton';
 
+const Container = styled.div`
+  width: 100%;
+`;
+
 const StyledNewButton = styled(NewButton)`
   color: var(--empty-font-color);
   margin: 0 0 10px 5px;
@@ -131,11 +135,11 @@ const AddNewProperty = () => {
   }, [buttonRef, isAddingNew, resetAddingNew, setIsPopupVisible]);
 
   return (
-    <div>
+    <Container>
       <StyledNewButton
         onClick={handleClick}
         text="Add a property"
-        width={''}
+        width={12}
         ref={buttonRef}
       />
       {!isAddingNew ? (
@@ -177,7 +181,7 @@ const AddNewProperty = () => {
           })}
         </AddPropContainer>
       )}
-    </div>
+    </Container>
   );
 };
 

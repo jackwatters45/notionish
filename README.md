@@ -2,6 +2,7 @@
 
 Still todo
 
+- make sure everything still works (date is broken)
 - fix tab bs
 - drag and drop
 - backend
@@ -29,7 +30,7 @@ Random Notes
 
 Currently
 
-- finish view crap
-- sort
-- filter
-- build table view
+// make it actually work with the real data
+// switching between views
+
+// table

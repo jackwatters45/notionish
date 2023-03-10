@@ -2,8 +2,8 @@ import Icon from '@mdi/react';
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import ViewDropdown from './ViewDropdown';
-import usePopupProperty from '../utils/custom/usePopupProperty';
-import viewsData from '../utils/helpers/viewHelpers';
+import usePopup from '../../utils/custom/usePopup';
+import viewsData from '../../utils/helpers/viewHelpers';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -30,7 +30,7 @@ const SelectedView = styled.div`
 
 const View = (props) => {
   const buttonRef = useRef();
-  const { isDropdown, ...popupProps } = usePopupProperty(props, buttonRef);
+  const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
   const { data: view } = props;
 
   const { type, name } = view;

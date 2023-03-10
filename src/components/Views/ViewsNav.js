@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { ViewsContext } from '../MainContent';
-import View from './View';
-import NewViewPopup from './NewViewPopup';
+import View from './NewViews/View';
+import NewViewPopup from './NewViews/NewViewPopup';
 import viewsData from '../utils/helpers/viewHelpers';
+import Filter from './Filter/Filter';
+import Sort from './Sort/Sort';
 
 const NavContainer = styled.div`
   display: flex;
@@ -27,7 +29,7 @@ const ViewsContainer = styled.div`
   gap: 1px;
 `;
 
-const ViewContainer = styled.div`
+const UnselectedView = styled.div`
   display: flex;
   align-items: center;
   padding: 4px 8px;
@@ -38,7 +40,7 @@ const ViewContainer = styled.div`
   border-radius: 4px;
   max-width: 220px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   &:hover {
     background-color: rgba(255, 255, 255, 0.055);
     border-radius: 4px;
@@ -51,51 +53,30 @@ const Options = styled.div`
   margin-bottom: 4px;
 `;
 
-const Option = styled.div`
-  user-select: none;
-  transition: background 20ms ease-in 0s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  height: 28px;
-  border-radius: 3px;
-  padding: 6px;
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.055);
-    border-radius: 4px;
-  }
-`;
-
 const StyledHr = styled.hr`
   height: 1px;
   background: var(--card-background-color);
   margin-bottom: 10px;
 `;
 
-// filter or sort active - font is blue -> rgb(35, 131, 226);
-// if view ? color ...
+// rename everything better
+// displaying and editing active filters
+// deal with the actual filtering (use helpers)
+// make sure everything resets
 
-// TODO This is also gonna have to change the content being rendered but can't really do rn
-const ViewsNav = ({ isHovered }) => {
+// add view and sort prop to new views ...
+// change the content being rendered but can't really do rn
+const ViewsNav = () => {
   const { views } = useContext(ViewsContext);
 
-  const [selectedView, setSelectedView] = useState(views[0]);
+  const [selectedView, setSelectedView] = useState();
   const handleClickUnselectedView = (view) => setSelectedView(view);
   useEffect(() => {
-    const isSelectedExists = views.find((view) => view === selectedView) 
-    if(isSelectedExists) return 
+    const isSelectedExists = views.find((view) => view === selectedView);
+    if (isSelectedExists) return;
 
     setSelectedView(views[0]);
   }, [selectedView, views]);
-
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  // const toggleAddingNew = () => setIsAddingNew(!isAddingNew);
-
-  // TODO gonna need to set false eventually
-
-  // const [isSortedPopup, setIsSortedPopup] = useState(false);
-  // const [isFilteredPopup, setIsFilteredPopup] = useState(false);
 
   return (
     <NavContainer>
@@ -108,29 +89,21 @@ const ViewsNav = ({ isHovered }) => {
             return view === selectedView ? (
               <View key={name} data={view} />
             ) : (
-              <ViewContainer
+              <UnselectedView
                 key={name}
                 onClick={() => handleClickUnselectedView(view)}
               >
                 <Icon path={icon} size={0.75} />
                 {name}
-              </ViewContainer>
+              </UnselectedView>
             );
           })}
-          {isHovered || isAddingNew ? (
-            <NewViewPopup setIsAddingNew={setIsAddingNew} />
-          ) : (
-            ''
-          )}
+          <NewViewPopup />
         </ViewsContainer>
-        {isHovered ? (
-          <Options>
-            <Option>Filter</Option>
-            <Option>Sort</Option>
-          </Options>
-        ) : (
-          ''
-        )}
+        <Options>
+          <Filter selectedView={selectedView} />
+          <Sort selectedView={selectedView} />
+        </Options>
       </NavContent>
       <StyledHr />
     </NavContainer>

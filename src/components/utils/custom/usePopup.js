@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { SidebarContext } from '../../MainContent';
 
-const usePopupProperty = (props, buttonRef) => {
+const usePopup = (props, buttonRef) => {
   const { setIsPopupVisible } = useContext(SidebarContext);
   const dropdownRef = useRef();
 
@@ -24,12 +24,15 @@ const usePopupProperty = (props, buttonRef) => {
       setIsDropdown(false);
     };
     const handleClick = (e) => {
-      // not sure why the show logic would be in here?
       if (!buttonRef.current) return;
       if (buttonRef.current.contains(e.target) && !isDropdown)
         return showPopup();
 
       if (!dropdownRef.current) return;
+
+      // console.log(e.target)
+      // console.log(dropdownRef.current)
+      // console.log(isDropdown && !dropdownRef.current.contains(e.target))
 
       if (isDropdown && !dropdownRef.current.contains(e.target))
         return hidePopup();
@@ -56,4 +59,4 @@ const usePopupProperty = (props, buttonRef) => {
     : { isDropdown, style: getRight(), ref: dropdownRef, setIsDropdown };
 };
 
-export default usePopupProperty;
+export default usePopup;

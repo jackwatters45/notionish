@@ -96,10 +96,6 @@ const MainContent = () => {
     };
   }, [isPopupVisible, isSidebarVisible]);
 
-  const [isHovered, setIsHovered] = useState(false);
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
-
   return (
     <>
       <ViewsContext.Provider value={{ views, setViews, removeView, addView }}>
@@ -122,11 +118,8 @@ const MainContent = () => {
                   setIsPopupVisible,
                 }}
               >
-                <MainContentContainer
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <ViewsNav isHovered={isHovered} />
+                <MainContentContainer>
+                  <ViewsNav />
                   <ProjectContainer>
                     {projects &&
                       projects.map((project) => (

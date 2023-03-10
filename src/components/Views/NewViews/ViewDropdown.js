@@ -2,7 +2,7 @@ import { mdiDeleteOutline, mdiRenameBoxOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ViewsContext } from '../MainContent';
+import { ViewsContext } from '../../MainContent';
 
 const DropdownContainer = styled.div`
   position: absolute;
