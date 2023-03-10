@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import usePopupProperty from '../../utils/custom/usePopupProperty';
+import usePopup from '../../utils/custom/usePopup';
 import LabelDropdown from './LabelDropdown';
 
 const Label = styled.div`
@@ -22,7 +22,7 @@ const PropertyLabel = (props) => {
   const buttonRef = useRef();
   const { icon, name } = props;
 
-  const { isDropdown, ...popupProps } = usePopupProperty(props, buttonRef);
+  const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
 
   // hover for div parent div of content editable div
   const [hover, setHover] = useState(false);
@@ -46,7 +46,7 @@ const PropertyLabel = (props) => {
         <StyledIcon path={icon} size={0.75} />
         <p>{name}</p>
       </Label>
-      {isDropdown ? <LabelDropdown {...popupProps}  /> : ''}
+      {isDropdown ? <LabelDropdown {...popupProps} /> : ''}
     </div>
   );
 };

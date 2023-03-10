@@ -28,6 +28,20 @@ const viewsData = {
 export default viewsData;
 
 export const defaultViews = [
-  { name: 'Board', id: 'board', type: 'board', icon: mdiDeveloperBoard },
-  { name: 'Table', id: 'table', type: 'table', icon: mdiTable },
+  {
+    name: 'Board',
+    id: 'board',
+    type: 'board',
+    icon: mdiDeveloperBoard,
+    sort: [],
+    filter: [],
+  },
+  {
+    name: 'Table',
+    id: 'table',
+    type: 'table',
+    icon: mdiTable,
+    sort: [],
+    filter: [],
+  },
 ];

@@ -25,7 +25,6 @@ const ProjectInput = styled.input`
 const StyledNewButton = styled(NewButton)`
   background-color: var(--section-background-color);
   margin: 4px;
-
 `;
 
 const AddProject = () => {

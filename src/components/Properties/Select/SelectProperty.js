@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../../utils/theme';
 import SelectDropdown from './SelectDropdown';
-import usePopupProperty from '../../utils/custom/usePopupProperty';
+import usePopup from '../../utils/custom/usePopup';
 
 const SelectContainer = styled.div`
   ${propertySharedStyle};
@@ -37,10 +37,7 @@ const SelectProperty = (props) => {
     ...editableDivProps
   } = useEditableDiv(props, { disabled: true });
 
-  const { isDropdown, ...popupProps } = usePopupProperty(
-    props,
-    selectButtonRef,
-  );
+  const { isDropdown, ...popupProps } = usePopup(props, selectButtonRef);
 
   // hover for div parent div of content editable div
   const [hover, setHover] = useState(false);

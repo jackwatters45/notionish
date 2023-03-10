@@ -13,14 +13,14 @@ const StyledButton = styled.button`
 `;
 
 const NewButton = forwardRef(
-  ({ onClick, className, text, width = 248 }, ref) => {
+  ({ onClick, className, text, width = 12 }, ref) => {
     return (
       <StyledButton
         ref={ref}
         className={className}
         onClick={onClick}
         style={{
-          width: typeof width === 'number' ? `${width}px` : 'fit-content',
+          width: typeof width === 'number' ? `calc(100% - ${width}px)` : 'fit-content',
         }}
       >
         <Icon path={mdiPlus} size={0.9} />
