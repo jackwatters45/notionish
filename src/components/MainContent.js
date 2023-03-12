@@ -7,6 +7,7 @@ import Sidebar from './Sidebar/Sidebar';
 import useArrayOfObjects from './utils/custom/useArrayOfObjects';
 import ViewsNav from './Views/ViewsNav';
 import { defaultViews } from './utils/helpers/viewHelpers';
+import Table from './Table/Table';
 
 const MainContentContainer = styled.div`
   display: flex;
@@ -38,6 +39,45 @@ const testProjects = [
   },
 ];
 
+const testTodos = [
+  {
+      "name": "Todo 1",
+      "id": "lf25yyz4",
+      "notes": "",
+      "project": {
+          "id": "le6tmu59",
+          "name": "Project 1"
+      },
+      "date": "",
+      "priority": "High",
+      "created": "2023-03-10T06:35:43.120Z"
+  },
+  {
+      "name": "Todo 2",
+      "id": "lf25zdq0",
+      "notes": "",
+      "project": {
+          "id": "le6tmu59",
+          "name": "Project 1"
+      },
+      "date": "",
+      "priority": "Medium",
+      "created": "2023-03-10T06:36:02.232Z"
+  },
+  {
+      "name": "Todo 3",
+      "id": "lf25zkat",
+      "notes": "",
+      "project": {
+          "id": "le6tmu59",
+          "name": "Project 1"
+      },
+      "date": "",
+      "priority": "Low",
+      "created": "2023-03-10T06:36:10.757Z"
+  }
+]
+
 const MainContent = () => {
   const sidebarRef = useRef();
 
@@ -47,7 +87,7 @@ const MainContent = () => {
   const [projects, setProjects, removeProject, addProject] =
     useArrayOfObjects(testProjects); // TODO replace initial
 
-  const [todos, setTodos, removeTodo, addTodo] = useArrayOfObjects();
+  const [todos, setTodos, removeTodo, addTodo] = useArrayOfObjects(testTodos);
 
   const [properties, setProperties, removeProperty, addProperty] =
     useArrayOfObjects(defaultProperties);
@@ -96,6 +136,8 @@ const MainContent = () => {
     };
   }, [isPopupVisible, isSidebarVisible]);
 
+
+ 
   return (
     <>
       <ViewsContext.Provider value={{ views, setViews, removeView, addView }}>
@@ -120,13 +162,14 @@ const MainContent = () => {
               >
                 <MainContentContainer>
                   <ViewsNav />
-                  <ProjectContainer>
+                  <Table />
+                  {/* <ProjectContainer>
                     {projects &&
                       projects.map((project) => (
                         <Project project={project} key={project.id} />
                       ))}
                     <AddProject projects={projects} setProjects={setProjects} />
-                  </ProjectContainer>
+                  </ProjectContainer> */}
                 </MainContentContainer>
                 <Sidebar
                   ref={sidebarRef}

@@ -14,7 +14,7 @@ const useEditableDiv = (props) => {
   const { todos, setTodos } = useContext(TodosContext);
 
   let { name } = props;
-  const formatProperty = () => (name = name.toLowerCase());
+  const formatProperty = () => (name = name ? name.toLowerCase() : '');
   formatProperty();
 
   const editableRef = useRef();

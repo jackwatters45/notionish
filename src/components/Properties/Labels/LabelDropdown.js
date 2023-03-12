@@ -59,7 +59,8 @@ const ErrorMsg = styled.span`
 `;
 
 // maybe add ability to change prop type eventually but for now nah
-const LabelDropdown = forwardRef(({ style, propId }, ref) => {
+const LabelDropdown = forwardRef((props, ref) => {
+  const { style, propId } = props;
   const { properties, setProperties, removeProperty } =
     useContext(PropertiesContext);
 
@@ -101,7 +102,7 @@ const LabelDropdown = forwardRef(({ style, propId }, ref) => {
             <Icon path={mdiRenameBoxOutline} size={0.75} />
             Rename
           </Row>
-          <Row onClick={removeProperty}>
+          <Row onClick={() => removeProperty(propId)}>
             <Icon path={mdiDeleteOutline} size={0.75} />
             Delete property
           </Row>
@@ -116,10 +117,11 @@ const LabelDropdown = forwardRef(({ style, propId }, ref) => {
             />
             {isErrorMsg ? (
               <>
-              <hr />
-              <ErrorMsg>
-                A property named {nameInput} already exists in this database.
-              </ErrorMsg></>
+                <hr />
+                <ErrorMsg>
+                  A property named {nameInput} already exists in this database.
+                </ErrorMsg>
+              </>
             ) : (
               ''
             )}

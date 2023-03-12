@@ -53,19 +53,6 @@ const Options = styled.div`
   margin-bottom: 4px;
 `;
 
-const StyledHr = styled.hr`
-  height: 1px;
-  background: var(--card-background-color);
-  margin-bottom: 10px;
-`;
-
-// rename everything better
-// displaying and editing active filters
-// deal with the actual filtering (use helpers)
-// make sure everything resets
-
-// add view and sort prop to new views ...
-// change the content being rendered but can't really do rn
 const ViewsNav = () => {
   const { views } = useContext(ViewsContext);
 
@@ -105,7 +92,6 @@ const ViewsNav = () => {
           <Sort selectedView={selectedView} />
         </Options>
       </NavContent>
-      <StyledHr />
     </NavContainer>
   );
 };

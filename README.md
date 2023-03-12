@@ -30,6 +30,7 @@ Random Notes
 
 Currently
 
-// table
-// make it actually work with the real data
+table
 // switching between views
+// deal with the actual filtering adn sorting (use helpers)
+// rename everything better

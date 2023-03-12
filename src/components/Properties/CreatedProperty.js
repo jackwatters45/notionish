@@ -20,7 +20,7 @@ const CreatedProperty = (props) => {
   props = { ...props, disabled: true };
   const { html: _, ...editableDivProps } = useEditableDiv(props);
 
-  const formatDate = () => props.data.created.toDateString();
+  const formatDate = () => new Date(props.data.created).toDateString();
 
   return <StyledContentEditable html={formatDate()} {...editableDivProps} />;
 };

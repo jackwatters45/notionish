@@ -20,7 +20,7 @@ const StyledIcon = styled(Icon)`
 
 const PropertyLabel = (props) => {
   const buttonRef = useRef();
-  const { icon, name } = props;
+  const { icon, name, className } = props;
 
   const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
 
@@ -42,6 +42,7 @@ const PropertyLabel = (props) => {
         onMouseLeave={toggleHoverOff}
         onClick={handleClick}
         style={{ backgroundColor: hover ? 'rgba(255, 255, 255, 0.055)' : '' }}
+        className={className}
       >
         <StyledIcon path={icon} size={0.75} />
         <p>{name}</p>

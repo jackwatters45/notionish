@@ -20,11 +20,14 @@ const NewButton = forwardRef(
         className={className}
         onClick={onClick}
         style={{
-          width: typeof width === 'number' ? `calc(100% - ${width}px)` : 'fit-content',
+          width:
+            typeof width === 'number'
+              ? `calc(100% - ${width}px)`
+              : 'fit-content',
         }}
       >
         <Icon path={mdiPlus} size={0.9} />
-        <p style={{ marginTop: '2px' }}>{text}</p>
+        <p>{text}</p>
       </StyledButton>
     );
   },

@@ -69,6 +69,6 @@ export default propertyData;
 export const defaultProperties = [
   { name: 'Priority', id: 'priority', type: 'text' },
   { name: 'Date', id: 'date', type: 'date' },
-  { name: 'Time Created', id: 'time created', type: 'created' },
+  { name: 'Time Created', id: 'created', type: 'created' },
   { name: 'Project', id: 'project', type: 'select' },
 ];

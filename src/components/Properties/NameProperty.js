@@ -14,7 +14,7 @@ const StyledContentEditable = styled(ContentEditable)`
 // Property name is unique so kinda like a key (active prop db)
 // for created - maybe add a type and if type = date that is how formatted
 const NameProperty = (props) => {
-  const { data: todo, property } = props;
+  const { data: todo } = props;
   const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
   const editableDivProps = useEditableDiv(props);
 
@@ -23,10 +23,7 @@ const NameProperty = (props) => {
   };
 
   return (
-    <StyledContentEditable
-      onBlur={property === 'name' ? handleBlurNameInput : null}
-      {...editableDivProps}
-    />
+    <StyledContentEditable onBlur={handleBlurNameInput} {...editableDivProps} />
   );
 };
 

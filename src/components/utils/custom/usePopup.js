@@ -30,10 +30,6 @@ const usePopup = (props, buttonRef) => {
 
       if (!dropdownRef.current) return;
 
-      // console.log(e.target)
-      // console.log(dropdownRef.current)
-      // console.log(isDropdown && !dropdownRef.current.contains(e.target))
-
       if (isDropdown && !dropdownRef.current.contains(e.target))
         return hidePopup();
     };
@@ -53,10 +49,16 @@ const usePopup = (props, buttonRef) => {
         isDropdown,
         style: getRight(),
         ref: dropdownRef,
-        propId: props.data.name.toLowerCase(),
+        propId: props.name && props.name.toLowerCase(),
         data: props.data,
       }
-    : { isDropdown, style: getRight(), ref: dropdownRef, setIsDropdown };
+    : {
+        isDropdown,
+        style: getRight(),
+        ref: dropdownRef,
+        setIsDropdown,
+        propId: props.name && props.name.toLowerCase(),
+      };
 };
 
 export default usePopup;

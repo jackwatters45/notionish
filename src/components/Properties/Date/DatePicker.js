@@ -122,21 +122,22 @@ const RegularCell = styled.div`
   }
 `;
 
-const DatePicker = forwardRef(({ style, todo, propId }, ref) => {
+const DatePicker = forwardRef(({ style, data, propId }, ref) => {
   const { setTodos, todos } = useContext(TodosContext);
 
   const [date, setDate] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+
   useEffect(() => {
     const addDateToState = () => {
-      const date = todo.date || new Date();
+      const date = data.date || new Date();
       setDate(date);
       setMonth(date.getMonth());
       setYear(date.getFullYear());
     };
     addDateToState();
-  }, [todo.date]);
+  }, [data.date]);
 
   const changeDate = (date) => {
     setDate(date);
@@ -144,7 +145,7 @@ const DatePicker = forwardRef(({ style, todo, propId }, ref) => {
     setYear(date.getFullYear());
 
     const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === todo.id);
+    const todoCopy = todosCopy.find(({ id }) =>  id === data.id);
     todoCopy[propId] = date;
     setTodos(todosCopy);
   };
