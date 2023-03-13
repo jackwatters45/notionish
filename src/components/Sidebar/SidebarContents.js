@@ -11,7 +11,8 @@ import {
 import NotesProperty from '../Properties/NotesProperty';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
-import AddNewProperty from './AddNewProperty';
+import AddNewPropertySidebar from './AddNewPropertySidebar';
+import { hoverStyle } from '../utils/theme';
 
 const PropertiesContainer = styled.form`
   padding: 32px 48px 0 48px;
@@ -34,6 +35,11 @@ const TodoName = styled(NameProperty)`
   grid-column: 1 / -1;
 `;
 
+// TODO add ones for no hover
+const StyledProperty = styled(PropertyLabel)`
+  ${hoverStyle}
+`;
+
 const DoneButton = styled(Icon)`
   cursor: pointer;
   align-self: start;
@@ -46,6 +52,10 @@ const StyledNotes = styled(NotesProperty)`
   width: 100%;
   grid-column: 1 / -1;
   margin: 10px 0;
+`;
+
+const StyledAddPropButton = styled(AddNewPropertySidebar)`
+  margin: 0 0 10px 5px;
 `;
 
 // TODO create property -> donny forget id
@@ -79,7 +89,7 @@ const SidebarContents = () => {
           onClick={handleRemoveTodoAndSidebar}
         />
       </PropertyRow>
-      <AddNewProperty />
+      <StyledAddPropButton text={'Add a property'} />
       <hr />
       <StyledNotes
         name={'notes'}

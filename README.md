@@ -2,12 +2,6 @@
 
 Still todo
 
-- make sure everything still works (date is broken)
-- fix tab bs
-- drag and drop
-- backend
-- clean up
-
 Random Notes
 
 - trying to edit the is done property totally messes it up
@@ -31,6 +25,12 @@ Random Notes
 Currently
 
 table
-// switching between views
-// deal with the actual filtering adn sorting (use helpers)
-// rename everything better
+
+- switching between views
+- opening sidebar
+- deal with the actual filtering adn sorting (use helpers)
+- rename everything better
+- fix tab bs
+- drag and drop
+- backend
+- clean up

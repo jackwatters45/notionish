@@ -13,3 +13,10 @@ export const propertySharedStyle = css`
   transition: background 20ms ease-in 0s;
   text-decoration-color: var(--empty-font-color);
 `;
+
+export const hoverStyle = css`
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.055);
+    border-radius: 4px;
+  }
+`;

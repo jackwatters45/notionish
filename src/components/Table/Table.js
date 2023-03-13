@@ -1,13 +1,13 @@
-import Icon from '@mdi/react';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
 import { PropertiesContext, TodosContext } from '../MainContent';
-import { mdiAlphabeticalVariant, mdiPlus } from '@mdi/js';
+import { mdiAlphabeticalVariant } from '@mdi/js';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NewButton from '../utils/components/NewButton';
 import uniqid from 'uniqid';
 import NameProperty from '../Properties/NameProperty';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
+import AddNewPropertyTable from './AddNewPropertyTable';
 
 const Container = styled.div`
   min-width: 100%;
@@ -64,16 +64,6 @@ const HeaderCell = styled(PropertyLabel)`
   ${propertyColumns}
 `;
 
-const PlusHeader = styled.div`
-  overflow: hidden;
-  display: flex;
-  user-select: none;
-  transition: background 20ms ease-in 0s;
-  cursor: pointer;
-  padding: 0 8px;
-  align-items: center;
-`;
-
 const TableRow = styled.div`
   ${sharedRow}
   color: var(--main-font-color);
@@ -122,15 +112,7 @@ const Table = () => {
     ]);
   };
 
-  // TODO little tab thing to open sidebar
-  // TODO fix header rename stuff
-  // header popups don't work
-  // <PropertyLabel icon={icon} data={selectedTodo} name={name} />
-
-  useEffect(() => {
-    // console.log(todos)
-  });
-
+  // TODO remove hover on editable divs
   return (
     <Container>
       <Header>
@@ -141,10 +123,7 @@ const Table = () => {
           const { icon } = propertyData[type];
           return <HeaderCell key={id} name={name} icon={icon} data={''} />;
         })}
-        <PlusHeader>
-          {/* TODO onClick add property */}
-          <Icon path={mdiPlus} size={0.9} />
-        </PlusHeader>
+        <AddNewPropertyTable />
       </Header>
       {todos.map((todo) => (
         <TableRow key={todo.name}>
@@ -160,7 +139,6 @@ const Table = () => {
         </TableRow>
       ))}
       <BottomRow>
-        {/* TODO on clickAdd Todo and autofocus */}
         <StyledNewButton onClick={addTodo} text={'New'} />
       </BottomRow>
     </Container>

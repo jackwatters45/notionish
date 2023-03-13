@@ -9,15 +9,22 @@ import React, {
 import styled from 'styled-components';
 import { PropertiesContext, SidebarContext } from '../MainContent';
 import propertyData from '../utils/helpers/propertyHelpers';
-import NewButton from '../utils/components/NewButton';
+import { mdiPlus } from '@mdi/js';
+import usePopup from '../utils/custom/usePopup';
 
-const Container = styled.div`
-  width: 100%;
+const ButtonDiv = styled.div`
+  overflow: hidden;
+  display: flex;
+  user-select: none;
+  transition: background 20ms ease-in 0s;
+  cursor: pointer;
+  padding: 0 8px;
+  align-items: center;
 `;
 
-const StyledNewButton = styled(NewButton)`
+const StyledIcon = styled(Icon)`
   color: var(--empty-font-color);
-  margin: 0 0 10px 5px;
+  margin: 6px 0;
 `;
 
 const AddPropContainer = styled.div`
@@ -67,20 +74,13 @@ const ErrorMsg = styled.span`
   color: rgb(235, 87, 87);
 `;
 
-// TODO should use usePopup?
-const AddNewProperty = () => {
+const AddNewPropertyTable = (props) => {
   const { properties, setProperties } = useContext(PropertiesContext);
   const { setIsPopupVisible } = useContext(SidebarContext);
 
   const buttonRef = useRef();
-  const dropdownRef = useRef();
 
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const handleClick = (e) => {
-    e.preventDefault();
-    setTimeout(() => setIsAddingNew(true));
-    setIsPopupVisible(true);
-  };
+  const { isDropdown, setIsDropdown, ...popupProps } = usePopup({}, buttonRef);
 
   const [nameInput, setNameInput] = useState('');
   const handleNameChange = (e) => setNameInput(e.target.value);
@@ -89,10 +89,11 @@ const AddNewProperty = () => {
 
   const resetAddingNew = useCallback(() => {
     setIsPopupVisible(false);
-    setIsAddingNew(false);
+    setIsDropdown(false);
     setIsErrorMsg(false);
     setType('text');
-  }, [setIsPopupVisible]);
+  }, [setIsDropdown, setIsPopupVisible]);
+
   const handleKeyDown = (e) => {
     if (e.key !== 'Enter') return;
     addProperty(e);
@@ -117,49 +118,25 @@ const AddNewProperty = () => {
     setIsErrorMsg(properties.find(({ id }) => id === nameInput) ? true : false);
   }, [properties, nameInput]);
 
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (!dropdownRef.current) return;
-      if (isAddingNew && !dropdownRef.current.contains(e.target))
-        return resetAddingNew();
-    };
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isAddingNew) return resetAddingNew();
-    };
-    window.addEventListener('click', handleClick);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('click', handleClick);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [buttonRef, isAddingNew, resetAddingNew, setIsPopupVisible]);
-
   return (
-    <Container>
-      <StyledNewButton
-        onClick={handleClick}
-        text="Add a property"
-        width={12}
-        ref={buttonRef}
-      />
-      {!isAddingNew ? (
-        ''
-      ) : (
-        <AddPropContainer onKeyDown={handleKeyDown} ref={dropdownRef}>
+    <div>
+      <ButtonDiv>
+        <StyledIcon size={0.9} path={mdiPlus} ref={buttonRef} />
+      </ButtonDiv>
+      {isDropdown && (
+        <AddPropContainer onKeyDown={handleKeyDown} {...popupProps}>
           <StyledInput
             autoFocus
             placeholder="Property name"
             onChange={handleNameChange}
           />
-          {isErrorMsg ? (
+          {isErrorMsg && (
             <>
               <hr />
               <ErrorMsg>
                 A property named {nameInput} already exists in this database.
               </ErrorMsg>
             </>
-          ) : (
-            ''
           )}
           <hr />
           <TypeLabel>Type</TypeLabel>
@@ -181,8 +158,8 @@ const AddNewProperty = () => {
           })}
         </AddPropContainer>
       )}
-    </Container>
+    </div>
   );
 };
 
-export default AddNewProperty;
+export default AddNewPropertyTable;
