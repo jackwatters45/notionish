@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
-import { ViewsContext } from '../../MainContent';
 import filterOptions from './filterHelpers';
+import { DatabaseContext } from '../../utils/context/context';
 
 const Select = styled.div`
   display: flex;
@@ -60,7 +60,7 @@ const FilterRow = styled.div`
 
 const FilterTypeDropdown = (props) => {
   const { selectedView, filterType, property } = props;
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
   const selectButton = useRef();
   const { isDropdown, ...popupProps } = usePopup({}, selectButton);
 

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import { PropertiesContext, SidebarContext } from '../MainContent';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
 import { tabPress } from '../utils/helpers/cursorHelpers';
 import Icon from '@mdi/react';
@@ -12,6 +11,7 @@ import NotesProperty from '../Properties/NotesProperty';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
 import AddNewPropertySidebar from './AddNewPropertySidebar';
+import { DatabaseContext, SidebarContext } from '../utils/context/context';
 import { hoverStyle } from '../utils/theme';
 
 const PropertiesContainer = styled.form`
@@ -35,9 +35,8 @@ const TodoName = styled(NameProperty)`
   grid-column: 1 / -1;
 `;
 
-// TODO add ones for no hover
-const StyledProperty = styled(PropertyLabel)`
-  ${hoverStyle}
+const StyledPropertyValue = styled.div`
+  ${hoverStyle};
 `;
 
 const DoneButton = styled(Icon)`
@@ -58,9 +57,8 @@ const StyledAddPropButton = styled(AddNewPropertySidebar)`
   margin: 0 0 10px 5px;
 `;
 
-// TODO create property -> donny forget id
 const SidebarContents = () => {
-  const { properties } = useContext(PropertiesContext);
+  const { properties } = useContext(DatabaseContext);
   const { selectedTodo, handleRemoveTodoAndSidebar } =
     useContext(SidebarContext);
 
@@ -77,7 +75,9 @@ const SidebarContents = () => {
         return (
           <PropertyRow key={name}>
             <PropertyLabel icon={icon} data={selectedTodo} name={name} />
-            {getComponent(name, selectedTodo)}
+            <StyledPropertyValue>
+              {getComponent(name, selectedTodo)}
+            </StyledPropertyValue>
           </PropertyRow>
         );
       })}

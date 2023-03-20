@@ -12,25 +12,20 @@ const StyledButton = styled.button`
   height: fit-content;
 `;
 
-const NewButton = forwardRef(
-  ({ onClick, className, text, width = 12 }, ref) => {
-    return (
-      <StyledButton
-        ref={ref}
-        className={className}
-        onClick={onClick}
-        style={{
-          width:
-            typeof width === 'number'
-              ? `calc(100% - ${width}px)`
-              : 'fit-content',
-        }}
-      >
-        <Icon path={mdiPlus} size={0.9} />
-        <p>{text}</p>
-      </StyledButton>
-    );
-  },
-);
+const NewButton = forwardRef(({ onClick, className, text, width }, ref) => {
+  return (
+    <StyledButton
+      ref={ref}
+      className={className}
+      onClick={onClick}
+      style={{
+        width: typeof width === 'number' ? `${width}px` : `100%`,
+      }}
+    >
+      <Icon path={mdiPlus} size={0.9} />
+      <p>{text}</p>
+    </StyledButton>
+  );
+});
 
 export default NewButton;

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiCheckboxBlankOutline } from '@mdi/js';
 import React, { useContext } from 'react';
-import { TodosContext } from '../../MainContent';
+import { DatabaseContext } from '../context/context';
 
 const DoneContainer = styled.button`
   display: flex;
@@ -16,7 +16,7 @@ const DoneContainer = styled.button`
 `;
 
 const CardDone = ({ todo }) => {
-  const { handleRemoveTodo } = useContext(TodosContext);
+  const { handleRemoveTodo } = useContext(DatabaseContext);
 
   return (
     <DoneContainer onClick={() => handleRemoveTodo(todo.id)}>

@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
-import { PropertiesContext, TodosContext } from '../MainContent';
 import { mdiAlphabeticalVariant } from '@mdi/js';
-import propertyData from '../utils/helpers/propertyHelpers';
-import NewButton from '../utils/components/NewButton';
+import propertyData from '../../utils/helpers/propertyHelpers';
+import NewButton from '../../utils/components/NewButton';
 import uniqid from 'uniqid';
-import NameProperty from '../Properties/NameProperty';
-import PropertyLabel from '../Properties/Labels/PropertyLabel';
+import NameProperty from '../../Properties/NameProperty';
+import PropertyLabel from '../../Properties/Labels/PropertyLabel';
 import AddNewPropertyTable from './AddNewPropertyTable';
+import { DatabaseContext } from '../../utils/context/context';
 
 const Container = styled.div`
   min-width: 100%;
@@ -92,24 +92,13 @@ const StyledNewButton = styled(NewButton)`
   }
 `;
 
-const Table = () => {
-  const { properties } = useContext(PropertiesContext);
-  const { todos, setTodos } = useContext(TodosContext);
+// need to know if filter or sort
+const Table = (props) => {
+  const { todos, setTodos, properties } = useContext(DatabaseContext);
+  const { editedTodos } = props;
 
   const addTodo = () => {
-    setTodos([
-      ...todos,
-      {
-        name: '',
-        id: uniqid(),
-        notes: '',
-        project: '',
-        date: '',
-        priority: '',
-        created: new Date(),
-        // {...properties},
-      },
-    ]);
+    setTodos([...todos, { name: '', id: uniqid(), notes: '', ...properties }]);
   };
 
   // TODO remove hover on editable divs
@@ -125,7 +114,7 @@ const Table = () => {
         })}
         <AddNewPropertyTable />
       </Header>
-      {todos.map((todo) => (
+      {editedTodos.map((todo) => (
         <TableRow key={todo.name}>
           <RowName>
             <NameProperty name={'name'} data={todo} autoFocus />

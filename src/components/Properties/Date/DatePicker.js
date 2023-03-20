@@ -13,7 +13,7 @@ import calendarDates, {
 } from './calendarHelpers';
 import Icon from '@mdi/react';
 import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
-import { TodosContext } from '../../MainContent';
+import { DatabaseContext } from '../../utils/context/context';
 
 const DropDown = styled.div`
   position: absolute;
@@ -123,7 +123,7 @@ const RegularCell = styled.div`
 `;
 
 const DatePicker = forwardRef(({ style, data, propId }, ref) => {
-  const { setTodos, todos } = useContext(TodosContext);
+  const { setTodos, todos } = useContext(DatabaseContext);
 
   const [date, setDate] = useState('');
   const [month, setMonth] = useState('');

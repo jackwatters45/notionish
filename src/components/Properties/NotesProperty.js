@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import ContentEditable from 'react-contenteditable';
-import { TodosContext } from '../MainContent';
 import styled from 'styled-components';
 import useEditableDiv from '../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../utils/theme';
+import { DatabaseContext } from '../utils/context/context';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle}
@@ -12,7 +12,7 @@ const StyledContentEditable = styled(ContentEditable)`
 // not complete rn but seems beyond the scope of this project for now (3/1/23)
 const NotesProperty = (props) => {
   const { data: todo } = props;
-  const { setTodos, todos } = useContext(TodosContext);
+  const { setTodos, todos } = useContext(DatabaseContext);
   const {
     onKeyDown: _,
     handleChange: __,

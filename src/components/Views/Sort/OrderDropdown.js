@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
-import { ViewsContext } from '../../MainContent';
+import { DatabaseContext } from '../../utils/context/context';
 
 const Select = styled.div`
   display: flex;
@@ -59,7 +59,7 @@ const Row = styled.div`
 
 const OrderDropdown = (props) => {
   const { order, property, selectedView } = props;
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
   const orderButton = useRef();
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
     {},

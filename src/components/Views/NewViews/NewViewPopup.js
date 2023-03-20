@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiPlus } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
-import { ViewsContext } from '../../MainContent';
 import viewsData from '../../utils/helpers/viewHelpers';
+import { DatabaseContext } from '../../utils/context/context';
 
 const StyledIcon = styled(Icon)`
   padding: 1px;
@@ -68,7 +68,7 @@ const NewViewPopup = (props) => {
     props,
     buttonRef,
   );
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
 
   const [input, setInput] = useState('');
   const handleNameChange = (e) => setInput(e.target.value);

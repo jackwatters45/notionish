@@ -1,13 +1,12 @@
 # Todo list I created a while back adapted to use react
 
-Still todo
-
 Random Notes
 
+- maybe skip firebase background
+- property object should hold all the sort info etc??
 - trying to edit the is done property totally messes it up
 - eventually rename to not be todo oriented
 - use useContext for now but I think this is bad and dumb and all the data should just be backend idk
-- context file
 - eventually use draft js for notes section
 - drag or click styling
 - index file for exporting properties
@@ -21,14 +20,12 @@ Random Notes
 - property is upper case (not guaranteed) and is being converted to lowercase in the custom hooks. Probably a bad way to do this
 - popup positioning is meh
 - eventually done needs to just be turned into a checkbox property
+- sidebar hovering is a bit sloppy
+- i had some autofocuses in each view that i turned off so when new todo created needs to auto focus (but not when view changes)
+- filter and sort should be visible when sidebar open
 
-Currently
+Next
 
-table
-
-- switching between views
-- opening sidebar
-- deal with the actual filtering adn sorting (use helpers)
 - rename everything better
 - fix tab bs
 - drag and drop

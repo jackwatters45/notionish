@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import SearchPopup from './SearchPopup';
-import { ViewsContext } from '../../MainContent';
+import { DatabaseContext } from '../../utils/context/context';
 
 const Select = styled.div`
   display: flex;
@@ -45,7 +45,7 @@ const Popup = styled.div`
 
 const PropertyDropdown = (props) => {
   const { icon, selectedView, type, property } = props;
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
   const selectButton = useRef();
   const { isDropdown, ...popupProps } = usePopup({}, selectButton);
 

@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { SidebarContext } from './MainContent';
-import CardDone from './utils/components/CardDone';
-import NameProperty from './Properties/NameProperty';
+import CardDone from '../../utils/components/CardDone';
+import NameProperty from '../../Properties/NameProperty';
+import { SidebarContext } from '../../utils/context/context';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px 10px;
@@ -38,7 +38,6 @@ const Todo = ({ todo }) => {
         name={'name'}
         className="card"
         data={todo}
-        autoFocus
         placeholder="Type a name..."
       />
       <CardDone className="card" todo={todo} />

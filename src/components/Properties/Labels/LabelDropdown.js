@@ -2,7 +2,7 @@ import { mdiDeleteOutline, mdiRenameBoxOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { PropertiesContext } from '../../MainContent';
+import { DatabaseContext } from '../../utils/context/context';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -62,7 +62,7 @@ const ErrorMsg = styled.span`
 const LabelDropdown = forwardRef((props, ref) => {
   const { style, propId } = props;
   const { properties, setProperties, removeProperty } =
-    useContext(PropertiesContext);
+    useContext(DatabaseContext);
 
   const [isRenaming, setIsRenaming] = useState(false);
   const handleClickRename = () => {

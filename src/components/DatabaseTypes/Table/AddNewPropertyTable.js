@@ -7,10 +7,10 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { PropertiesContext, SidebarContext } from '../MainContent';
-import propertyData from '../utils/helpers/propertyHelpers';
+import propertyData from '../../utils/helpers/propertyHelpers';
 import { mdiPlus } from '@mdi/js';
-import usePopup from '../utils/custom/usePopup';
+import usePopup from '../../utils/custom/usePopup';
+import { DatabaseContext, SidebarContext } from '../../utils/context/context';
 
 const ButtonDiv = styled.div`
   overflow: hidden;
@@ -75,7 +75,7 @@ const ErrorMsg = styled.span`
 `;
 
 const AddNewPropertyTable = (props) => {
-  const { properties, setProperties } = useContext(PropertiesContext);
+  const { properties, setProperties } = useContext(DatabaseContext);
   const { setIsPopupVisible } = useContext(SidebarContext);
 
   const buttonRef = useRef();

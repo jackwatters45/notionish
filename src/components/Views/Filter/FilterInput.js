@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { ViewsContext } from '../../MainContent';
+import { DatabaseContext } from '../../utils/context/context';
 
 const Input = styled.input`
   display: flex;
@@ -23,7 +23,7 @@ const Input = styled.input`
 `;
 
 const FilterInput = ({ searchEl, property, selectedView }) => {
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
 
   const [input, setInput] = useState(searchEl);
   const handleChange = (e) => {

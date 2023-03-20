@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext } from 'react';
-import { TodosContext } from '../../MainContent';
 import { cursorToEndLine } from '../helpers/cursorHelpers';
+import { DatabaseContext } from '../context/context';
 
 const useEditableDiv = (props) => {
   const {
@@ -9,9 +9,9 @@ const useEditableDiv = (props) => {
     disabled,
     className,
     placeholder = 'Empty',
-    hoverable = false,
+    hoverable = true,
   } = props;
-  const { todos, setTodos } = useContext(TodosContext);
+  const { todos, setTodos } = useContext(DatabaseContext);
 
   let { name } = props;
   const formatProperty = () => (name = name ? name.toLowerCase() : '');
@@ -48,25 +48,25 @@ const useEditableDiv = (props) => {
     cursorToEndLine(editableRef.current);
   }, [autoFocus, editableRef]);
 
-  const [hover, setHover] = useState(false);
-  // when active remove hover
-  const handleClick = () => setHover(false);
-  const toggleHoverOn = () => {
-    if (name === 'notes' || name === 'name') return;
-    if (!disabled || hoverable) setHover(true);
-  };
-  const toggleHoverOff = () => {
-    if (name === 'notes' || name === 'name') return;
-    if (!disabled || hoverable) setHover(false);
-  };
+  // const [hover, setHover] = useState(false);
+  // // when active remove hover
+  // const handleClick = () => setHover(false);
+  // const toggleHoverOn = () => {
+  //   if (name === 'notes' || name === 'name') return;
+  //   if (!disabled || hoverable) setHover(true);
+  // };
+  // const toggleHoverOff = () => {
+  //   if (name === 'notes' || name === 'name') return;
+  //   if (!disabled || hoverable) setHover(false);
+  // };
 
-  const style =
-    hover && document.activeElement !== editableRef.current
-      ? {
-          backgroundColor: 'rgba(255, 255, 255, 0.055)',
-          borderRadius: '4px',
-        }
-      : {};
+  // const style =
+  //   hoverable && hover && document.activeElement !== editableRef.current
+  //     ? {
+  //         backgroundColor: 'rgba(255, 255, 255, 0.055)',
+  //         borderRadius: '4px',
+  //       }
+  //     : {};
 
   return {
     html: data[name] || '',
@@ -78,10 +78,10 @@ const useEditableDiv = (props) => {
     id: name,
     disabled,
     placeholder,
-    onMouseEnter: toggleHoverOn,
-    onMouseLeave: toggleHoverOff,
-    style,
-    onClick: handleClick,
+    // onMouseEnter: toggleHoverOn,
+    // onMouseLeave: toggleHoverOff,
+    // // style,
+    // onClick: handleClick,
   };
 };
 

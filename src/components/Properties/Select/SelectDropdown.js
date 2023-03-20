@@ -1,8 +1,8 @@
 import React, { forwardRef, useContext } from 'react';
 import styled from 'styled-components';
-import { ProjectsContext, TodosContext } from '../../MainContent';
 import Icon from '@mdi/react';
 import { mdiDrag } from '@mdi/js';
+import { DatabaseContext } from '../../utils/context/context';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -64,8 +64,7 @@ const DropdownRow = styled.div`
 `;
 
 const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
-  const { projects } = useContext(ProjectsContext);
-  const { setTodos, todos } = useContext(TodosContext);
+  const { setTodos, todos, projects } = useContext(DatabaseContext);
 
   const handleClick = (project) => {
     const todosCopy = [...todos];

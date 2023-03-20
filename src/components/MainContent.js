@@ -1,13 +1,18 @@
-import React, { createContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import AddProject from './Project/AddProject';
-import Project from './Project/Project';
 import { defaultProperties } from './utils/helpers/propertyHelpers';
 import Sidebar from './Sidebar/Sidebar';
 import useArrayOfObjects from './utils/custom/useArrayOfObjects';
 import ViewsNav from './Views/ViewsNav';
 import { defaultViews } from './utils/helpers/viewHelpers';
-import Table from './Table/Table';
+import DatabaseContent from './DatabaseTypes/DatabaseContent';
+import sortFunction from './Views/Sort/sortHelpers';
+import {
+  DatabaseContext,
+  SidebarContext,
+  testProjects,
+  testTodos,
+} from './utils/context/context';
 
 const MainContentContainer = styled.div`
   display: flex;
@@ -15,68 +20,6 @@ const MainContentContainer = styled.div`
   height: fit-content;
   margin: 0 50px;
 `;
-
-const ProjectContainer = styled.div`
-  display: flex;
-  margin-bottom: 8px;
-  overflow: auto;
-`;
-
-export const ViewsContext = createContext({});
-export const ProjectsContext = createContext({});
-export const TodosContext = createContext({});
-export const SidebarContext = createContext({});
-export const PropertiesContext = createContext({});
-
-const testProjects = [
-  {
-    id: 'le6tmu59',
-    name: 'Project 1',
-  },
-  {
-    id: 'le6tmu60',
-    name: 'Project 2',
-  },
-];
-
-const testTodos = [
-  {
-      "name": "Todo 1",
-      "id": "lf25yyz4",
-      "notes": "",
-      "project": {
-          "id": "le6tmu59",
-          "name": "Project 1"
-      },
-      "date": "",
-      "priority": "High",
-      "created": "2023-03-10T06:35:43.120Z"
-  },
-  {
-      "name": "Todo 2",
-      "id": "lf25zdq0",
-      "notes": "",
-      "project": {
-          "id": "le6tmu59",
-          "name": "Project 1"
-      },
-      "date": "",
-      "priority": "Medium",
-      "created": "2023-03-10T06:36:02.232Z"
-  },
-  {
-      "name": "Todo 3",
-      "id": "lf25zkat",
-      "notes": "",
-      "project": {
-          "id": "le6tmu59",
-          "name": "Project 1"
-      },
-      "date": "",
-      "priority": "Low",
-      "created": "2023-03-10T06:36:10.757Z"
-  }
-]
 
 const MainContent = () => {
   const sidebarRef = useRef();
@@ -112,7 +55,6 @@ const MainContent = () => {
   };
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-
   useEffect(() => {
     const handleClick = (e) => {
       if (
@@ -136,52 +78,84 @@ const MainContent = () => {
     };
   }, [isPopupVisible, isSidebarVisible]);
 
+  const [selectedView, setSelectedView] = useState(views[0]);
+  const [editedTodos, setEditedTodos] = useState(todos);
+  const handleClickUnselectedView = (view) => setSelectedView(view);
 
- 
+  useEffect(() => {
+    if (!views.find((view) => view === selectedView))
+      return setSelectedView(views[0]);
+  }, [selectedView, todos, views]);
+
+  useEffect(() => {
+    if (!selectedView) return;
+
+    const { sort, filter } = selectedView;
+    let newTodos = todos;
+
+    const applyFilter = () => {
+      filter.forEach(({ property, type, searchEl }) => {
+        newTodos = newTodos.filter((todo) => {
+          const filteredProperty = todo[property.id];
+          return type.filterFunc(filteredProperty, searchEl, property.type);
+        });
+      });
+    };
+    if (filter.length) applyFilter();
+
+    const applySort = () => (newTodos = sortFunction(newTodos, sort));
+    if (sort.length) applySort();
+
+    setEditedTodos(newTodos);
+  }, [selectedView, todos, views]);
+
+  const databaseValues = {
+    views,
+    setViews,
+    removeView,
+    addView,
+    projects,
+    setProjects,
+    removeProject,
+    addProject,
+    todos,
+    setTodos,
+    removeTodo,
+    addTodo,
+    properties,
+    setProperties,
+    removeProperty,
+    addProperty,
+  };
+
+  const sidebarValues = {
+    isSidebarVisible,
+    closeSidebar,
+    handleRemoveTodoAndSidebar,
+    selectedTodo,
+    toggleSidebar,
+    setIsPopupVisible,
+  };
+
   return (
     <>
-      <ViewsContext.Provider value={{ views, setViews, removeView, addView }}>
-        <ProjectsContext.Provider
-          value={{ projects, setProjects, removeProject, addProject }}
-        >
-          <TodosContext.Provider
-            value={{ todos, setTodos, removeTodo, addTodo }}
-          >
-            <PropertiesContext.Provider
-              value={{ properties, setProperties, removeProperty, addProperty }}
-            >
-              <SidebarContext.Provider
-                value={{
-                  isSidebarVisible,
-                  closeSidebar,
-                  handleRemoveTodoAndSidebar,
-                  selectedTodo,
-                  toggleSidebar,
-                  setIsPopupVisible,
-                }}
-              >
-                <MainContentContainer>
-                  <ViewsNav />
-                  <Table />
-                  {/* <ProjectContainer>
-                    {projects &&
-                      projects.map((project) => (
-                        <Project project={project} key={project.id} />
-                      ))}
-                    <AddProject projects={projects} setProjects={setProjects} />
-                  </ProjectContainer> */}
-                </MainContentContainer>
-                <Sidebar
-                  ref={sidebarRef}
-                  isSidebarVisible={isSidebarVisible}
-                  closeSidebar={closeSidebar}
-                  todo={selectedTodo}
-                />
-              </SidebarContext.Provider>
-            </PropertiesContext.Provider>
-          </TodosContext.Provider>
-        </ProjectsContext.Provider>
-      </ViewsContext.Provider>
+      <DatabaseContext.Provider value={databaseValues}>
+        <SidebarContext.Provider value={sidebarValues}>
+          <MainContentContainer>
+            <ViewsNav
+              selectedView={selectedView}
+              handleClickUnselectedView={handleClickUnselectedView}
+            />
+            <DatabaseContent selectedView={selectedView} editedTodos={editedTodos}/>
+          </MainContentContainer>
+          <Sidebar
+            ref={sidebarRef}
+            isSidebarVisible={isSidebarVisible}
+            closeSidebar={closeSidebar}
+            todo={selectedTodo}
+          />
+        </SidebarContext.Provider>
+      </DatabaseContext.Provider>
     </>
   );
 };

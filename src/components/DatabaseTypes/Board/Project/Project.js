@@ -4,9 +4,9 @@ import Icon from '@mdi/react';
 import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
-import { ProjectsContext, TodosContext } from '../MainContent';
-import NewButton from '../utils/components/NewButton';
+import NewButton from '../../../utils/components/NewButton';
 import ProjectTitle from './ProjectTitle';
+import { DatabaseContext } from '../../../utils/context/context';
 
 const ProjectContainer = styled.div`
   margin: 4px;
@@ -45,9 +45,8 @@ const TodosContainer = styled.div`
   gap: 6px;
 `;
 
-const Project = ({ project }) => {
-  const { removeProject } = useContext(ProjectsContext);
-  const { todos, setTodos } = useContext(TodosContext);
+const Project = ({ project, editedTodos }) => {
+  const { todos, setTodos, removeProject } = useContext(DatabaseContext);
 
   // TODO loop through properties and initialize
   const handleAddTodo = () =>
@@ -84,11 +83,12 @@ const Project = ({ project }) => {
         />
       </Header>
       <TodosContainer>
-        {todos &&
-          todos.map((todo) =>
-            todo.project.id === project.id ? (
-              <Todo todo={todo} key={todo.id} />
-            ) : undefined,
+        {editedTodos &&
+          editedTodos.map(
+            (todo) =>
+              todo.project.id === project.id && (
+                <Todo todo={todo} key={todo.id} />
+              ),
           )}
       </TodosContainer>
       <NewButton onClick={handleAddTodo} text={'New'} />

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import FilterPopup from './FilterPopup';
 import SearchPopup from '../Utils/SearchPopup';
-import { ViewsContext } from '../../MainContent';
 import filterOptions from './filterHelpers';
+import { DatabaseContext } from '../../utils/context/context';
 
 const AddFilter = (props) => {
   const { selectedView, handleEnterFilter } = props;
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
 
   const [isClickedFilterType, setIsClickedFilterType] = useState(false);
 

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiSubdirectoryArrowLeft } from '@mdi/js';
-import { ProjectsContext } from '../MainContent';
+import { DatabaseContext } from '../../../utils/context/context';
 
 const StyledNameContainer = styled.div`
   padding: 4px;
@@ -58,7 +58,7 @@ const StyledButton = styled.button`
 `;
 
 const ProjectTitle = ({ project }) => {
-  const { setProjects, projects } = useContext(ProjectsContext);
+  const { setProjects, projects } = useContext(DatabaseContext);
   const { name, id: projId } = project;
   const inputRef = useRef();
 

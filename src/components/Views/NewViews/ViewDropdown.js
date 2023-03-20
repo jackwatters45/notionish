@@ -2,7 +2,7 @@ import { mdiDeleteOutline, mdiRenameBoxOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ViewsContext } from '../../MainContent';
+import { DatabaseContext } from '../../utils/context/context';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -59,7 +59,7 @@ const ErrorMsg = styled.span`
 `;
 
 const ViewDropdown = forwardRef((props, ref) => {
-  const { views, setViews, removeView } = useContext(ViewsContext);
+  const { views, setViews, removeView } = useContext(DatabaseContext);
   const { style, propId } = props;
 
   const [isRenaming, setIsRenaming] = useState(false);

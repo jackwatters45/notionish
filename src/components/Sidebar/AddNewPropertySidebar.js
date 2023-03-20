@@ -7,9 +7,9 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
-import { PropertiesContext, SidebarContext } from '../MainContent';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NewButton from '../utils/components/NewButton';
+import { DatabaseContext, SidebarContext } from '../utils/context/context';
 
 const Container = styled.div`
   width: 100%;
@@ -68,7 +68,7 @@ const ErrorMsg = styled.span`
 
 // TODO should use usePopup?
 const AddNewPropertySidebar = ({ className, text }) => {
-  const { properties, setProperties } = useContext(PropertiesContext);
+  const { properties, setProperties } = useContext(DatabaseContext);
   const { setIsPopupVisible } = useContext(SidebarContext);
 
   const buttonRef = useRef();
@@ -138,7 +138,6 @@ const AddNewPropertySidebar = ({ className, text }) => {
       <StyledNewButton
         onClick={handleClick}
         text={text}
-        width={12}
         ref={buttonRef}
       />
       {!isAddingNew ? (

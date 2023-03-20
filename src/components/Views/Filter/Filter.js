@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ViewsContext } from '../../MainContent';
 import NewButton from '../../utils/components/NewButton';
 import usePopup from '../../utils/custom/usePopup';
 import AddFilter from './AddFilter';
 import CurrentFilters from './CurrentFilters';
+import { DatabaseContext } from '../../utils/context/context';
 
 const DropdownContainer = styled.div`
   min-width: 290px;
@@ -37,7 +37,7 @@ const Option = styled.div`
 
 const Filter = (props) => {
   const buttonRef = useRef();
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...popup } = usePopup(props, buttonRef);
   const { selectedView } = props;
 
@@ -61,7 +61,12 @@ const Filter = (props) => {
     setIsAddingFilter(!(selectedView && selectedView.filter.length));
   }, [selectedView]);
 
-  const isFilter = selectedView && selectedView.filter.length;
+  const [isFilter, setIsFilter] = useState(false);
+  useEffect(() => {
+    if (!selectedView) return;
+    setIsFilter(!!selectedView.filter.length);
+  }, [selectedView, views]);
+
   return (
     <div>
       <Option
@@ -72,23 +77,19 @@ const Filter = (props) => {
       </Option>
       {isDropdown && (
         <DropdownContainer {...popup}>
-          {isAddingFilter ? (
-            <AddFilter
-              selectedView={selectedView}
-              handleEnterFilter={handleEnterFilter}
-            />
-          ) : (
+          {!isAddingFilter && selectedView.filter.length ? (
             <>
               <CurrentFilters
                 selectedView={selectedView}
                 removeFilter={removeFilter}
               />
-              <NewButton
-                text={'Add filter'}
-                onClick={handleClickAddNew}
-                width={0}
-              />
+              <NewButton text={'Add filter'} onClick={handleClickAddNew} />
             </>
+          ) : (
+            <AddFilter
+              selectedView={selectedView}
+              handleEnterFilter={handleEnterFilter}
+            />
           )}
         </DropdownContainer>
       )}

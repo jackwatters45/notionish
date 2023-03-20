@@ -34,8 +34,7 @@ const View = (props) => {
   const { data: view } = props;
 
   const { type, name } = view;
-  // eslint-disable-next-line no-unused-vars
-  const { icon, getComponent } = viewsData[type];
+  const { icon } = viewsData[type];
   return (
     <SelectedView>
       <ViewContainer ref={buttonRef}>

@@ -1,8 +1,8 @@
 import Icon from '@mdi/react';
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { PropertiesContext } from '../../MainContent';
 import propertyData from '../../utils/helpers/propertyHelpers';
+import { DatabaseContext } from '../../utils/context/context';
 
 const FilterRow = styled.div`
   display: flex;
@@ -38,7 +38,7 @@ const StyledInput = styled.input`
   }
 `;
 const SearchPopup = ({ handleSelectProperty, text, alreadyUsed }) => {
-  const { properties } = useContext(PropertiesContext);
+  const { properties } = useContext(DatabaseContext);
 
   const [searchInput, setSearchInput] = useState('');
   const handleSearchInputChange = (e) => setSearchInput(e.target.value);

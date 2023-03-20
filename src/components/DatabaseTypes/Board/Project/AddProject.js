@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import uniqid from 'uniqid';
-import { ProjectsContext } from '../MainContent';
-import NewButton from '../utils/components/NewButton';
+import NewButton from '../../../utils/components/NewButton';
+import { DatabaseContext } from '../../../utils/context/context';
 
 const AddProjectForm = styled.form`
   height: 33.59px;
@@ -27,8 +27,8 @@ const StyledNewButton = styled(NewButton)`
   margin: 4px;
 `;
 
-const AddProject = () => {
-  const { projects, setProjects } = useContext(ProjectsContext);
+const AddProject = ({ width }) => {
+  const { projects, setProjects } = useContext(DatabaseContext);
   const [isAddingProject, setIsAddingProject] = useState(false);
   const handleClickAddProjectBtn = () => setIsAddingProject(true);
 
@@ -54,6 +54,7 @@ const AddProject = () => {
     </AddProjectForm>
   ) : (
     <StyledNewButton
+      width={width}
       onClick={handleClickAddProjectBtn}
       text={'Add New Project'}
     />

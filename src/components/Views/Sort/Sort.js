@@ -1,10 +1,10 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ViewsContext } from '../../MainContent';
 import NewButton from '../../utils/components/NewButton';
 import usePopup from '../../utils/custom/usePopup';
 import SearchPopup from '../Utils/SearchPopup';
 import CurrentSorts from './CurrentSorts';
+import { DatabaseContext } from '../../utils/context/context';
 
 const DropdownContainer = styled.div`
   min-width: 290px;
@@ -38,7 +38,7 @@ const Option = styled.div`
 const Sort = (props) => {
   const buttonRef = useRef();
   const { selectedView } = props;
-  const { views, setViews } = useContext(ViewsContext);
+  const { views, setViews } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
     props,
     buttonRef,
@@ -72,15 +72,15 @@ const Sort = (props) => {
     });
   };
 
+  const [isSort, setIsSort] = useState(false);
+  useEffect(() => {
+    if (!selectedView) return;
+    setIsSort(!!selectedView.sort.length);
+  }, [selectedView, views]);
+
   return (
     <div>
-      <Option
-        ref={buttonRef}
-        style={{
-          color:
-            selectedView && selectedView.sort.length ? 'rgb(35, 131, 226)' : '',
-        }}
-      >
+      <Option ref={buttonRef} style={{ color: isSort && 'rgb(35, 131, 226)' }}>
         Sort
       </Option>
       {isDropdown && (
@@ -91,11 +91,7 @@ const Sort = (props) => {
                 selectedView={selectedView}
                 removeSort={removeSort}
               />
-              <NewButton
-                text={'Add sort'}
-                onClick={handleClickAddNew}
-                width={0}
-              />
+              <NewButton text={'Add sort'} onClick={handleClickAddNew} />
             </>
           ) : (
             <SearchPopup

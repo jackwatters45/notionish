@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import { ViewsContext } from '../MainContent';
 import View from './NewViews/View';
 import NewViewPopup from './NewViews/NewViewPopup';
 import viewsData from '../utils/helpers/viewHelpers';
 import Filter from './Filter/Filter';
 import Sort from './Sort/Sort';
+import { DatabaseContext } from '../utils/context/context';
 
 const NavContainer = styled.div`
   display: flex;
@@ -53,17 +53,10 @@ const Options = styled.div`
   margin-bottom: 4px;
 `;
 
-const ViewsNav = () => {
-  const { views } = useContext(ViewsContext);
+const ViewsNav = (props) => {
+  const { views } = useContext(DatabaseContext);
 
-  const [selectedView, setSelectedView] = useState();
-  const handleClickUnselectedView = (view) => setSelectedView(view);
-  useEffect(() => {
-    const isSelectedExists = views.find((view) => view === selectedView);
-    if (isSelectedExists) return;
-
-    setSelectedView(views[0]);
-  }, [selectedView, views]);
+  const { selectedView, handleClickUnselectedView } = props;
 
   return (
     <NavContainer>
