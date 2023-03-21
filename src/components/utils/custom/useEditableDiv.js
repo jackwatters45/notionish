@@ -1,16 +1,9 @@
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import { cursorToEndLine } from '../helpers/cursorHelpers';
 import { DatabaseContext } from '../context/context';
 
 const useEditableDiv = (props) => {
-  const {
-    data,
-    autoFocus,
-    disabled,
-    className,
-    placeholder = 'Empty',
-    hoverable = true,
-  } = props;
+  const { data, autoFocus, disabled, className, placeholder = 'Empty' } = props;
   const { todos, setTodos } = useContext(DatabaseContext);
 
   let { name } = props;
@@ -48,26 +41,6 @@ const useEditableDiv = (props) => {
     cursorToEndLine(editableRef.current);
   }, [autoFocus, editableRef]);
 
-  // const [hover, setHover] = useState(false);
-  // // when active remove hover
-  // const handleClick = () => setHover(false);
-  // const toggleHoverOn = () => {
-  //   if (name === 'notes' || name === 'name') return;
-  //   if (!disabled || hoverable) setHover(true);
-  // };
-  // const toggleHoverOff = () => {
-  //   if (name === 'notes' || name === 'name') return;
-  //   if (!disabled || hoverable) setHover(false);
-  // };
-
-  // const style =
-  //   hoverable && hover && document.activeElement !== editableRef.current
-  //     ? {
-  //         backgroundColor: 'rgba(255, 255, 255, 0.055)',
-  //         borderRadius: '4px',
-  //       }
-  //     : {};
-
   return {
     html: data[name] || '',
     onChange: handleChange,
@@ -78,10 +51,6 @@ const useEditableDiv = (props) => {
     id: name,
     disabled,
     placeholder,
-    // onMouseEnter: toggleHoverOn,
-    // onMouseLeave: toggleHoverOff,
-    // // style,
-    // onClick: handleClick,
   };
 };
 

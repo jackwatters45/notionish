@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import usePopup from '../../utils/custom/usePopup';
@@ -11,7 +11,7 @@ const Label = styled.div`
   align-items: center;
   height: 34px;
   cursor: pointer;
-  border-radius: 4px;
+  // border-radius: 4px;
 `;
 
 const StyledIcon = styled(Icon)`
@@ -20,34 +20,17 @@ const StyledIcon = styled(Icon)`
 
 const PropertyLabel = (props) => {
   const buttonRef = useRef();
-  const { icon, name, className } = props;
+  const { icon, name, className, disabled } = props;
 
   const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
 
-  // hover for div parent div of content editable div
-  const [hover, setHover] = useState(false);
-  const handleClick = () => setHover(false);
-  const toggleHoverOn = () => {
-    if (!isDropdown) setHover(true);
-  };
-  const toggleHoverOff = () => {
-    if (!isDropdown) setHover(false);
-  };
-
   return (
     <div>
-      <Label
-        ref={buttonRef}
-        onMouseEnter={toggleHoverOn}
-        onMouseLeave={toggleHoverOff}
-        onClick={handleClick}
-        style={{ backgroundColor: hover ? 'rgba(255, 255, 255, 0.055)' : '' }}
-        className={className}
-      >
+      <Label ref={buttonRef} className={className}>
         <StyledIcon path={icon} size={0.75} />
         <p>{name}</p>
       </Label>
-      {isDropdown ? <LabelDropdown {...popupProps} /> : ''}
+      {isDropdown && !disabled && <LabelDropdown {...popupProps} />}
     </div>
   );
 };

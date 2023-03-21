@@ -35,9 +35,13 @@ const TodoName = styled(NameProperty)`
   grid-column: 1 / -1;
 `;
 
-const StyledPropertyValue = styled.div`
+const StyledPropertyLabel = styled(PropertyLabel)`
   ${hoverStyle};
 `;
+
+const StyledPropertyValue = styled.div`
+  ${hoverStyle};
+  `;
 
 const DoneButton = styled(Icon)`
   cursor: pointer;
@@ -74,7 +78,7 @@ const SidebarContents = () => {
         const { icon, getComponent } = propertyData[type];
         return (
           <PropertyRow key={name}>
-            <PropertyLabel icon={icon} data={selectedTodo} name={name} />
+            <StyledPropertyLabel icon={icon} data={selectedTodo} name={name} />
             <StyledPropertyValue>
               {getComponent(name, selectedTodo)}
             </StyledPropertyValue>
@@ -82,7 +86,7 @@ const SidebarContents = () => {
         );
       })}
       <PropertyRow>
-        <PropertyLabel icon={checkboxIcon} data={{ name: 'Done?' }} />
+        <PropertyLabel icon={checkboxIcon} name={'Done?'} disabled={true} />
         <DoneButton
           path={emptyCheckboxIcon}
           size={0.85}

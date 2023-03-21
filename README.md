@@ -2,6 +2,8 @@
 
 Random Notes
 
+- drop down hover styling -> hover should go away from button when dropdown is open (maybe conditional render of the button idk)
+- also if prop is disabled -> no hover (ex. ${(props) => props.disabled && hoverStyle}) only problem is rn the style is on an external div not the actual component
 - maybe skip firebase background
 - property object should hold all the sort info etc??
 - trying to edit the is done property totally messes it up
@@ -26,8 +28,10 @@ Random Notes
 
 Next
 
-- rename everything better
-- fix tab bs
+- table -> sidebar (+ label is bad)
+- autofocus for create new todo (both views - also make sure it looks good default)
+- fix tab bs (if gonna take too long just skip)
 - drag and drop
-- backend
-- clean up
+
+- backend (evaluate if even worth it - at the very least add a login)
+- rename everything better + clean up

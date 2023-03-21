@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
@@ -35,29 +35,13 @@ const SelectProperty = (props) => {
     html,
     style: _,
     ...editableDivProps
-  } = useEditableDiv(props, { disabled: true });
+  } = useEditableDiv({ ...props, disabled: true });
 
   const { isDropdown, ...popupProps } = usePopup(props, selectButtonRef);
 
-  // hover for div parent div of content editable div
-  const [hover, setHover] = useState(false);
-  const handleClick = () => setHover(false);
-  const toggleHoverOn = () => {
-    if (!isDropdown) setHover(true);
-  };
-  const toggleHoverOff = () => {
-    if (!isDropdown) setHover(false);
-  };
-
   return (
     <SelectContainer>
-      <SelectButtonBackground
-        onMouseEnter={toggleHoverOn}
-        onMouseLeave={toggleHoverOff}
-        onClick={handleClick}
-        style={{ backgroundColor: hover ? 'rgba(255, 255, 255, 0.055)' : '' }}
-        ref={selectButtonRef}
-      >
+      <SelectButtonBackground ref={selectButtonRef}>
         <StyledContentEditable {...editableDivProps} html={html.name} />
       </SelectButtonBackground>
       {isDropdown ? <SelectDropdown {...popupProps} /> : ''}

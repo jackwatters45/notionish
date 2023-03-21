@@ -92,7 +92,7 @@ const StyledNewButton = styled(NewButton)`
   }
 `;
 
-// need to know if filter or sort
+// label has two hovers
 const Table = (props) => {
   const { todos, setTodos, properties } = useContext(DatabaseContext);
   const { editedTodos } = props;
@@ -101,12 +101,15 @@ const Table = (props) => {
     setTodos([...todos, { name: '', id: uniqid(), notes: '', ...properties }]);
   };
 
-  // TODO remove hover on editable divs
   return (
     <Container>
       <Header>
         {/* Technically probably don't want to be able to edit this */}
-        <HeaderCellName icon={mdiAlphabeticalVariant} name={'Name'} />
+        <HeaderCellName
+          icon={mdiAlphabeticalVariant}
+          name={'Name'}
+          disabled={true}
+        />
         {properties.map((property) => {
           const { name, id, type } = property;
           const { icon } = propertyData[type];
