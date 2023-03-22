@@ -20,7 +20,9 @@ const getTextProperty = (name, todo) => (
 const getNumberProperty = (name, todo) => (
   <NumberProperty name={name} data={todo} />
 );
+
 const getUrlProperty = (name, todo) => <UrlProperty name={name} data={todo} />;
+
 const getDateProperty = (name, todo) => (
   <DateProperty name={name} data={todo} />
 );
@@ -36,31 +38,37 @@ const propertyData = {
     name: 'Text',
     getComponent: getTextProperty,
     icon: mdiTextLong,
+    defaultValue: null,
   },
   number: {
     name: 'Number',
     getComponent: getNumberProperty,
     icon: mdiPound,
+    defaultValue: null,
   },
   url: {
     name: 'Url',
     getComponent: getUrlProperty,
     icon: mdiLinkVariant,
+    defaultValue: null,
   },
   date: {
     name: 'Date',
     getComponent: getDateProperty,
     icon: mdiCalendarMonth,
+    defaultValue: null,
   },
   select: {
     name: 'Select',
     getComponent: getSelectProperty,
     icon: mdiArrowDownDropCircleOutline,
+    defaultValue: null,
   },
   created: {
     name: 'Created Time',
     getComponent: getCreatedProperty,
     icon: mdiClockTimeNineOutline,
+    defaultValue: new Date(),
   },
 };
 
@@ -72,3 +80,12 @@ export const defaultProperties = [
   { name: 'Time Created', id: 'created', type: 'created' },
   { name: 'Project', id: 'project', type: 'select' },
 ];
+
+export const getPropertiesObj = (properties) => {
+  return Object.fromEntries(
+    properties.map(({ id, type }) => {
+      const { defaultValue } = propertyData[type];
+      return [id, defaultValue];
+    }),
+  );
+};

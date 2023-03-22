@@ -50,7 +50,10 @@ const MainContent = () => {
         e.target.parentElement.outerHTML.includes(selectedTodo.name));
     if (isCurrentlyOpen()) return setIsSidebarVisible(false);
 
+    console.log(e, todo);
     setIsSidebarVisible(true);
+
+    console.log(isSidebarVisible)
     setSelectedTodo(todo);
   };
 
@@ -146,7 +149,10 @@ const MainContent = () => {
               selectedView={selectedView}
               handleClickUnselectedView={handleClickUnselectedView}
             />
-            <DatabaseContent selectedView={selectedView} editedTodos={editedTodos}/>
+            <DatabaseContent
+              selectedView={selectedView}
+              editedTodos={editedTodos}
+            />
           </MainContentContainer>
           <Sidebar
             ref={sidebarRef}

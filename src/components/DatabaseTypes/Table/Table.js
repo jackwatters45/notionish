@@ -1,13 +1,15 @@
 import React, { useContext } from 'react';
 import styled, { css } from 'styled-components';
 import { mdiAlphabeticalVariant } from '@mdi/js';
-import propertyData from '../../utils/helpers/propertyHelpers';
+import propertyData, {
+  getPropertiesObj,
+} from '../../utils/helpers/propertyHelpers';
 import NewButton from '../../utils/components/NewButton';
 import uniqid from 'uniqid';
-import NameProperty from '../../Properties/NameProperty';
 import PropertyLabel from '../../Properties/Labels/PropertyLabel';
 import AddNewPropertyTable from './AddNewPropertyTable';
 import { DatabaseContext } from '../../utils/context/context';
+import TableRowContent from './TableRowContent';
 
 const Container = styled.div`
   min-width: 100%;
@@ -64,20 +66,6 @@ const HeaderCell = styled(PropertyLabel)`
   ${propertyColumns}
 `;
 
-const TableRow = styled.div`
-  ${sharedRow}
-  color: var(--main-font-color);
-`;
-
-const RowName = styled.div`
-  ${nameColumn}
-  font-weight: 700;
-`;
-
-const RowCell = styled.div`
-  ${propertyColumns}
-`;
-
 const BottomRow = styled.div`
   ${sharedRow};
 `;
@@ -92,19 +80,21 @@ const StyledNewButton = styled(NewButton)`
   }
 `;
 
-// label has two hovers
+// select  -> add values
+// sidebar (not sure why toggle no work)
 const Table = (props) => {
   const { todos, setTodos, properties } = useContext(DatabaseContext);
   const { editedTodos } = props;
 
-  const addTodo = () => {
-    setTodos([...todos, { name: '', id: uniqid(), notes: '', ...properties }]);
-  };
+  const addTodo = () =>
+    setTodos([
+      ...todos,
+      { name: '', id: uniqid(), notes: '', ...getPropertiesObj(properties) },
+    ]);
 
   return (
     <Container>
       <Header>
-        {/* Technically probably don't want to be able to edit this */}
         <HeaderCellName
           icon={mdiAlphabeticalVariant}
           name={'Name'}
@@ -118,17 +108,7 @@ const Table = (props) => {
         <AddNewPropertyTable />
       </Header>
       {editedTodos.map((todo) => (
-        <TableRow key={todo.name}>
-          <RowName>
-            <NameProperty name={'name'} data={todo} autoFocus />
-          </RowName>
-          {properties.map((property) => {
-            const { id, type, name } = property;
-            const { getComponent } = propertyData[type];
-
-            return <RowCell key={id}>{getComponent(name, todo)} </RowCell>;
-          })}
-        </TableRow>
+        <TableRowContent key={todo.id} todo={todo} />
       ))}
       <BottomRow>
         <StyledNewButton onClick={addTodo} text={'New'} />

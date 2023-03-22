@@ -2,6 +2,7 @@ import { css } from 'styled-components';
 
 export const propertySharedStyle = css`
   width: 100%;
+  height:100%;
   word-break: break-word;
   display: inline-block;
   color: var(--main-font-color);

@@ -7,6 +7,7 @@ import uniqid from 'uniqid';
 import NewButton from '../../../utils/components/NewButton';
 import ProjectTitle from './ProjectTitle';
 import { DatabaseContext } from '../../../utils/context/context';
+import { getPropertiesObj } from '../../../utils/helpers/propertyHelpers';
 
 const ProjectContainer = styled.div`
   margin: 4px;
@@ -46,22 +47,13 @@ const TodosContainer = styled.div`
 `;
 
 const Project = ({ project, editedTodos }) => {
-  const { todos, setTodos, removeProject } = useContext(DatabaseContext);
+  const { todos, setTodos, removeProject, properties } =
+    useContext(DatabaseContext);
 
-  // TODO loop through properties and initialize
   const handleAddTodo = () =>
     setTodos([
       ...todos,
-      {
-        name: '',
-        id: uniqid(),
-        notes: '',
-        project: project,
-        date: '',
-        priority: '',
-        created: new Date(),
-        // {...properties},
-      },
+      { name: '', id: uniqid(), notes: '', ...getPropertiesObj(properties) },
     ]);
 
   const [trashIconStatus, setTrashIconStatus] = useState('none');

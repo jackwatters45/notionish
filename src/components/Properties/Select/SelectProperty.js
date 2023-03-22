@@ -29,6 +29,11 @@ const StyledContentEditable = styled(ContentEditable)`
   margin: 0 0 0 6px;
 `;
 
+const ButtonContainer = styled.div`
+  height: inherit;
+  width: inherit;
+`;
+
 const SelectProperty = (props) => {
   const {
     innerRef: selectButtonRef,
@@ -41,9 +46,13 @@ const SelectProperty = (props) => {
 
   return (
     <SelectContainer>
-      <SelectButtonBackground ref={selectButtonRef}>
-        <StyledContentEditable {...editableDivProps} html={html.name} />
-      </SelectButtonBackground>
+      <ButtonContainer ref={selectButtonRef}>
+        {html.name && (
+          <SelectButtonBackground>
+            <StyledContentEditable {...editableDivProps} html={html.name} />
+          </SelectButtonBackground>
+        )}
+      </ButtonContainer>
       {isDropdown ? <SelectDropdown {...popupProps} /> : ''}
     </SelectContainer>
   );
