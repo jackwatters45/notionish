@@ -37,7 +37,7 @@ const useEditableDiv = (props) => {
 
   // Focus -> moves to end of line
   useEffect(() => {
-    if (!autoFocus) return;
+    if (!autoFocus || !editableRef.current.innerText) return;
     cursorToEndLine(editableRef.current);
   }, [autoFocus, editableRef]);
 

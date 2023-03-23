@@ -53,7 +53,13 @@ const Project = ({ project, editedTodos }) => {
   const handleAddTodo = () =>
     setTodos([
       ...todos,
-      { name: '', id: uniqid(), notes: '', ...getPropertiesObj(properties) },
+      {
+        name: '',
+        id: uniqid(),
+        notes: '',
+        ...getPropertiesObj(properties),
+        project: project,
+      },
     ]);
 
   const [trashIconStatus, setTrashIconStatus] = useState('none');
@@ -76,12 +82,21 @@ const Project = ({ project, editedTodos }) => {
       </Header>
       <TodosContainer>
         {editedTodos &&
-          editedTodos.map(
-            (todo) =>
+          editedTodos.map((todo) => {
+            if (!todo.project) {
+              return (
+                project.name === 'No Status' && (
+                  <Todo todo={todo} key={todo.id} />
+                )
+              );
+            }
+
+            return (
               todo.project.id === project.id && (
                 <Todo todo={todo} key={todo.id} />
-              ),
-          )}
+              )
+            );
+          })}
       </TodosContainer>
       <NewButton onClick={handleAddTodo} text={'New'} />
     </ProjectContainer>

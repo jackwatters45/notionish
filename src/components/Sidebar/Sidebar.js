@@ -40,11 +40,11 @@ const Dragger = styled.div`
   cursor: col-resize;
 `;
 
-const Sidebar = forwardRef((_, ref) => {
+const Sidebar = forwardRef((props, ref) => {
   const { isSidebarVisible, closeSidebar } = useContext(SidebarContext);
+  const { sidebarWidth, setSidebarWidth } = props;
 
   const [isResizing, setIsResizing] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(400);
   const stopResizing = useCallback(() => setIsResizing(false), []);
   const startResizing = useCallback(() => setIsResizing(true), []);
   const resize = useCallback(
@@ -60,8 +60,10 @@ const Sidebar = forwardRef((_, ref) => {
             (document.body.clientWidth * 2) / 3,
           ),
         );
+
+      // set
     },
-    [isResizing, ref],
+    [isResizing, ref, setSidebarWidth],
   );
 
   useEffect(() => {

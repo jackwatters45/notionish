@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../utils/custom/useEditableDiv';
@@ -11,19 +11,27 @@ const StyledContentEditable = styled(ContentEditable)`
   height: fit-content;
 `;
 
-// Property name is unique so kinda like a key (active prop db)
-// for created - maybe add a type and if type = date that is how formatted
 const NameProperty = (props) => {
   const { data: todo } = props;
   const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
-  const editableDivProps = useEditableDiv(props);
+  const { innerRef, ...editableDivProps } = useEditableDiv(props);
+
+  // hovers on newly created db items
+  useEffect(() => {
+    if (!innerRef.current.innerText) innerRef.current.focus();
+  }, [innerRef]);
 
   const handleBlurNameInput = () => {
-    if (!todo.name) handleRemoveTodoAndSidebar(todo.id);
+    if (!todo.name) {
+      handleRemoveTodoAndSidebar(todo.id);}
   };
 
   return (
-    <StyledContentEditable onBlur={handleBlurNameInput} {...editableDivProps} />
+    <StyledContentEditable
+      onBlur={handleBlurNameInput}
+      innerRef={innerRef}
+      {...editableDivProps}
+    />
   );
 };
 

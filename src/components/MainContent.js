@@ -19,6 +19,7 @@ const MainContentContainer = styled.div`
   flex-direction: column;
   height: fit-content;
   margin: 0 50px;
+  overflow: hidden;
 `;
 
 const MainContent = () => {
@@ -38,6 +39,8 @@ const MainContent = () => {
   const [selectedTodo, setSelectedTodo] = useState();
   // TODO can i make use the popup hook for this pls - idk this is just ugly
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(400);
+  const getContentWidth = () => (isSidebarVisible ? sidebarWidth : 0);
   const closeSidebar = () => setIsSidebarVisible(false);
   const handleRemoveTodoAndSidebar = () => {
     if (selectedTodo) removeTodo(selectedTodo.id);
@@ -48,13 +51,11 @@ const MainContent = () => {
       isSidebarVisible &&
       (e.target.outerHTML.includes(selectedTodo.name) ||
         e.target.parentElement.outerHTML.includes(selectedTodo.name));
+
     if (isCurrentlyOpen()) return setIsSidebarVisible(false);
 
-    console.log(e, todo);
-    setIsSidebarVisible(true);
-
-    console.log(isSidebarVisible)
     setSelectedTodo(todo);
+    setIsSidebarVisible(true);
   };
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -64,7 +65,7 @@ const MainContent = () => {
         isSidebarVisible &&
         !isPopupVisible &&
         !sidebarRef.current.contains(e.target) &&
-        !e.target.className.includes('card')
+        !e.target.className.includes('dbItem')
       ) {
         closeSidebar();
       }
@@ -144,7 +145,9 @@ const MainContent = () => {
     <>
       <DatabaseContext.Provider value={databaseValues}>
         <SidebarContext.Provider value={sidebarValues}>
-          <MainContentContainer>
+          <MainContentContainer
+            style={{ width: `calc(100% - 100px - ${getContentWidth()}px)` }}
+          >
             <ViewsNav
               selectedView={selectedView}
               handleClickUnselectedView={handleClickUnselectedView}
@@ -156,9 +159,8 @@ const MainContent = () => {
           </MainContentContainer>
           <Sidebar
             ref={sidebarRef}
-            isSidebarVisible={isSidebarVisible}
-            closeSidebar={closeSidebar}
-            todo={selectedTodo}
+            sidebarWidth={sidebarWidth}
+            setSidebarWidth={setSidebarWidth}
           />
         </SidebarContext.Provider>
       </DatabaseContext.Provider>

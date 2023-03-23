@@ -80,17 +80,16 @@ const StyledNewButton = styled(NewButton)`
   }
 `;
 
-// select  -> add values
-// sidebar (not sure why toggle no work)
 const Table = (props) => {
   const { todos, setTodos, properties } = useContext(DatabaseContext);
   const { editedTodos } = props;
 
-  const addTodo = () =>
+  const addTodo = () => {
     setTodos([
       ...todos,
       { name: '', id: uniqid(), notes: '', ...getPropertiesObj(properties) },
     ]);
+  };
 
   return (
     <Container>

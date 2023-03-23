@@ -27,7 +27,7 @@ const StyledIcon = styled(Icon)`
   margin: 6px 0;
 `;
 
-const AddPropContainer = styled.div`
+const AddPropContainer = styled.form`
   width: 220px;
   position: absolute;
   display: flex;
@@ -118,13 +118,20 @@ const AddNewPropertyTable = (props) => {
     setIsErrorMsg(properties.find(({ id }) => id === nameInput) ? true : false);
   }, [properties, nameInput]);
 
+  const handleSubmit = (e) => e.preventDefault();
+
   return (
     <div>
       <ButtonDiv>
         <StyledIcon size={0.9} path={mdiPlus} ref={buttonRef} />
       </ButtonDiv>
       {isDropdown && (
-        <AddPropContainer onKeyDown={handleKeyDown} {...popupProps}>
+        <AddPropContainer
+          onKeyDown={handleKeyDown}
+          onSubmit={handleSubmit}
+          {...popupProps}
+        >
+          <button style={{ display: 'none' }} type="submit" />
           <StyledInput
             autoFocus
             placeholder="Property name"

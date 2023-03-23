@@ -1,6 +1,6 @@
 import { mdiPageLayoutSidebarRight } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { DatabaseContext, SidebarContext } from '../../utils/context/context';
 import propertyData from '../../utils/helpers/propertyHelpers';
@@ -51,10 +51,20 @@ const TableRow = styled.div`
 const RowName = styled.div`
   ${nameColumn}
   font-weight: 700;
+  &:focus-within {
+    background: rgb(37, 37, 37);
+    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+  }
 `;
 
 const RowCell = styled.div`
   ${propertyColumns}
+  &:focus-within {
+    background: rgb(37, 37, 37);
+    box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
+      rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
+  }
 `;
 
 const StyledSidebarButton = styled.button`
@@ -72,23 +82,32 @@ const StyledSidebarButton = styled.button`
 const TableRowContent = (props) => {
   const { toggleSidebar } = useContext(SidebarContext);
   const { properties } = useContext(DatabaseContext);
-
   const { todo } = props;
 
   const [isHovered, setIsHovered] = useState(false);
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
 
+  useEffect(() => {
+    console.log(document.activeElement);
+    console.log(itemRef.current);
+  });
+
+  const itemRef = useRef();
+
   return (
     <TableRow
-      key={todo.name}
+      key={todo.id}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <RowName>
-        <NameProperty name={'name'} data={todo} autoFocus />
+        <NameProperty name={'name'} data={todo} />
         {isHovered && (
-          <StyledSidebarButton onClick={(e) => toggleSidebar(e, todo)}>
+          <StyledSidebarButton
+            className="dbItem"
+            onClick={(e) => toggleSidebar(e, todo)}
+          >
             <Icon path={mdiPageLayoutSidebarRight} size={0.525} />
             OPEN
           </StyledSidebarButton>
@@ -97,7 +116,11 @@ const TableRowContent = (props) => {
       {properties.map((property) => {
         const { id, type, name } = property;
         const { getComponent } = propertyData[type];
-        return <RowCell key={id}>{getComponent(name, todo)} </RowCell>;
+        return (
+          <RowCell ref={itemRef} key={id}>
+            {getComponent(name, todo)}{' '}
+          </RowCell>
+        );
       })}
     </TableRow>
   );

@@ -5,7 +5,7 @@ import NameProperty from '../../Properties/NameProperty';
 import { SidebarContext } from '../../utils/context/context';
 
 const TodoContainer = styled.div`
-  padding: 10px 10px 6px 10px;
+  padding: 10px 10px 6px;
   background-color: var(--card-background-color);
   height: fit-content;
   border-radius: 4px;
@@ -30,17 +30,17 @@ const Todo = ({ todo }) => {
 
   return (
     <TodoContainer
-      className="card"
+      className="dbItem"
       onClick={(e) => toggleSidebar(e, todo)}
       draggable="true"
     >
       <StyledNameProp
         name={'name'}
-        className="card"
+        className="dbItem"
         data={todo}
         placeholder="Type a name..."
       />
-      <CardDone className="card" todo={todo} />
+      <CardDone className="dbItem" todo={todo} />
     </TodoContainer>
   );
 };

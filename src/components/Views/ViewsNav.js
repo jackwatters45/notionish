@@ -13,7 +13,7 @@ const NavContainer = styled.div`
   flex-direction: column;
   padding: 0 4px;
   color: var(--secondary-font-color);
-  width: calc(100vw - 100px);
+  width: 100%;
 `;
 
 const NavContent = styled.div`

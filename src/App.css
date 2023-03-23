@@ -76,9 +76,12 @@ img {
 button,
 form {
   display: flex;
-  align-items: center;
   background-color: inherit;
   border: none;
+}
+
+button {
+  align-items: center;
 }
 
 button,
