@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { mdiAlphabeticalVariant } from '@mdi/js';
 import propertyData, {
@@ -10,16 +10,18 @@ import PropertyLabel from '../../Properties/Labels/PropertyLabel';
 import AddNewPropertyTable from './AddNewPropertyTable';
 import { DatabaseContext } from '../../utils/context/context';
 import TableRowContent from './TableRowContent';
+import { useDrop } from 'react-dnd';
 
 const Container = styled.div`
   min-width: 100%;
   user-select: none;
-  padding-bottom: 180px;
+  padding-bottom: 50px;
 `;
 
 const sharedRow = css`
   display: flex;
   background: rgb(25, 25, 25);
+  width: 100%;
   min-height: 33px;
   color: rgba(255, 255, 255, 0.443);
   border-top: 1px solid rgb(47, 47, 47);
@@ -82,7 +84,7 @@ const StyledNewButton = styled(NewButton)`
 
 const Table = (props) => {
   const { todos, setTodos, properties } = useContext(DatabaseContext);
-  const { editedTodos } = props;
+  const { editedTodos, selectedView } = props;
 
   const addTodo = () => {
     setTodos([
@@ -91,8 +93,41 @@ const Table = (props) => {
     ]);
   };
 
+  const dropItem = ({ todoId }, offset) => {
+    const dbCopy = [...todos];
+    const droppedItem = dbCopy.find(({ id }) => todoId === id);
+
+    const { y } = offset;
+    const tableStart = 195;
+
+    const tablePositionY = y - tableStart;
+    const rowHeight = 35;
+    const newIndex = Math.floor(tablePositionY / rowHeight);
+
+    dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
+    dbCopy.splice(newIndex, 0, droppedItem);
+
+    setTodos(dbCopy);
+  };
+
+  const [forbidDrop, setForbidDrop] = useState(false);
+  useEffect(() => {
+    if (!selectedView) return;
+    setForbidDrop(!!selectedView.sort.length);
+  }, [selectedView]);
+
+  const [{ opacity }, drop] = useDrop(
+    () => ({
+      accept: 'dbItem',
+      canDrop: () => !forbidDrop,
+      collect: (monitor) => ({ opacity: !!monitor.isOver() ? 0.75 : 1 }),
+      drop: (item, monitor) => dropItem(item, monitor.getClientOffset()),
+    }),
+    [],
+  );
+
   return (
-    <Container>
+    <Container ref={drop} style={{ opacity }}>
       <Header>
         <HeaderCellName
           icon={mdiAlphabeticalVariant}

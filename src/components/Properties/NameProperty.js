@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../utils/theme';
-import { SidebarContext } from '../utils/context/context';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle}
@@ -12,8 +11,6 @@ const StyledContentEditable = styled(ContentEditable)`
 `;
 
 const NameProperty = (props) => {
-  const { data: todo } = props;
-  const { handleRemoveTodoAndSidebar } = useContext(SidebarContext);
   const { innerRef, ...editableDivProps } = useEditableDiv(props);
 
   // hovers on newly created db items
@@ -21,18 +18,7 @@ const NameProperty = (props) => {
     if (!innerRef.current.innerText) innerRef.current.focus();
   }, [innerRef]);
 
-  const handleBlurNameInput = () => {
-    if (!todo.name) {
-      handleRemoveTodoAndSidebar(todo.id);}
-  };
-
-  return (
-    <StyledContentEditable
-      onBlur={handleBlurNameInput}
-      innerRef={innerRef}
-      {...editableDivProps}
-    />
-  );
+  return <StyledContentEditable innerRef={innerRef} {...editableDivProps} />;
 };
 
 export default NameProperty;

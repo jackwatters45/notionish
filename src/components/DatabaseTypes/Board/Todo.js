@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import CardDone from '../../utils/components/CardDone';
 import NameProperty from '../../Properties/NameProperty';
 import { SidebarContext } from '../../utils/context/context';
+import { useDrag } from 'react-dnd';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px;
@@ -25,14 +26,23 @@ const StyledNameProp = styled(NameProperty)`
   padding: 0 0 6px 0;
 `;
 
+// TODO cursor for while dragging??
+
 const Todo = ({ todo }) => {
   const { toggleSidebar } = useContext(SidebarContext);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'dbItem',
+    item: { todoId: todo.id },
+    collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
+  }));
 
   return (
     <TodoContainer
       className="dbItem"
       onClick={(e) => toggleSidebar(e, todo)}
-      draggable="true"
+      ref={drag}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <StyledNameProp
         name={'name'}
