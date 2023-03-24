@@ -2,9 +2,5 @@
 
 Next
 
-- table row bad
-- scrollbar shit
-
-- login
-- backend (evaluate if even worth it - at the very least add a login)
+- backend
 - rename everything better + clean up

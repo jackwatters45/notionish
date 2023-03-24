@@ -8,7 +8,7 @@ const FooterContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 10px 0; 
+  margin: 8px 0; 
 `;
 const Link = styled.a`
   display: flex;

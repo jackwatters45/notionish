@@ -41,12 +41,12 @@ const StyledPropertyLabel = styled(PropertyLabel)`
 
 const StyledPropertyValue = styled.div`
   ${hoverStyle};
-  &>div:focus {
+  & > div:focus {
     background: rgb(37, 37, 37);
     box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
       rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
   }
-  `;
+`;
 
 const DoneButton = styled(Icon)`
   cursor: pointer;
@@ -67,9 +67,13 @@ const StyledAddPropButton = styled(AddNewPropertySidebar)`
 `;
 
 const SidebarContents = () => {
-  const { properties } = useContext(DatabaseContext);
-  const { selectedTodo, handleRemoveTodoAndSidebar } =
-    useContext(SidebarContext);
+  const { properties, removeTodo } = useContext(DatabaseContext);
+  const { selectedTodo, closeSidebar } = useContext(SidebarContext);
+
+  const handleRemoveTodoAndSidebar = () => {
+    if (selectedTodo) removeTodo(selectedTodo.id);
+    closeSidebar();
+  };
 
   useEffect(() => {
     window.addEventListener('keydown', tabPress);

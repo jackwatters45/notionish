@@ -40,12 +40,10 @@ const MainContent = () => {
   // TODO can i make use the popup hook for this pls - idk this is just ugly
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(400);
-  const getContentWidth = () => (isSidebarVisible ? sidebarWidth : 0);
+  const getContentWidth = () =>
+    `calc(100% - 100px - ${isSidebarVisible ? sidebarWidth : 0}px)`;
   const closeSidebar = () => setIsSidebarVisible(false);
-  const handleRemoveTodoAndSidebar = () => {
-    if (selectedTodo) removeTodo(selectedTodo.id);
-    closeSidebar();
-  };
+
   const toggleSidebar = (e, todo) => {
     const isCurrentlyOpen = () =>
       isSidebarVisible &&
@@ -135,7 +133,6 @@ const MainContent = () => {
   const sidebarValues = {
     isSidebarVisible,
     closeSidebar,
-    handleRemoveTodoAndSidebar,
     selectedTodo,
     toggleSidebar,
     setIsPopupVisible,
@@ -145,9 +142,7 @@ const MainContent = () => {
     <>
       <DatabaseContext.Provider value={databaseValues}>
         <SidebarContext.Provider value={sidebarValues}>
-          <MainContentContainer
-            style={{ width: `calc(100% - 100px - ${getContentWidth()}px)` }}
-          >
+          <MainContentContainer style={{ width: getContentWidth() }}>
             <ViewsNav
               selectedView={selectedView}
               handleClickUnselectedView={handleClickUnselectedView}

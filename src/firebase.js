@@ -1,11 +1,8 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyBNnpWZTNAVKXK4zTfouN56WQTRDxCxt6E',
   authDomain: 'todo-list-a011b.firebaseapp.com',
@@ -18,27 +15,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-export { firebaseConfig, app, analytics };
-
-// import { initializeApp } from 'firebase/app';
-// import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
-// // Follow this pattern to import other Firebase services
-// // import { } from 'firebase/<service>';
-
-// // TODO: Replace the following with your app's Firebase project configuration
-// const firebaseConfig = {
-//   //...
-// };
-
-// const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-
-// // Get a list of cities from your database
-// async function getCities(db) {
-//   const citiesCol = collection(db, 'cities');
-//   const citySnapshot = await getDocs(citiesCol);
-//   const cityList = citySnapshot.docs.map(doc => doc.data());
-//   return cityList;
-// }
+// Export firestore database
+// It will be imported into your react app whenever it is needed
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+export const auth = getAuth(app);

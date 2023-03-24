@@ -1,7 +1,10 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-export const DatabaseContext = createContext({})
+export const DatabaseContext = createContext({});
+
 export const SidebarContext = createContext({});
+
+export const UserContext = createContext();
 
 export const testProjects = [
   {
