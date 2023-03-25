@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import FilterPopup from './FilterPopup';
 import SearchPopup from '../Utils/SearchPopup';
 import filterOptions from './filterHelpers';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const AddFilter = (props) => {
   const { selectedView, handleEnterFilter } = props;

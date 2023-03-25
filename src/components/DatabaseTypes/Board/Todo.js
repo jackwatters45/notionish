@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import CardDone from '../../utils/components/CardDone';
 import NameProperty from '../../Properties/NameProperty';
-import { SidebarContext } from '../../utils/context/context';
+import { SidebarContext } from '../../../context/context';
 import { useDrag } from 'react-dnd';
 
 const TodoContainer = styled.div`

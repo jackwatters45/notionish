@@ -4,7 +4,7 @@ import NewButton from '../../utils/components/NewButton';
 import usePopup from '../../utils/custom/usePopup';
 import AddFilter from './AddFilter';
 import CurrentFilters from './CurrentFilters';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const DropdownContainer = styled.div`
   min-width: 290px;

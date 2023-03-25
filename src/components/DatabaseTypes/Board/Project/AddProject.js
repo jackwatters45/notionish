@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
+import { v5 as uuid } from 'uuid';
 import uniqid from 'uniqid';
 import NewButton from '../../../utils/components/NewButton';
-import { DatabaseContext } from '../../../utils/context/context';
+import { DatabaseContext } from '../../../../context/context';
 
 const AddProjectForm = styled.form`
   height: 33.59px;
@@ -32,7 +33,7 @@ const AddProject = ({ width }) => {
 
   const addProject = () => {
     setProjects([...projects, project]);
-    setProject({ id: uniqid() });
+    setProject({ id: uuid() });
   };
 
   const [project, setProject] = useState({ id: uniqid() });

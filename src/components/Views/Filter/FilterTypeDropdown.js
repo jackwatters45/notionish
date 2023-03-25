@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import filterOptions from './filterHelpers';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const Select = styled.div`
   display: flex;
@@ -68,7 +68,9 @@ const FilterTypeDropdown = (props) => {
     const viewsCopy = [...views];
     const getSelected = viewsCopy.find((view) => view === selectedView);
 
-    const editedProp = getSelected.filter.find((el) => el.property === property);
+    const editedProp = getSelected.filter.find(
+      (el) => el.property === property,
+    );
     editedProp.type = clickedProp;
 
     setTimeout(() => setViews(viewsCopy));

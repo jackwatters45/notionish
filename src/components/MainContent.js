@@ -1,18 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { defaultProperties } from './utils/helpers/propertyHelpers';
 import Sidebar from './Sidebar/Sidebar';
-import useArrayOfObjects from './utils/custom/useArrayOfObjects';
 import ViewsNav from './Views/ViewsNav';
-import { defaultViews } from './utils/helpers/viewHelpers';
 import DatabaseContent from './DatabaseTypes/DatabaseContent';
 import sortFunction from './Views/Sort/sortHelpers';
-import {
-  DatabaseContext,
-  SidebarContext,
-  testProjects,
-  testTodos,
-} from './utils/context/context';
+import { DatabaseContext, SidebarContext } from '../context/context';
+import { applyFilters } from './Views/Filter/filterHelpers';
 
 const MainContentContainer = styled.div`
   display: flex;
@@ -23,23 +16,14 @@ const MainContentContainer = styled.div`
 `;
 
 const MainContent = () => {
+  const { todos, views } = useContext(DatabaseContext);
+
   const sidebarRef = useRef();
 
-  const [views, setViews, removeView, addView] =
-    useArrayOfObjects(defaultViews);
-
-  const [projects, setProjects, removeProject, addProject] =
-    useArrayOfObjects(testProjects); // TODO replace initial
-
-  const [todos, setTodos, removeTodo, addTodo] = useArrayOfObjects(testTodos);
-
-  const [properties, setProperties, removeProperty, addProperty] =
-    useArrayOfObjects(defaultProperties);
-
   const [selectedTodo, setSelectedTodo] = useState();
-  // TODO can i make use the popup hook for this pls - idk this is just ugly
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(400);
+
   const getContentWidth = () =>
     `calc(100% - 100px - ${isSidebarVisible ? sidebarWidth : 0}px)`;
   const closeSidebar = () => setIsSidebarVisible(false);
@@ -80,55 +64,24 @@ const MainContent = () => {
     };
   }, [isPopupVisible, isSidebarVisible]);
 
-  const [selectedView, setSelectedView] = useState(views[0]);
-  const [editedTodos, setEditedTodos] = useState(todos);
+  const [selectedView, setSelectedView] = useState();
   const handleClickUnselectedView = (view) => setSelectedView(view);
-
   useEffect(() => {
-    if (!views.find((view) => view === selectedView))
-      return setSelectedView(views[0]);
+    if (!views.find((view) => view === selectedView)) setSelectedView(views[0]);
   }, [selectedView, todos, views]);
 
+  const [editedTodos, setEditedTodos] = useState(todos);
   useEffect(() => {
     if (!selectedView) return;
 
-    const { sort, filter } = selectedView;
     let newTodos = todos;
-
-    const applyFilter = () => {
-      filter.forEach(({ property, type, searchEl }) => {
-        newTodos = newTodos.filter((todo) => {
-          const filteredProperty = todo[property.id];
-          return type.filterFunc(filteredProperty, searchEl, property.type);
-        });
-      });
-    };
-    if (filter.length) applyFilter();
-
-    const applySort = () => (newTodos = sortFunction(newTodos, sort));
-    if (sort.length) applySort();
+    if (selectedView.filter.length)
+      newTodos = applyFilters(newTodos, selectedView.filter);
+    if (selectedView.sort.length)
+      newTodos = sortFunction(newTodos, selectedView.sort);
 
     setEditedTodos(newTodos);
   }, [selectedView, todos, views]);
-
-  const databaseValues = {
-    views,
-    setViews,
-    removeView,
-    addView,
-    projects,
-    setProjects,
-    removeProject,
-    addProject,
-    todos,
-    setTodos,
-    removeTodo,
-    addTodo,
-    properties,
-    setProperties,
-    removeProperty,
-    addProperty,
-  };
 
   const sidebarValues = {
     isSidebarVisible,
@@ -140,25 +93,25 @@ const MainContent = () => {
 
   return (
     <>
-      <DatabaseContext.Provider value={databaseValues}>
-        <SidebarContext.Provider value={sidebarValues}>
-          <MainContentContainer style={{ width: getContentWidth() }}>
-            <ViewsNav
-              selectedView={selectedView}
-              handleClickUnselectedView={handleClickUnselectedView}
-            />
+      <SidebarContext.Provider value={sidebarValues}>
+        <MainContentContainer style={{ width: getContentWidth() }}>
+          <ViewsNav
+            selectedView={selectedView}
+            handleClickUnselectedView={handleClickUnselectedView}
+          />
+          {selectedView && (
             <DatabaseContent
               selectedView={selectedView}
               editedTodos={editedTodos}
             />
-          </MainContentContainer>
-          <Sidebar
-            ref={sidebarRef}
-            sidebarWidth={sidebarWidth}
-            setSidebarWidth={setSidebarWidth}
-          />
-        </SidebarContext.Provider>
-      </DatabaseContext.Provider>
+          )}
+        </MainContentContainer>
+        <Sidebar
+          ref={sidebarRef}
+          sidebarWidth={sidebarWidth}
+          setSidebarWidth={setSidebarWidth}
+        />
+      </SidebarContext.Provider>
     </>
   );
 };

@@ -11,7 +11,7 @@ import NotesProperty from '../Properties/NotesProperty';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
 import AddNewPropertySidebar from './AddNewPropertySidebar';
-import { DatabaseContext, SidebarContext } from '../utils/context/context';
+import { DatabaseContext, SidebarContext } from '../../context/context';
 import { hoverStyle } from '../utils/theme';
 
 const PropertiesContainer = styled.form`

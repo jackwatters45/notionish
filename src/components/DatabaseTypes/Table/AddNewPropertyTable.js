@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import propertyData from '../../utils/helpers/propertyHelpers';
 import { mdiPlus } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
-import { DatabaseContext, SidebarContext } from '../../utils/context/context';
+import { DatabaseContext, SidebarContext } from '../../../context/context';
 
 const ButtonDiv = styled.div`
   overflow: hidden;

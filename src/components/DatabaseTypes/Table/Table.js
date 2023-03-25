@@ -5,10 +5,10 @@ import propertyData, {
   getPropertiesObj,
 } from '../../utils/helpers/propertyHelpers';
 import NewButton from '../../utils/components/NewButton';
-import uniqid from 'uniqid';
+import { v5 as uuid } from 'uuid';
 import PropertyLabel from '../../Properties/Labels/PropertyLabel';
 import AddNewPropertyTable from './AddNewPropertyTable';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 import TableRowContent from './TableRowContent';
 import { useDrop } from 'react-dnd';
 
@@ -89,7 +89,7 @@ const Table = (props) => {
   const addTodo = () => {
     setTodos([
       ...todos,
-      { name: '', id: uniqid(), notes: '', ...getPropertiesObj(properties) },
+      { name: '', id: uuid(), notes: '', ...getPropertiesObj(properties) },
     ]);
   };
 

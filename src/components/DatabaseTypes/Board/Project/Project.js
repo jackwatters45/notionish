@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import uniqid from 'uniqid';
 import NewButton from '../../../utils/components/NewButton';
 import ProjectTitle from './ProjectTitle';
-import { DatabaseContext } from '../../../utils/context/context';
+import { DatabaseContext } from '../../../../context/context';
 import { getPropertiesObj } from '../../../utils/helpers/propertyHelpers';
 import { useDrop } from 'react-dnd';
 
@@ -59,8 +59,7 @@ const Project = ({ project, editedTodos, dragHeight, selectedView }) => {
   useEffect(() => {
     if (!editedTodos) return;
     const projectTodoArr = editedTodos.filter(({ project: todoProj }) => {
-      const { id, name } = project;
-      return !todoProj ? name === 'No Status' : todoProj.id === id;
+      return !todoProj ? project === 'No Status' : todoProj === project;
     });
     setProjectTodos(projectTodoArr);
   }, [editedTodos, project]);
@@ -130,7 +129,7 @@ const Project = ({ project, editedTodos, dragHeight, selectedView }) => {
             style={{ display: trashIconStatus }}
             path={mdiDeleteOutline}
             size={0.75}
-            onClick={() => removeProject(project.id)}
+            onClick={() => removeProject(project)}
           />
         </Header>
         <TodosContainer>

@@ -9,7 +9,7 @@ import React, {
 import styled from 'styled-components';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NewButton from '../utils/components/NewButton';
-import { DatabaseContext, SidebarContext } from '../utils/context/context';
+import { DatabaseContext, SidebarContext } from '../../context/context';
 
 const Container = styled.div`
   width: 100%;
@@ -135,11 +135,7 @@ const AddNewPropertySidebar = ({ className, text }) => {
 
   return (
     <Container className={className}>
-      <StyledNewButton
-        onClick={handleClick}
-        text={text}
-        ref={buttonRef}
-      />
+      <StyledNewButton onClick={handleClick} text={text} ref={buttonRef} />
       {!isAddingNew ? (
         ''
       ) : (

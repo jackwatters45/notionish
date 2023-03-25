@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Project from './Project/Project';
 import AddProject from './Project/AddProject';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const ProjectContainer = styled.div`
   display: flex;
@@ -20,22 +20,20 @@ const Board = ({ editedTodos, selectedView }) => {
     setMaxHeight(projectContainerRef.current.offsetHeight);
   }, [projects]);
 
-  
-
   return (
     <ProjectContainer ref={projectContainerRef}>
       {projects &&
         projects.map((project) => (
           <Project
             project={project}
-            key={project.id}
+            key={project}
             editedTodos={editedTodos}
             dragHeight={maxHeight}
             selectedView={selectedView}
           />
         ))}
       <Project
-        project={{ name: 'No Status', id: -1 }}
+        project={'No Status'}
         editedTodos={editedTodos}
         dragHeight={maxHeight}
         selectedView={selectedView}

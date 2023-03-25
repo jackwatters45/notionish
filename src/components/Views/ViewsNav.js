@@ -6,7 +6,7 @@ import NewViewPopup from './NewViews/NewViewPopup';
 import viewsData from '../utils/helpers/viewHelpers';
 import Filter from './Filter/Filter';
 import Sort from './Sort/Sort';
-import { DatabaseContext } from '../utils/context/context';
+import { DatabaseContext } from '../../context/context';
 
 const NavContainer = styled.div`
   display: flex;
@@ -64,8 +64,7 @@ const ViewsNav = (props) => {
         <ViewsContainer>
           {views.map((view) => {
             const { type, name } = view;
-            // eslint-disable-next-line no-unused-vars
-            const { icon, getComponent } = viewsData[type];
+            const { icon } = viewsData[type];
             return view === selectedView ? (
               <View key={name} data={view} />
             ) : (

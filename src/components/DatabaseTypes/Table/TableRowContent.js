@@ -2,7 +2,7 @@ import { mdiPageLayoutSidebarRight, mdiDrag } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useContext, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { DatabaseContext, SidebarContext } from '../../utils/context/context';
+import { DatabaseContext, SidebarContext } from '../../../context/context';
 import propertyData from '../../utils/helpers/propertyHelpers';
 import NameProperty from '../../Properties/NameProperty';
 import { useDrag } from 'react-dnd';

@@ -13,7 +13,7 @@ import calendarDates, {
 } from './calendarHelpers';
 import Icon from '@mdi/react';
 import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const DropDown = styled.div`
   position: absolute;
@@ -145,7 +145,7 @@ const DatePicker = forwardRef(({ style, data, propId }, ref) => {
     setYear(date.getFullYear());
 
     const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) =>  id === data.id);
+    const todoCopy = todosCopy.find(({ id }) => id === data.id);
     todoCopy[propId] = date;
     setTodos(todosCopy);
   };

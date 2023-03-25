@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { UserContext } from './utils/context/context';
+import { UserContext } from '../context/context';
 import { auth } from '../firebase';
 import {
   FacebookAuthProvider,
@@ -32,14 +32,9 @@ const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: end;
+  justify-content: start;
+  height: 100%;
 `;
-
-const LogoutContainer = styled.div`
-display: flex;
-flex-direction: column;
-align-items: end;
-margin-bottom: 16px;
-`
 
 const LoginText = styled.h3`
   font-weight: 300;
@@ -74,17 +69,13 @@ const StyledPopupIcon = styled(Icon)`
 
 const ErrorDiv = styled.div`
   height: 18px;
-  margin: 0 0 10px 0;
   display: flex;
   justify-content: center;
 `;
 
 const Error = styled.p`
   font-size: 12px;
-  height: 18px;
-  margin: 0 0 10px 0;
   display: flex;
-  justify-content: center;
   padding: 0px 4px;
   width: fit-content;
 `;
@@ -125,28 +116,30 @@ const Nav = () => {
   return (
     <Container>
       <Header>Notion Todo Clone</Header>
-      {user ? (
-        <LogoutContainer>
-          <LoginText>Welcome, {user.displayName || user.email}</LoginText>
-          <LogOutButton onClick={signOutUser}>Sign Out</LogOutButton>
-        </LogoutContainer>
-      ) : (
-        <LoginContainer>
-          <LoginText>Login to save your todos</LoginText>
-          <LoginIcons>
-            <StyledButton onClick={loginGoogle}>
-              <StyledPopupIcon path={mdiGoogle} size={0.9} />
-            </StyledButton>
-            <StyledButton onClick={loginGithub}>
-              <StyledPopupIcon path={mdiGithub} size={0.95} />
-            </StyledButton>
-            <StyledButton onClick={loginFacebook}>
-              <StyledPopupIcon path={mdiFacebook} size={0.95} />
-            </StyledButton>
-          </LoginIcons>
-          <ErrorDiv>{errorMessage && <Error>{errorMessage}</Error>}</ErrorDiv>
-        </LoginContainer>
-      )}
+      <LoginContainer>
+        {user ? (
+          <>
+            <LoginText>Welcome, {user.displayName || user.email}</LoginText>
+            <LogOutButton onClick={signOutUser}>Sign Out</LogOutButton>
+          </>
+        ) : (
+          <>
+            <LoginText>Login to save your todos</LoginText>
+            <LoginIcons>
+              <StyledButton onClick={loginGoogle}>
+                <StyledPopupIcon path={mdiGoogle} size={0.9} />
+              </StyledButton>
+              <StyledButton onClick={loginGithub}>
+                <StyledPopupIcon path={mdiGithub} size={0.95} />
+              </StyledButton>
+              <StyledButton onClick={loginFacebook}>
+                <StyledPopupIcon path={mdiFacebook} size={0.95} />
+              </StyledButton>
+            </LoginIcons>
+            <ErrorDiv>{errorMessage && <Error>{errorMessage}</Error>}</ErrorDiv>
+          </>
+        )}
+      </LoginContainer>
     </Container>
   );
 };

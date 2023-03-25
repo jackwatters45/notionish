@@ -3,7 +3,7 @@ import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../utils/theme';
-import { DatabaseContext } from '../utils/context/context';
+import { DatabaseContext } from '../../context/context';
 
 const StyledContentEditable = styled(ContentEditable)`
   ${propertySharedStyle}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useContext } from 'react';
 import { cursorToEndLine } from '../helpers/cursorHelpers';
-import { DatabaseContext } from '../context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const useEditableDiv = (props) => {
   const { data, autoFocus, disabled, className, placeholder = 'Empty' } = props;

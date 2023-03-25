@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import FilterOptionsDropdown from './FilterOptionsDropdown';
 import usePopup from '../../utils/custom/usePopup';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const ChooseFilter = styled.div`
   display: flex;

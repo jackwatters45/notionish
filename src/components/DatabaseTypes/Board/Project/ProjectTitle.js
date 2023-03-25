@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiSubdirectoryArrowLeft } from '@mdi/js';
-import { DatabaseContext } from '../../../utils/context/context';
+import { DatabaseContext } from '../../../../context/context';
 
 const StyledNameContainer = styled.div`
   padding: 4px;
@@ -59,18 +59,17 @@ const StyledButton = styled.button`
 
 const ProjectTitle = ({ project }) => {
   const { setProjects, projects } = useContext(DatabaseContext);
-  const { name, id: projId } = project;
   const inputRef = useRef();
 
   const [isEditing, setIsEditing] = useState(false);
   const handleClickName = () => setTimeout(() => setIsEditing(true));
   const CloseInput = () => setIsEditing(false);
 
-  const [input, setInput] = useState(name || '');
+  const [input, setInput] = useState(project || '');
   const handleChange = (e) => setInput(e.target.value);
   const submitInput = () => {
     const projectsCopy = [...projects];
-    const project = projectsCopy.find(({ id }) => id === projId);
+    const project = projectsCopy.find((projectName) => projectName === project);
     project.name = input;
     setProjects(projects);
 
@@ -95,7 +94,7 @@ const ProjectTitle = ({ project }) => {
   return (
     <div>
       <StyledNameContainer>
-        <ProjectTitleText onClick={handleClickName}>{name}</ProjectTitleText>
+        <ProjectTitleText onClick={handleClickName}>{project}</ProjectTitleText>
       </StyledNameContainer>
       {isEditing ? (
         <ProjectNameInput ref={inputRef}>

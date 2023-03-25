@@ -8,8 +8,7 @@ import React, {
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiDrag } from '@mdi/js';
-import { DatabaseContext } from '../../utils/context/context';
-import uniqid from 'uniqid';
+import { DatabaseContext } from '../../../context/context';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -106,8 +105,7 @@ const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
   const handleKeyDown = (e) => {
     if (e.key !== 'Enter') return;
 
-    const newProject = { name: input, id: uniqid() };
-
+    const newProject = input;
     setProjects([...projects, newProject]);
     selectProject(newProject);
     setInput('');
@@ -117,7 +115,7 @@ const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
     <DropdownContainer ref={ref} style={style}>
       <Current>
         {data.project && (
-          <CategoryName ref={currentValueRef}>{data.project.name}</CategoryName>
+          <CategoryName ref={currentValueRef}>{data.project}</CategoryName>
         )}
         <StyledInput
           autoFocus
@@ -130,13 +128,13 @@ const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
       <Categories>
         <StyledOptionsText>Select an option or create one</StyledOptionsText>
         {projects.map((project) => (
-          <DropdownRow key={project.id} onClick={() => selectProject(project)}>
+          <DropdownRow key={project} onClick={() => selectProject(project)}>
             <Icon
               path={mdiDrag}
               size={0.85}
               color={'var(--secondary-font-color)'}
             />
-            <CategoryName>{project.name}</CategoryName>
+            <CategoryName>{project}</CategoryName>
           </DropdownRow>
         ))}
       </Categories>

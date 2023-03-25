@@ -44,12 +44,13 @@ const SelectProperty = (props) => {
 
   const { isDropdown, ...popupProps } = usePopup(props, selectButtonRef);
 
+  // html used to be html.name below
   return (
     <SelectContainer>
       <ButtonContainer ref={selectButtonRef}>
-        {html.name && (
+        {html && (
           <SelectButtonBackground>
-            <StyledContentEditable {...editableDivProps} html={html.name} />
+            <StyledContentEditable {...editableDivProps} html={html} />
           </SelectButtonBackground>
         )}
       </ButtonContainer>

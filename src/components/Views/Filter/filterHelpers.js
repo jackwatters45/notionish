@@ -1,4 +1,3 @@
-
 const isFilter = (property, searchEl, propertyType) => {
   if (propertyType === 'date') {
     if (!property) return false;
@@ -60,6 +59,16 @@ const filterOptions = {
     id: 'does not contain',
     filterFunc: notContainsFilter,
   },
+};
+
+export const applyFilters = (newTodos, filter) => {
+  filter.forEach(({ property, type, searchEl }) => {
+    newTodos = newTodos.filter((todo) => {
+      const filteredProperty = todo[property.id];
+      return type.filterFunc(filteredProperty, searchEl, property.type);
+    });
+  });
+  return newTodos;
 };
 
 export default filterOptions;

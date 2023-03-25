@@ -20,7 +20,6 @@ const sortTypes = {
 };
 
 const sortFunction = (arr, propertiesArr) => {
-  // this wasn't working for a while because forgot to make a copy of arr
   const arrCopy = [...arr];
   return arrCopy.sort((a, b) => {
     let result = 0;

@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDoubleRight } from '@mdi/js';
 import SidebarContents from './SidebarContents';
-import { SidebarContext } from '../utils/context/context';
+import { SidebarContext } from '../../context/context';
 
 const SidebarContainer = styled.div`
   position: fixed;

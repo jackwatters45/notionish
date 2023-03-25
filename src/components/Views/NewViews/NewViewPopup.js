@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import { mdiPlus } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import viewsData from '../../utils/helpers/viewHelpers';
-import { DatabaseContext } from '../../utils/context/context';
+import { DatabaseContext } from '../../../context/context';
 
 const StyledIcon = styled(Icon)`
   padding: 1px;
