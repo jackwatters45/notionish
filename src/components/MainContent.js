@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Sidebar from './Sidebar/Sidebar';
 import ViewsNav from './Views/ViewsNav';
@@ -6,6 +6,8 @@ import DatabaseContent from './DatabaseTypes/DatabaseContent';
 import sortFunction from './Views/Sort/sortHelpers';
 import { DatabaseContext, SidebarContext } from '../context/context';
 import { applyFilters } from './Views/Filter/filterHelpers';
+import useArrayOfObjects from './utils/custom/useArrayOfObjects';
+import { collection, getDocs } from 'firebase/firestore';
 
 const MainContentContainer = styled.div`
   display: flex;
@@ -15,8 +17,66 @@ const MainContentContainer = styled.div`
   overflow: hidden;
 `;
 
-const MainContent = () => {
-  const { todos, views } = useContext(DatabaseContext);
+const MainContent = ({ userDbRef }) => {
+  // fetching Data
+  const [dbItems, setDbItems, removeDbItem, addDbItem] = useArrayOfObjects();
+  useEffect(() => {
+    const fetchDbItems = async () => {
+      const dbItemsRef = collection(userDbRef, 'dbItems');
+      const dbItemsSnapshot = await getDocs(dbItemsRef);
+      const newDbItemsArr = dbItemsSnapshot.docs.map((doc) => {
+        const { id } = doc;
+        const { created, ...docData } = doc.data();
+        // Move this date part to the actual display or something
+        return { id, ...docData, created: new Date(created.seconds * 1000) };
+      });
+      setDbItems(newDbItemsArr);
+    };
+    fetchDbItems();
+  }, [setDbItems, userDbRef]);
+
+  const [views, setViews, removeView, addView] = useArrayOfObjects();
+  useEffect(() => {
+    const fetchView = async () => {
+      const viewsRef = collection(userDbRef, 'views');
+      const viewsSnapshot = await getDocs(viewsRef);
+      const newViewsArr = viewsSnapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
+      setViews(newViewsArr);
+    };
+    fetchView();
+  }, [setViews, userDbRef]);
+
+  const [properties, setProperties, removeProperty, addProperty] =
+    useArrayOfObjects();
+  useEffect(() => {
+    const fetchProperties = async () => {
+      const propsCollection = collection(userDbRef, 'properties');
+      const propsSnapshot = await getDocs(propsCollection);
+      const newPropertiesArr = propsSnapshot.docs.map((doc) => {
+        return { ...doc.data() };
+      });
+      setProperties(newPropertiesArr);
+    };
+    fetchProperties();
+  }, [setProperties, userDbRef]);
+
+  const databaseValues = {
+    userDbRef,
+    views,
+    setViews,
+    removeView,
+    addView,
+    dbItems,
+    setDbItems,
+    removeDbItem,
+    addDbItem,
+    properties,
+    setProperties,
+    removeProperty,
+    addProperty,
+  };
 
   const sidebarRef = useRef();
 
@@ -68,20 +128,20 @@ const MainContent = () => {
   const handleClickUnselectedView = (view) => setSelectedView(view);
   useEffect(() => {
     if (!views.find((view) => view === selectedView)) setSelectedView(views[0]);
-  }, [selectedView, todos, views]);
+  }, [selectedView, dbItems, views]);
 
-  const [editedTodos, setEditedTodos] = useState(todos);
+  const [editedTodos, setEditedTodos] = useState(dbItems);
   useEffect(() => {
     if (!selectedView) return;
 
-    let newTodos = todos;
+    let newTodos = dbItems;
     if (selectedView.filter.length)
       newTodos = applyFilters(newTodos, selectedView.filter);
     if (selectedView.sort.length)
       newTodos = sortFunction(newTodos, selectedView.sort);
 
     setEditedTodos(newTodos);
-  }, [selectedView, todos, views]);
+  }, [selectedView, dbItems, views]);
 
   const sidebarValues = {
     isSidebarVisible,
@@ -93,25 +153,27 @@ const MainContent = () => {
 
   return (
     <>
-      <SidebarContext.Provider value={sidebarValues}>
-        <MainContentContainer style={{ width: getContentWidth() }}>
-          <ViewsNav
-            selectedView={selectedView}
-            handleClickUnselectedView={handleClickUnselectedView}
-          />
-          {selectedView && (
-            <DatabaseContent
+      <DatabaseContext.Provider value={databaseValues}>
+        <SidebarContext.Provider value={sidebarValues}>
+          <MainContentContainer style={{ width: getContentWidth() }}>
+            <ViewsNav
               selectedView={selectedView}
-              editedTodos={editedTodos}
+              handleClickUnselectedView={handleClickUnselectedView}
             />
-          )}
-        </MainContentContainer>
-        <Sidebar
-          ref={sidebarRef}
-          sidebarWidth={sidebarWidth}
-          setSidebarWidth={setSidebarWidth}
-        />
-      </SidebarContext.Provider>
+            {selectedView && (
+              <DatabaseContent
+                selectedView={selectedView}
+                editedTodos={editedTodos}
+              />
+            )}
+          </MainContentContainer>
+          <Sidebar
+            ref={sidebarRef}
+            sidebarWidth={sidebarWidth}
+            setSidebarWidth={setSidebarWidth}
+          />
+        </SidebarContext.Provider>
+      </DatabaseContext.Provider>
     </>
   );
 };

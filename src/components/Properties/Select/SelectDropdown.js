@@ -115,7 +115,7 @@ const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
     <DropdownContainer ref={ref} style={style}>
       <Current>
         {data.project && (
-          <CategoryName ref={currentValueRef}>{data.project}</CategoryName>
+          <CategoryName ref={currentValueRef}>{data.project.name}</CategoryName>
         )}
         <StyledInput
           autoFocus
@@ -134,7 +134,7 @@ const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
               size={0.85}
               color={'var(--secondary-font-color)'}
             />
-            <CategoryName>{project}</CategoryName>
+            <CategoryName>{project.name}</CategoryName>
           </DropdownRow>
         ))}
       </Categories>

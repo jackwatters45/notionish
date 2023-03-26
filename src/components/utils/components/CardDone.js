@@ -15,11 +15,11 @@ const DoneContainer = styled.button`
   padding: 2px 1px;
 `;
 
-const CardDone = ({ todo }) => {
-  const { handleRemoveTodo } = useContext(DatabaseContext);
+const CardDone = ({ dbItem }) => {
+  const { handleRemoveDbItem } = useContext(DatabaseContext);
 
   return (
-    <DoneContainer onClick={() => handleRemoveTodo(todo.id)}>
+    <DoneContainer onClick={() => handleRemoveDbItem(dbItem.id)}>
       <Icon path={mdiCheckboxBlankOutline} size={0.8} />
       <p>Done</p>
     </DoneContainer>

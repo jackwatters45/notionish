@@ -4,18 +4,23 @@ Next
 
 backend
 
-- setting data
+- finished db crap -> still do rest
+
+- setting data (state and backend)
 
 rename everything better + clean up
 
 - some check to make sure select properties are unique
-
 - gonna need to do something about date
 
-- loading page
-
 - have a feeling I'm gonna run into issue with trying to change id
+- save everything backend but the front end takes care of rendering
+- also rename + clean up
 
-- not sure if user context is necessary
+- loading page
+- not sure how to sort now??? (adding new todo should place it at bottom)
+- update drag and drop last
+- select is broken
+- cursor styling
 
-- not sure how to sort now??? (adding new should go bottom)
+- test what It would look like to add the snap listener once done

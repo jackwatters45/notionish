@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiSubdirectoryArrowLeft } from '@mdi/js';
 import { DatabaseContext } from '../../../../context/context';
+import { doc, writeBatch } from 'firebase/firestore';
+import { db } from '../../../../firebase';
 
 const StyledNameContainer = styled.div`
   padding: 4px;
@@ -11,14 +13,14 @@ const StyledNameContainer = styled.div`
     border-radius: 4px;
   }
 `;
-const ProjectTitleText = styled.p`
+const GroupTitleText = styled.p`
   width: fit-content;
   border-radius: 4px;
   background: rgb(90, 90, 90);
   padding: 0 6px;
 `;
 
-const ProjectNameInput = styled.div`
+const GroupNameInput = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
@@ -57,23 +59,42 @@ const StyledButton = styled.button`
   }
 `;
 
-const ProjectTitle = ({ project }) => {
-  const { setProjects, projects } = useContext(DatabaseContext);
+const GroupTitle = ({ group, groups, propertyData }) => {
+  const { userDbRef, dbItems, setDbItems } = useContext(DatabaseContext);
   const inputRef = useRef();
 
   const [isEditing, setIsEditing] = useState(false);
   const handleClickName = () => setTimeout(() => setIsEditing(true));
-  const CloseInput = () => setIsEditing(false);
+  const closeInput = () => setIsEditing(false);
 
-  const [input, setInput] = useState(project || '');
-  const handleChange = (e) => setInput(e.target.value);
-  const submitInput = () => {
-    const projectsCopy = [...projects];
-    const project = projectsCopy.find((projectName) => projectName === project);
-    project.name = input;
-    setProjects(projects);
+  const [groupNameInput, setGroupNameInput] = useState(group ? group.name : '');
+  const handleChange = (e) => setGroupNameInput(e.target.value);
+  const submitInput = async () => {
+    if (group.name === groupNameInput) return;
 
-    CloseInput();
+    const groupsCopy = [...groups];
+    const groupCopy = groupsCopy.find(({ id }) => id === group.id);
+    groupCopy.name = groupNameInput;
+
+    const batch = writeBatch(db);
+    const propertyRef = doc(userDbRef, 'properties', propertyData.id);
+    batch.update(propertyRef, { values: groupsCopy });
+
+    const dbItemsCopy = [...dbItems];
+    dbItemsCopy.forEach((item) => {
+      if (groupsCopy.find(({ id }) => item[propertyData.name]?.id !== id))
+        return;
+
+      item[propertyData.name] = groupCopy;
+
+      const dbItemRef = doc(userDbRef, 'dbItems', item.id);
+      batch.update(dbItemRef, { [propertyData.name]: groupCopy });
+    });
+
+    await batch.commit();
+    setDbItems(dbItemsCopy);
+
+    closeInput();
   };
 
   const handleClickSubmitButton = () => submitInput();
@@ -85,7 +106,7 @@ const ProjectTitle = ({ project }) => {
     const checkClickOff = (e) => {
       if (!inputRef.current || !isEditing) return;
       if (inputRef.current.contains(e.target)) return;
-      CloseInput();
+      closeInput();
     };
     window.addEventListener('click', checkClickOff);
     return () => window.removeEventListener('click', checkClickOff);
@@ -94,12 +115,14 @@ const ProjectTitle = ({ project }) => {
   return (
     <div>
       <StyledNameContainer>
-        <ProjectTitleText onClick={handleClickName}>{project}</ProjectTitleText>
+        <GroupTitleText onClick={handleClickName}>
+          {group ? group.name : 'No Status'}
+        </GroupTitleText>
       </StyledNameContainer>
-      {isEditing ? (
-        <ProjectNameInput ref={inputRef}>
+      {isEditing && group && (
+        <GroupNameInput ref={inputRef}>
           <StyledInput
-            value={input}
+            value={groupNameInput}
             onInput={handleChange}
             onKeyDown={handleEnterInput}
             placeholder="Rename project"
@@ -108,12 +131,10 @@ const ProjectTitle = ({ project }) => {
             Done
             <Icon path={mdiSubdirectoryArrowLeft} size={0.7} />
           </StyledButton>
-        </ProjectNameInput>
-      ) : (
-        ''
+        </GroupNameInput>
       )}
     </div>
   );
 };
 
-export default ProjectTitle;
+export default GroupTitle;

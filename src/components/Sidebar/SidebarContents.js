@@ -67,11 +67,11 @@ const StyledAddPropButton = styled(AddNewPropertySidebar)`
 `;
 
 const SidebarContents = () => {
-  const { properties, removeTodo } = useContext(DatabaseContext);
+  const { properties, removeDbItem } = useContext(DatabaseContext);
   const { selectedTodo, closeSidebar } = useContext(SidebarContext);
 
   const handleRemoveTodoAndSidebar = () => {
-    if (selectedTodo) removeTodo(selectedTodo.id);
+    if (selectedTodo) removeDbItem(selectedTodo.id);
     closeSidebar();
   };
 

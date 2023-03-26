@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { UserContext } from '../context/context';
 import { auth } from '../firebase';
 import {
   FacebookAuthProvider,
@@ -89,9 +88,7 @@ const LogOutButton = styled.button`
   color: var(--main-font-color);
 `;
 
-const Nav = () => {
-  const { user } = useContext(UserContext);
-
+const Nav = ({ user }) => {
   const [errorMessage, setErrorMessage] = useState();
 
   const signOutUser = async () => {

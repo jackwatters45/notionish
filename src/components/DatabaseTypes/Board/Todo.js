@@ -19,40 +19,43 @@ const TodoContainer = styled.div`
   flex-direction: column;
   gap: 2px;
   cursor: pointer;
+  &:hover {
+    background-color: var(--card-hover-background-color);
+  }
 `;
 
 const StyledNameProp = styled(NameProperty)`
-  background-color: var(--card-background-color);
+  background-color: inherit;
   padding: 0 0 6px 0;
 `;
 
 // TODO cursor for while dragging??
 
-const Todo = ({ todo }) => {
+const DbItem = ({ dbItem }) => {
   const { toggleSidebar } = useContext(SidebarContext);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'dbItem',
-    item: { todoId: todo.id },
+    item: { todoId: dbItem.id },
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
 
   return (
     <TodoContainer
       className="dbItem"
-      onClick={(e) => toggleSidebar(e, todo)}
+      onClick={(e) => toggleSidebar(e, dbItem)}
       ref={drag}
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <StyledNameProp
         name={'name'}
         className="dbItem"
-        data={todo}
+        data={dbItem}
         placeholder="Type a name..."
       />
-      <CardDone className="dbItem" todo={todo} />
+      <CardDone className="dbItem" dbItem={dbItem} />
     </TodoContainer>
   );
 };
 
-export default Todo;
+export default DbItem;

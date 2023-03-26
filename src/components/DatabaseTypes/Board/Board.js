@@ -1,45 +1,65 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import Project from './Project/Project';
-import AddProject from './Project/AddProject';
+import Group from './Group/Group';
+import AddGroup from './Group/AddGroup';
 import { DatabaseContext } from '../../../context/context';
+import useArrayOfObjects from '../../utils/custom/useArrayOfObjects';
 
-const ProjectContainer = styled.div`
+const GroupsContainer = styled.div`
   display: flex;
   margin-bottom: 8px;
   height: 100%;
 `;
 
-const Board = ({ editedTodos, selectedView }) => {
-  const { projects } = useContext(DatabaseContext);
+const Board = (props) => {
+  const {
+    editedTodos,
+    selectedView,
+    propertyData = { id: 'CWn4hkG8N6XTyhPxLhnI', name: 'project' },
+  } = props;
+  const { properties } = useContext(DatabaseContext);
 
-  const projectContainerRef = useRef();
+  const [groups, setGroups, removeGroup, addGroup] = useArrayOfObjects();
+  useEffect(() => {
+    const property = properties.find(({ id }) => id === propertyData.name);
+    setGroups(property.values);
+  }, [properties, propertyData, setGroups]);
+
+  const groupsContainerRef = useRef();
   const [maxHeight, setMaxHeight] = useState();
   useEffect(() => {
-    if (!projectContainerRef.current) return;
-    setMaxHeight(projectContainerRef.current.offsetHeight);
-  }, [projects]);
+    setMaxHeight(groupsContainerRef?.current.offsetHeight);
+  }, [groups]);
 
   return (
-    <ProjectContainer ref={projectContainerRef}>
-      {projects &&
-        projects.map((project) => (
-          <Project
-            project={project}
-            key={project}
-            editedTodos={editedTodos}
-            dragHeight={maxHeight}
-            selectedView={selectedView}
-          />
-        ))}
-      <Project
-        project={'No Status'}
+    <GroupsContainer ref={groupsContainerRef}>
+      {groups &&
+        groups.map((group) => {
+          return (
+            <Group
+              key={group.id}
+              group={group}
+              groups={groups}
+              propertyData={propertyData}
+              removeGroup={removeGroup}
+              editedTodos={editedTodos}
+              dragHeight={maxHeight}
+              selectedView={selectedView}
+            />
+          );
+        })}
+      <Group
         editedTodos={editedTodos}
         dragHeight={maxHeight}
         selectedView={selectedView}
       />
-      <AddProject width={260} />
-    </ProjectContainer>
+      <AddGroup
+        width={260}
+        addGroup={addGroup}
+        propId={propertyData.id}
+        groups={groups}
+      />
+    </GroupsContainer>
   );
 };
 

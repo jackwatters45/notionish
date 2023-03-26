@@ -112,10 +112,10 @@ const DragButton = styled.div`
   transition: background 20ms ease-in 0s;
 `;
 
-const TableRowContent = (props) => {
+const TableRowContent = ({ dbItem }) => {
   const { toggleSidebar } = useContext(SidebarContext);
   const { properties } = useContext(DatabaseContext);
-  const { todo } = props;
+
   const itemRef = useRef();
 
   const [isHovered, setIsHovered] = useState(false);
@@ -126,7 +126,7 @@ const TableRowContent = (props) => {
 
   const [{ opacity }, drag, dragPreview] = useDrag(() => ({
     type: 'dbItem',
-    item: { todoId: todo.id },
+    item: { todoId: dbItem.id },
     collect: (monitor) => ({ opacity: !!monitor.isDragging() ? 0.5 : 1 }),
   }));
 
@@ -134,7 +134,7 @@ const TableRowContent = (props) => {
     <ContainerDiv
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      key={todo.id}
+      key={dbItem.id}
     >
       {isHovered && (
         <DragButton ref={drag}>
@@ -143,11 +143,11 @@ const TableRowContent = (props) => {
       )}
       <TableRow ref={dragPreview} style={{ opacity }}>
         <RowName>
-          <NameProperty name={'name'} data={todo} />
+          <NameProperty name={'name'} data={dbItem} />
           {isHovered && (
             <StyledSidebarButton
               className="dbItem"
-              onClick={(e) => toggleSidebar(e, todo)}
+              onClick={(e) => toggleSidebar(e, dbItem)}
             >
               <Icon path={mdiPageLayoutSidebarRight} size={0.525} />
               OPEN
@@ -159,7 +159,7 @@ const TableRowContent = (props) => {
           const { getComponent } = propertyData[type];
           return (
             <RowCell ref={itemRef} key={id}>
-              {getComponent(name, todo)}
+              {getComponent(name, dbItem)}
             </RowCell>
           );
         })}

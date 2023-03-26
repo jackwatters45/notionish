@@ -5,12 +5,13 @@ import propertyData, {
   getPropertiesObj,
 } from '../../utils/helpers/propertyHelpers';
 import NewButton from '../../utils/components/NewButton';
-import { v5 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import PropertyLabel from '../../Properties/Labels/PropertyLabel';
 import AddNewPropertyTable from './AddNewPropertyTable';
 import { DatabaseContext } from '../../../context/context';
 import TableRowContent from './TableRowContent';
 import { useDrop } from 'react-dnd';
+import { addDoc, collection } from 'firebase/firestore';
 
 const Container = styled.div`
   min-width: 100%;
@@ -83,18 +84,24 @@ const StyledNewButton = styled(NewButton)`
 `;
 
 const Table = (props) => {
-  const { todos, setTodos, properties } = useContext(DatabaseContext);
   const { editedTodos, selectedView } = props;
+  const { userDbRef, dbItems, setDbItems, addDbItem, properties } =
+    useContext(DatabaseContext);
 
-  const addTodo = () => {
-    setTodos([
-      ...todos,
-      { name: '', id: uuid(), notes: '', ...getPropertiesObj(properties) },
-    ]);
+  const addTodo = async () => {
+    const newDbItem = {
+      name: '',
+      id: uuid(),
+      notes: '',
+      ...getPropertiesObj(properties),
+    };
+
+    addDbItem(newDbItem);
+    await addDoc(collection(userDbRef, 'dbItems'), newDbItem);
   };
 
   const dropItem = ({ todoId }, offset) => {
-    const dbCopy = [...todos];
+    const dbCopy = [...dbItems];
     const droppedItem = dbCopy.find(({ id }) => todoId === id);
 
     const { y } = offset;
@@ -107,7 +114,7 @@ const Table = (props) => {
     dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
     dbCopy.splice(newIndex, 0, droppedItem);
 
-    setTodos(dbCopy);
+    setDbItems(dbCopy);
   };
 
   const [forbidDrop, setForbidDrop] = useState(false);
@@ -141,8 +148,8 @@ const Table = (props) => {
         })}
         <AddNewPropertyTable />
       </Header>
-      {editedTodos.map((todo) => (
-        <TableRowContent key={todo.id} todo={todo} />
+      {editedTodos.map((dbItem) => (
+        <TableRowContent key={dbItem.id} dbItem={dbItem} />
       ))}
       <BottomRow>
         <StyledNewButton onClick={addTodo} text={'New'} />

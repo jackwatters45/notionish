@@ -50,7 +50,7 @@ const SelectProperty = (props) => {
       <ButtonContainer ref={selectButtonRef}>
         {html && (
           <SelectButtonBackground>
-            <StyledContentEditable {...editableDivProps} html={html} />
+            <StyledContentEditable {...editableDivProps} html={html.name} />
           </SelectButtonBackground>
         )}
       </ButtonContainer>
