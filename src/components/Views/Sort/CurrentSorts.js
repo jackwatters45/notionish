@@ -41,8 +41,8 @@ const CurrentSorts = ({ selectedView, setViews }) => {
   const { userDbRef } = useContext(DatabaseContext);
 
   const removeSort = async (property) => {
-    setViews((prev) =>
-      prev.map((view) => {
+    setViews((prevViews) =>
+      prevViews.map((view) => {
         return view === selectedView
           ? {
               ...view,

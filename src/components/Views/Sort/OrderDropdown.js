@@ -70,8 +70,8 @@ const OrderDropdown = ({ order, property, selectedView, setViews }) => {
   const handleSelectProperty = async (clickedProp) => {
     setIsDropdown(false);
 
-    setViews((prev) =>
-      prev.map((view) => {
+    setViews((prevViews) =>
+      prevViews.map((view) => {
         return view === selectedView
           ? {
               ...view,

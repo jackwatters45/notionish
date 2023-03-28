@@ -52,8 +52,8 @@ const PropertyDropdown = (props) => {
   // TODO typically this has set isDropdown to false
 
   const handleSelectProperty = async (clickedProp) => {
-    setViews((prev) =>
-      prev.map((view) => {
+    setViews((prevViews) =>
+      prevViews.map((view) => {
         return view === selectedView
           ? {
               ...view,

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import NewButton from '../../utils/components/NewButton';
 import usePopup from '../../utils/custom/usePopup';
@@ -37,12 +37,19 @@ const Option = styled.div`
 
 const Filter = (props) => {
   const buttonRef = useRef();
-  const { views, setViews } = useContext(DatabaseContext);
+  const { views } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...popup } = usePopup(props, buttonRef);
-  const { selectedView } = props;
+  const { selectedView, setViews, properties } = props;
 
   const [isAddingFilter, setIsAddingFilter] = useState();
   const handleClickAddNew = () => setTimeout(() => setIsAddingFilter(true));
+  const handleEnterFilter = (e) => {
+    if (e.key === 'Enter') setTimeout(() => setIsAddingFilter(false));
+  };
+
+  useEffect(() => {
+    setIsAddingFilter(!selectedView.filter?.length);
+  }, [selectedView]);
 
   const removeFilter = (property) => {
     const viewsCopy = [...views];
@@ -51,21 +58,23 @@ const Filter = (props) => {
       (filter) => filter.property !== property,
     );
     setTimeout(() => setViews(viewsCopy));
+
+    //
+    setViews((prevViews) =>
+      prevViews.map((view) => {
+        return view === selectedView
+          ? {
+              ...view,
+              filter: view.filter.filter(
+                (filter) => filter.property !== property,
+              ),
+            }
+          : view;
+      }),
+    );
   };
 
-  const handleEnterFilter = (e) => {
-    if (e.key === 'Enter') setTimeout(() => setIsAddingFilter(false));
-  };
-
-  useEffect(() => {
-    setIsAddingFilter(!(selectedView && selectedView.filter.length));
-  }, [selectedView]);
-
-  const [isFilter, setIsFilter] = useState(false);
-  useEffect(() => {
-    if (!selectedView) return;
-    setIsFilter(!!selectedView.filter.length);
-  }, [selectedView, views]);
+  const isFilter = useMemo(() => !!selectedView?.filter.length, [selectedView]);
 
   return (
     <div>

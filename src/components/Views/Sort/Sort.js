@@ -65,8 +65,8 @@ const Sort = (props) => {
     async (property) => {
       setIsAddingNewSort(false);
 
-      setViews((prev) =>
-        prev.map((view) => {
+      setViews((prevViews) =>
+        prevViews.map((view) => {
           return view === selectedView
             ? {
                 ...view,
