@@ -11,6 +11,7 @@ import {
 import Icon from '@mdi/react';
 import { mdiGoogle, mdiGithub, mdiFacebook } from '@mdi/js';
 import { hoverStyle } from './utils/theme';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -89,20 +90,18 @@ const LogOutButton = styled.button`
 `;
 
 const Nav = ({ user }) => {
-  const [errorMessage, setErrorMessage] = useState();
+  const [isErrorMessage, setIsErrorMessage] = useState();
 
   const signOutUser = async () => {
     await signOut(auth);
-    setErrorMessage();
+    setIsErrorMessage(false);
   };
 
   const trySignInPopup = async (provider) => {
     try {
       return await signInWithPopup(auth, provider);
     } catch {
-      setErrorMessage(
-        'There was an error signing in. Please try again or use a different method.',
-      );
+      setIsErrorMessage(true);
     }
   };
 
@@ -112,7 +111,9 @@ const Nav = ({ user }) => {
 
   return (
     <Container>
-      <Header>Notion Todo Clone</Header>
+      <Link to={'/'}>
+        <Header>Notion Todo Clone</Header>
+      </Link>
       <LoginContainer>
         {user ? (
           <>
@@ -133,7 +134,14 @@ const Nav = ({ user }) => {
                 <StyledPopupIcon path={mdiFacebook} size={0.95} />
               </StyledButton>
             </LoginIcons>
-            <ErrorDiv>{errorMessage && <Error>{errorMessage}</Error>}</ErrorDiv>
+            <ErrorDiv>
+              {isErrorMessage && (
+                <Error>
+                  'There was an error signing in. Please try again or use a
+                  different method.'
+                </Error>
+              )}
+            </ErrorDiv>
           </>
         )}
       </LoginContainer>
