@@ -31,9 +31,10 @@ const SelectedView = styled.div`
 const View = (props) => {
   const buttonRef = useRef();
   const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
-  const { data: view } = props;
 
-  const { type, name } = view;
+  const {
+    data: { type, name },
+  } = props;
   const { icon } = viewsData[type];
   return (
     <SelectedView>
@@ -41,7 +42,7 @@ const View = (props) => {
         <Icon path={icon} size={0.75} />
         {name}
       </ViewContainer>
-      {isDropdown ? <ViewDropdown {...popupProps} /> : ''}
+      {isDropdown && <ViewDropdown {...popupProps} />}
     </SelectedView>
   );
 };

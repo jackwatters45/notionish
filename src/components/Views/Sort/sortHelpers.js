@@ -25,11 +25,17 @@ const sortFunction = (arr, propertiesArr) => {
     let result = 0;
     propertiesArr.some(({ property, order }) => {
       const { id, type } = property;
-      const sortFunc = sortTypes[type][order];
 
-      result = sortFunc(a[id], b[id]);
+      // TODO make sure this works when dealing with adding properties
+      try {
+        const sortFunc = sortTypes[type][order];
+        result = sortFunc(a[id], b[id]);
 
-      return result !== 0;
+        return result !== 0;
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
     });
     return result;
   });

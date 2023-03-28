@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiPlus } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import viewsData from '../../utils/helpers/viewHelpers';
+import { v4 as uuid } from 'uuid';
 import { DatabaseContext } from '../../../context/context';
+import { doc, setDoc } from 'firebase/firestore';
 
 const StyledIcon = styled(Icon)`
   padding: 1px;
@@ -64,66 +66,62 @@ const ErrorMsg = styled.span`
 
 const NewViewPopup = (props) => {
   const buttonRef = useRef();
+  const { views, addView } = props;
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
     props,
     buttonRef,
   );
-  const { views, setViews } = useContext(DatabaseContext);
+  const { userDbRef } = useContext(DatabaseContext);
 
   const [input, setInput] = useState('');
   const handleNameChange = (e) => setInput(e.target.value);
+
   const [type, setType] = useState('board');
   const handleClickType = (propertyType) => setType(propertyType);
 
-  const resetAddingNew = () => {
+  const handleKeyDown = async (e) => {
+    if (e.key !== 'Enter' || isErrorMsg || !input) return;
     setIsDropdown(false);
-    setIsErrorMsg(false);
-    setType('board');
-  };
 
-  const handleKeyDown = (e) => {
-    if (e.key !== 'Enter') return;
-    addView(e);
-  };
-
-  const addView = (e) => {
-    e.preventDefault();
-    if (isErrorMsg || !input) return;
-
+    const id = uuid();
     const newView = {
       name: input,
-      id: input.toLowerCase(),
+      id,
       type: type,
+      sort: [],
+      filter: [],
     };
 
-    setViews([...views, newView]);
-    resetAddingNew();
+    addView(newView);
+
+    try {
+      await setDoc(doc(userDbRef, 'views', id), { ...newView });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const [isErrorMsg, setIsErrorMsg] = useState(false);
-  useEffect(() => {
-    setIsErrorMsg(views.find(({ id }) => id === input) ? true : false);
+  const isErrorMsg = useMemo(() => {
+    return !!views.find(({ name }) => name === input);
   }, [views, input]);
 
   return (
     <div>
       <StyledIcon ref={buttonRef} path={mdiPlus} size={0.9} />
-      {isDropdown ? (
+      {isDropdown && (
         <DropdownContainer {...popupProps} onKeyDown={handleKeyDown}>
           <StyledInput
             autoFocus
             placeholder="Property name"
             onChange={handleNameChange}
           />
-          {isErrorMsg ? (
+          {isErrorMsg && (
             <>
               <hr />
               <ErrorMsg>
                 A view named {input} already exists in this database.
               </ErrorMsg>
             </>
-          ) : (
-            ''
           )}
           <hr />
           <TypeLabel>Type</TypeLabel>
@@ -144,13 +142,9 @@ const NewViewPopup = (props) => {
             );
           })}
         </DropdownContainer>
-      ) : (
-        ''
       )}
     </div>
   );
 };
 
 export default NewViewPopup;
-
-// <AddPropContainer onKeyDown={handleKeyDown} ref={dropdownRef}>

@@ -1,10 +1,12 @@
 import Icon from '@mdi/react';
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { mdiDrag, mdiClose } from '@mdi/js';
 import propertyData from '../../utils/helpers/propertyHelpers';
 import OrderDropdown from './OrderDropdown';
 import PropertyDropdown from '../Utils/PropertyDropdown';
+import { doc, updateDoc } from 'firebase/firestore';
+import { DatabaseContext } from '../../../context/context';
 
 const Container = styled.div`
   margin: 6px 0;
@@ -35,8 +37,30 @@ const StyledIcon = styled(Icon)`
   }
 `;
 
-const CurrentSorts = (props) => {
-  const { selectedView, removeSort } = props;
+const CurrentSorts = ({ selectedView, setViews }) => {
+  const { userDbRef } = useContext(DatabaseContext);
+
+  const removeSort = async (property) => {
+    setViews((prev) =>
+      prev.map((view) => {
+        return view === selectedView
+          ? {
+              ...view,
+              sort: view.sort.filter((sort) => sort.property !== property),
+            }
+          : view;
+      }),
+    );
+
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), {
+        ...selectedView,
+        sort: selectedView.sort.filter((sort) => sort.property !== property),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Container>
@@ -48,6 +72,7 @@ const CurrentSorts = (props) => {
             <LeftColumn>
               <Icon path={mdiDrag} size={0.9} />
               <PropertyDropdown
+                setViews={setViews}
                 type={'sort'}
                 property={property}
                 selectedView={selectedView}
@@ -57,6 +82,7 @@ const CurrentSorts = (props) => {
                 property={property}
                 selectedView={selectedView}
                 order={order}
+                setViews={setViews}
               />
             </LeftColumn>
             <StyledIcon

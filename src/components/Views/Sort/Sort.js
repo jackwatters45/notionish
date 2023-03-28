@@ -1,10 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import NewButton from '../../utils/components/NewButton';
 import usePopup from '../../utils/custom/usePopup';
 import SearchPopup from '../Utils/SearchPopup';
 import CurrentSorts from './CurrentSorts';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const DropdownContainer = styled.div`
   min-width: 290px;
@@ -35,48 +42,53 @@ const Option = styled.div`
   }
 `;
 
+// TODO util properties
+// TODO make sorts actually work -> uncomment editedTodos useEffect
+// TODO go through use popup and switch order of parameters
+// TODO need to make sure popup is closing when I want it to
+// TODO chatGpt to clean up
+// TODO -> Filter
 const Sort = (props) => {
   const buttonRef = useRef();
-  const { selectedView } = props;
-  const { views, setViews } = useContext(DatabaseContext);
+  const { selectedView, setViews, properties } = props;
+  const { userDbRef } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
     props,
     buttonRef,
   );
 
   const [isAddingNewSort, setIsAddingNewSort] = useState(false);
-  const handleClickAddNew = () => setTimeout(() => setIsAddingNewSort(true));
+  // TODO removed setTimeout
+  const handleClickAddNew = () => setIsAddingNewSort(true);
 
-  const removeSort = (property) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
-    getSelected.sort = getSelected.sort.filter(
-      (sort) => sort.property !== property,
-    );
-
-    setViews(viewsCopy);
-  };
-
-  const addSort = (property) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
-
-    const sort = { property: property, order: 'Ascending' };
-    getSelected.sort = getSelected.sort.length
-      ? [...getSelected.sort, sort]
-      : [sort];
-
-    setTimeout(() => {
-      setViews(viewsCopy);
+  const addSort = useCallback(
+    async (property) => {
       setIsAddingNewSort(false);
-    });
-  };
 
-  const [isSort, setIsSort] = useState(false);
-  useEffect(() => {
-    if (!selectedView) return;
-    setIsSort(!!selectedView.sort.length);
-  }, [selectedView, views]);
+      setViews((prev) =>
+        prev.map((view) => {
+          return view === selectedView
+            ? {
+                ...view,
+                sort: [...view.sort, { property, order: 'Ascending' }],
+              }
+            : view;
+        }),
+      );
+
+      try {
+        await updateDoc(doc(userDbRef, 'views', selectedView.id), {
+          ...selectedView,
+          sort: [...selectedView.sort, { property, order: 'Ascending' }],
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [selectedView, setViews, userDbRef],
+  );
+
+  const isSort = useMemo(() => !!selectedView?.sort.length, [selectedView]);
 
   return (
     <div>
@@ -87,15 +99,13 @@ const Sort = (props) => {
         <DropdownContainer {...popupProps}>
           {selectedView.sort.length && !isAddingNewSort ? (
             <>
-              <CurrentSorts
-                selectedView={selectedView}
-                removeSort={removeSort}
-              />
+              <CurrentSorts selectedView={selectedView} setViews={setViews} />
               <NewButton text={'Add sort'} onClick={handleClickAddNew} />
             </>
           ) : (
             <SearchPopup
               alreadyUsed={selectedView.sort}
+              properties={properties}
               handleSelectProperty={addSort}
               text={'Sort by...'}
             />

@@ -1,8 +1,7 @@
 import Icon from '@mdi/react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import propertyData from '../../utils/helpers/propertyHelpers';
-import { DatabaseContext } from '../../../context/context';
 
 const FilterRow = styled.div`
   display: flex;
@@ -37,31 +36,28 @@ const StyledInput = styled.input`
     outline: 2px solid rgb(35, 131, 226);
   }
 `;
-const SearchPopup = ({ handleSelectProperty, text, alreadyUsed }) => {
-  const { properties } = useContext(DatabaseContext);
 
+const SearchPopup = ({
+  handleSelectProperty,
+  text,
+  alreadyUsed,
+  properties,
+}) => {
   const [searchInput, setSearchInput] = useState('');
   const handleSearchInputChange = (e) => setSearchInput(e.target.value);
 
-  const [searchArr, setSearchArr] = useState(properties);
-  useEffect(() => {
-    let newSearchArr;
-    if (alreadyUsed && alreadyUsed.length) {
-      const usedProperties = alreadyUsed.map((sort) => sort.property);
-      newSearchArr = properties.filter(
-        (prop) => !usedProperties.includes(prop),
-      );
-    }
+  const searchArr = useMemo(() => {
+    const usedProperties = alreadyUsed?.map((sort) => sort.property) ?? [];
 
-    if (searchInput) {
-      newSearchArr = properties.filter((prop) =>
-        prop.id.includes(searchInput.toLowerCase()),
-      );
-    }
-    setTimeout(() => setSearchArr(newSearchArr || properties));
+    return usedProperties.some(Boolean)
+      ? properties.filter(
+          (prop) =>
+            !usedProperties.includes(prop) &&
+            prop.id.includes(searchInput.toLowerCase()),
+        )
+      : properties;
   }, [searchInput, properties, alreadyUsed]);
 
-  // Eventually -> max 5 options shown (don't want to have to deal with now)
   return (
     <>
       <StyledInput

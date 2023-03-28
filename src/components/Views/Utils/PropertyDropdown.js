@@ -1,10 +1,11 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import SearchPopup from './SearchPopup';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const Select = styled.div`
   display: flex;
@@ -44,20 +45,44 @@ const Popup = styled.div`
 `;
 
 const PropertyDropdown = (props) => {
-  const { icon, selectedView, type, property } = props;
-  const { views, setViews } = useContext(DatabaseContext);
+  const { icon, selectedView, type, property, setViews } = props;
+  const { userDbRef } = useContext(DatabaseContext);
   const selectButton = useRef();
-  const { isDropdown, ...popupProps } = usePopup({}, selectButton);
+  const { isDropdown, ...popupProps } = usePopup('', selectButton);
+  // TODO typically this has set isDropdown to false
 
-  const handleSelectProperty = (clickedProp) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
+  const handleSelectProperty = async (clickedProp) => {
+    setViews((prev) =>
+      prev.map((view) => {
+        return view === selectedView
+          ? {
+              ...view,
+              [type]: view[type].map((el) => {
+                return property === el.property
+                  ? { ...el, property: clickedProp }
+                  : el;
+              }),
+            }
+          : view;
+      }),
+    );
 
-    const editedProp = getSelected[type].find((el) => el.property === property);
-    editedProp.property = clickedProp;
-
-    setTimeout(() => setViews(viewsCopy));
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), {
+        ...selectedView,
+        [type]: selectedView[type].map((el) => {
+          return property === el.property
+            ? { ...el, property: clickedProp }
+            : el;
+        }),
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  const alreadyUsed = useMemo(() => selectedView[type], [selectedView, type]);
+
   return (
     <div>
       <Select ref={selectButton}>
@@ -68,7 +93,7 @@ const PropertyDropdown = (props) => {
       {isDropdown && (
         <Popup {...popupProps}>
           <SearchPopup
-            alreadyUsed={selectedView[type]}
+            alreadyUsed={alreadyUsed}
             handleSelectProperty={handleSelectProperty}
             text={'Search for a property...'}
           />

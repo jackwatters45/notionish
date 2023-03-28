@@ -4,6 +4,7 @@ import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const Select = styled.div`
   display: flex;
@@ -57,28 +58,40 @@ const Row = styled.div`
   }
 `;
 
-const OrderDropdown = (props) => {
-  const { order, property, selectedView } = props;
-  const { views, setViews } = useContext(DatabaseContext);
+const OrderDropdown = ({ order, property, selectedView, setViews }) => {
+  const { userDbRef } = useContext(DatabaseContext);
+
   const orderButton = useRef();
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
-    {},
+    '',
     orderButton,
   );
 
-  const handleSelectProperty = (clickedProp) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
+  const handleSelectProperty = async (clickedProp) => {
+    setIsDropdown(false);
 
-    const editedProp = getSelected.sort.find(
-      (sort) => sort.property === property,
+    setViews((prev) =>
+      prev.map((view) => {
+        return view === selectedView
+          ? {
+              ...view,
+              sort: view.sort.map((sort) => {
+                return sort.property === property
+                  ? { ...sort, order: clickedProp }
+                  : sort;
+              }),
+            }
+          : view;
+      }),
     );
 
-    editedProp.order = clickedProp;
-
-    setTimeout(() => {
-      setViews(viewsCopy);
-      setIsDropdown(false);
+    await updateDoc(doc(userDbRef, 'views', selectedView.id), {
+      ...selectedView,
+      sort: selectedView.sort.map((sort) => {
+        return sort.property === property
+          ? { ...sort, order: clickedProp }
+          : sort;
+      }),
     });
   };
 

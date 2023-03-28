@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import View from './NewViews/View';
@@ -6,7 +6,7 @@ import NewViewPopup from './NewViews/NewViewPopup';
 import viewsData from '../utils/helpers/viewHelpers';
 import Filter from './Filter/Filter';
 import Sort from './Sort/Sort';
-import { DatabaseContext } from '../../context/context';
+import { Link } from 'react-router-dom';
 
 const NavContainer = styled.div`
   display: flex;
@@ -53,11 +53,14 @@ const Options = styled.div`
   margin-bottom: 4px;
 `;
 
-const ViewsNav = (props) => {
-  const { views } = useContext(DatabaseContext);
-
-  const { selectedView, handleClickUnselectedView } = props;
-
+const ViewsNav = ({
+  selectedView,
+  views,
+  setViews,
+  removeView,
+  addView,
+  properties,
+}) => {
   return (
     <NavContainer>
       <NavContent>
@@ -66,22 +69,35 @@ const ViewsNav = (props) => {
             const { type, name } = view;
             const { icon } = viewsData[type];
             return view === selectedView ? (
-              <View key={name} data={view} />
-            ) : (
-              <UnselectedView
+              <View
                 key={name}
-                onClick={() => handleClickUnselectedView(view)}
-              >
-                <Icon path={icon} size={0.75} />
-                {name}
-              </UnselectedView>
+                data={view}
+                views={views}
+                setViews={setViews}
+                removeView={removeView}
+              />
+            ) : (
+              <Link to={`/${view.id}`} key={name}>
+                <UnselectedView>
+                  <Icon path={icon} size={0.75} />
+                  {name}
+                </UnselectedView>
+              </Link>
             );
           })}
-          <NewViewPopup />
+          <NewViewPopup views={views} setViews={setViews} addView={addView} />
         </ViewsContainer>
         <Options>
-          <Filter selectedView={selectedView} />
-          <Sort selectedView={selectedView} />
+          <Filter
+            selectedView={selectedView}
+            setViews={setViews}
+            properties={properties}
+          />
+          <Sort
+            selectedView={selectedView}
+            setViews={setViews}
+            properties={properties}
+          />
         </Options>
       </NavContent>
     </NavContainer>

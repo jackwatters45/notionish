@@ -1,8 +1,9 @@
 import { mdiDeleteOutline, mdiRenameBoxOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { forwardRef, useContext, useEffect, useState } from 'react';
+import React, { forwardRef, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { DatabaseContext } from '../../../context/context';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -58,80 +59,90 @@ const ErrorMsg = styled.span`
   color: rgb(235, 87, 87);
 `;
 
-const ViewDropdown = forwardRef((props, ref) => {
-  const { views, setViews, removeView } = useContext(DatabaseContext);
-  const { style, propId } = props;
+const ViewDropdown = forwardRef(
+  (
+    { style, data: selectedView, setIsDropdown, setViews, views, removeView },
+    ref,
+  ) => {
+    const { userDbRef } = useContext(DatabaseContext);
+    const viewRef = doc(userDbRef, 'views', selectedView.id);
 
-  const [isRenaming, setIsRenaming] = useState(false);
-  const handleClickRename = () => setTimeout(() => setIsRenaming(true));
+    const [isRenaming, setIsRenaming] = useState(false);
+    // TODO removed set timeout
+    const handleClickRename = () => setIsRenaming(true);
 
-  const [input, setInput] = useState('');
-  const [isErrorMsg, setIsErrorMsg] = useState(false);
-  const handleChange = (e) => setInput(e.target.value);
+    const [input, setInput] = useState('');
+    const handleChange = (e) => setInput(e.target.value);
+    const isErrorMsg = useMemo(
+      () => !!views.find(({ name }) => name === input),
+      [views, input],
+    );
 
-  const handleKeyDown = (e) => {
-    if (e.key !== 'Enter') return;
-    renameView(e);
-  };
 
-  const renameView = (e) => {
-    e.preventDefault();
-    if (isErrorMsg || !input) return;
+    const handleKeyDown = async (e) => {
+      if (e.key !== 'Enter' || isErrorMsg || !input) return;
+      setIsDropdown(false);
 
-    const viewsCopy = [...views];
-    const view = viewsCopy.find(({ id }) => id === propId);
+      setViews((prev) => {
+        return prev.map((view) => {
+          return view.id === selectedView.id ? { ...view, name: input } : view;
+        });
+      });
 
-    view.name = input;
-    view.id = input.toLowerCase();
-    setViews(viewsCopy);
-  };
+      try {
+        await updateDoc(viewRef, { ...selectedView, name: input });
+      } catch (e) {
+        console.error(e);
+      }
+    };
 
-  const handleDeleteView = () => {
-    // prevent delete last view -> add error message
-    if (views.length < 2) return;
-    removeView(propId);
-  };
+    const handleDeleteView = async () => {
+      if (views.length < 2) return;
 
-  useEffect(() => {
-    setIsErrorMsg(views.find(({ id }) => id === input) ? true : false);
-  }, [views, input]);
+      removeView(selectedView.id);
 
-  return (
-    <DropdownContainer ref={ref} style={style}>
-      {!isRenaming ? (
-        <>
-          <Row onClick={handleClickRename}>
-            <Icon path={mdiRenameBoxOutline} size={0.75} />
-            Rename
-          </Row>
-          <Row onClick={handleDeleteView}>
-            <Icon path={mdiDeleteOutline} size={0.75} />
-            Delete view
-          </Row>
-        </>
-      ) : (
-        <>
-          <InputRow>
-            <StyledInput
-              autoFocus
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-            />
-            {isErrorMsg ? (
-              <>
-                <hr />
-                <ErrorMsg>
-                  A view named {input} already exists in this database.
-                </ErrorMsg>
-              </>
-            ) : (
-              ''
-            )}
-          </InputRow>
-        </>
-      )}
-    </DropdownContainer>
-  );
-});
+      try {
+        await deleteDoc(viewRef);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    return (
+      <DropdownContainer ref={ref} style={style}>
+        {!isRenaming ? (
+          <>
+            <Row onClick={handleClickRename}>
+              <Icon path={mdiRenameBoxOutline} size={0.75} />
+              Rename
+            </Row>
+            <Row onClick={handleDeleteView}>
+              <Icon path={mdiDeleteOutline} size={0.75} />
+              Delete view
+            </Row>
+          </>
+        ) : (
+          <>
+            <InputRow>
+              <StyledInput
+                autoFocus
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+              />
+              {isErrorMsg && (
+                <>
+                  <hr />
+                  <ErrorMsg>
+                    A view named {input} already exists in this database.
+                  </ErrorMsg>
+                </>
+              )}
+            </InputRow>
+          </>
+        )}
+      </DropdownContainer>
+    );
+  },
+);
 
 export default ViewDropdown;
