@@ -1,36 +1,25 @@
-import { useEffect, useState, useContext, useRef } from 'react';
-import { SidebarContext } from '../../../context/context';
+import { useEffect, useState, useRef } from 'react';
 
-const usePopup = (props, buttonRef) => {
-  const { setIsPopupVisible } = useContext(SidebarContext);
+const usePopup = (props = '', buttonRef) => {
   const dropdownRef = useRef();
 
   const [isDropdown, setIsDropdown] = useState(false);
 
   const getRight = () => {
-    if (!buttonRef.current) return;
-    const pickerRightLoc = buttonRef.current.getBoundingClientRect().left + 270;
-    // if greater than 0 nothing, if less right: 0
+    const buttonRect = buttonRef.current?.getBoundingClientRect();
+    const pickerRightLoc = buttonRect?.left + 270 ?? 0;
     return window.innerWidth - pickerRightLoc < 0 ? { right: 0 } : {};
   };
 
   useEffect(() => {
-    const showPopup = () => {
-      setIsPopupVisible(true);
-      setIsDropdown(true);
-    };
-    const hidePopup = () => {
-      setIsPopupVisible(false);
-      setIsDropdown(false);
-    };
+    const showPopup = () => setIsDropdown(true);
+    const hidePopup = () => setIsDropdown(false);
+
     const handleClick = (e) => {
-      if (!buttonRef.current) return;
-      if (buttonRef.current.contains(e.target) && !isDropdown)
+      if (buttonRef.current?.contains(e.target) && !isDropdown)
         return showPopup();
 
-      if (!dropdownRef.current) return;
-
-      if (isDropdown && !dropdownRef.current.contains(e.target))
+      if (isDropdown && !dropdownRef.current?.contains(e.target))
         return hidePopup();
     };
     const handleEscape = (e) => {
@@ -42,23 +31,17 @@ const usePopup = (props, buttonRef) => {
       window.removeEventListener('click', handleClick);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isDropdown, buttonRef, setIsPopupVisible]);
+  }, [buttonRef, isDropdown, dropdownRef]);
 
-  return props.data
-    ? {
-        isDropdown,
-        style: getRight(),
-        ref: dropdownRef,
-        propId: props.name && props.name.toLowerCase(),
-        data: props.data,
-      }
-    : {
-        isDropdown,
-        style: getRight(),
-        ref: dropdownRef,
-        setIsDropdown,
-        propId: props.name && props.name.toLowerCase(),
-      };
+  return {
+    isDropdown,
+    setIsDropdown,
+    style: getRight(),
+    ref: dropdownRef,
+    // TODO Not really sure what propId is for, but it's used in the AddNewPropertySidebar
+    propId: props.name?.toLowerCase(),
+    ...{ ...props },
+  };
 };
 
 export default usePopup;
