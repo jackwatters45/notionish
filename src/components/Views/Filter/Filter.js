@@ -5,6 +5,7 @@ import usePopup from '../../utils/custom/usePopup';
 import AddFilter from './AddFilter';
 import CurrentFilters from './CurrentFilters';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const DropdownContainer = styled.div`
   min-width: 290px;
@@ -35,43 +36,42 @@ const Option = styled.div`
   }
 `;
 
+// TODO check what I missed on sort
+// TODO make sure working well
 const Filter = (props) => {
   const buttonRef = useRef();
-  const { views } = useContext(DatabaseContext);
+  const { userDbRef } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...popup } = usePopup(props, buttonRef);
   const { selectedView, setViews, properties } = props;
 
+  // TODO isAddingFilter stuff
   const [isAddingFilter, setIsAddingFilter] = useState();
+  // TODO remove timeouts
   const handleClickAddNew = () => setTimeout(() => setIsAddingFilter(true));
   const handleEnterFilter = (e) => {
     if (e.key === 'Enter') setTimeout(() => setIsAddingFilter(false));
   };
-
   useEffect(() => {
     setIsAddingFilter(!selectedView.filter?.length);
   }, [selectedView]);
 
-  const removeFilter = (property) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
-    getSelected.filter = getSelected.filter.filter(
-      (filter) => filter.property !== property,
-    );
-    setTimeout(() => setViews(viewsCopy));
+  const removeFilter = async (property) => {
+    const updatedView = {
+      ...selectedView,
+      filter: selectedView.filter.filter(
+        (filter) => filter.property !== property,
+      ),
+    };
 
-    //
     setViews((prevViews) =>
-      prevViews.map((view) => {
-        return view === selectedView
-          ? {
-              ...view,
-              filter: view.filter.filter(
-                (filter) => filter.property !== property,
-              ),
-            }
-          : view;
-      }),
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
+
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const isFilter = useMemo(() => !!selectedView?.filter.length, [selectedView]);
@@ -86,11 +86,13 @@ const Filter = (props) => {
       </Option>
       {isDropdown && (
         <DropdownContainer {...popup}>
-          {!isAddingFilter && selectedView.filter.length ? (
+          {!isAddingFilter && selectedView?.filter.length ? (
             <>
               <CurrentFilters
                 selectedView={selectedView}
                 removeFilter={removeFilter}
+                setViews={setViews}
+                properties={properties}
               />
               <NewButton text={'Add filter'} onClick={handleClickAddNew} />
             </>
@@ -98,6 +100,8 @@ const Filter = (props) => {
             <AddFilter
               selectedView={selectedView}
               handleEnterFilter={handleEnterFilter}
+              properties={properties}
+              setViews={setViews}
             />
           )}
         </DropdownContainer>

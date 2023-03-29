@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const Input = styled.input`
   display: flex;
@@ -22,20 +23,37 @@ const Input = styled.input`
   }
 `;
 
-const FilterInput = ({ searchEl, property, selectedView }) => {
-  const { views, setViews } = useContext(DatabaseContext);
+const FilterInput = ({
+  searchEl,
+  property,
+  selectedView,
+  setViews,
+  currentFilter,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
   const [input, setInput] = useState(searchEl);
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     setInput(e.target.value);
 
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
-    const editedFilter = getSelected.filter.find(
-      (filter) => filter.property === property,
+    const updatedFilter = { ...currentFilter, searchEl: e.target.value };
+
+    const updatedView = {
+      ...selectedView,
+      filter: selectedView.filter.map((filter) => {
+        return filter.property === property ? updatedFilter : filter;
+      }),
+    };
+
+    setViews((prevViews) =>
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
-    editedFilter.searchEl = e.target.value;
-    setTimeout(() => setViews(viewsCopy));
+
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return <Input placeholder="Empty..." value={input} onChange={handleChange} />;

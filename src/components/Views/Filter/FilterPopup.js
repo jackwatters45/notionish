@@ -1,10 +1,11 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import FilterOptionsDropdown from './FilterOptionsDropdown';
 import usePopup from '../../utils/custom/usePopup';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const ChooseFilter = styled.div`
   display: flex;
@@ -56,35 +57,66 @@ const StyledInput = styled.input`
 
 const FilterPopup = (props) => {
   const buttonRef = useRef();
-  const { views, setViews } = useContext(DatabaseContext);
+  const { userDbRef } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...dropdown } = usePopup('', buttonRef);
-  const { currentFilter, selectedView, handleEnterFilter } = props;
+  const { currentFilter, selectedView, handleEnterFilter, setViews } = props;
   const { property, type, searchEl } = currentFilter;
 
-  const handleClickFilterOption = (option) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
-    const editedFilter = getSelected.filter.find(
-      (filter) => filter === currentFilter,
-    );
-    editedFilter.type = option;
-    setTimeout(() => {
-      setViews(viewsCopy);
+  const getUpdatedView = useCallback(
+    (updatedFilter) => {
+      return {
+        ...selectedView,
+        filter: selectedView.filter.map((filter) => {
+          return filter === currentFilter ? updatedFilter : filter;
+        }),
+      };
+    },
+    [currentFilter, selectedView],
+  );
+
+  const handleClickFilterOption = useCallback(
+    async (option) => {
       setIsDropdown(false);
-    });
-  };
+
+      const updatedFilter = { ...currentFilter, type: option };
+      const updatedView = getUpdatedView(updatedFilter);
+
+      setViews((prevViews) =>
+        prevViews.map((view) => (view === selectedView ? updatedView : view)),
+      );
+
+      try {
+        await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [
+      currentFilter,
+      getUpdatedView,
+      selectedView,
+      setIsDropdown,
+      setViews,
+      userDbRef,
+    ],
+  );
 
   const [filterInput, setFilterInput] = useState(searchEl);
-  const handleFilterInputChange = (e) => {
+  const handleFilterInputChange = async (e) => {
     setFilterInput(e.target.value);
 
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
-    const editedFilter = getSelected.filter.find(
-      (filter) => filter === currentFilter,
+    const updatedFilter = { ...currentFilter, searchEl: e.target.value };
+    const updatedView = getUpdatedView(updatedFilter);
+
+    setViews((prevViews) =>
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
-    editedFilter.searchEl = e.target.value;
-    setTimeout(() => setViews(viewsCopy));
+
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (

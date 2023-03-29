@@ -65,22 +65,19 @@ const Sort = (props) => {
     async (property) => {
       setIsAddingNewSort(false);
 
+      const updatedSort = [
+        ...selectedView.sort,
+        { property, order: 'Ascending' },
+      ];
+
+      const updatedView = { ...selectedView, sort: updatedSort };
+      
       setViews((prevViews) =>
-        prevViews.map((view) => {
-          return view === selectedView
-            ? {
-                ...view,
-                sort: [...view.sort, { property, order: 'Ascending' }],
-              }
-            : view;
-        }),
+        prevViews.map((view) => (view === selectedView ? updatedView : view)),
       );
 
       try {
-        await updateDoc(doc(userDbRef, 'views', selectedView.id), {
-          ...selectedView,
-          sort: [...selectedView.sort, { property, order: 'Ascending' }],
-        });
+        await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
       } catch (e) {
         console.log(e);
       }

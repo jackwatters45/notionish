@@ -70,29 +70,20 @@ const OrderDropdown = ({ order, property, selectedView, setViews }) => {
   const handleSelectProperty = async (clickedProp) => {
     setIsDropdown(false);
 
-    setViews((prevViews) =>
-      prevViews.map((view) => {
-        return view === selectedView
-          ? {
-              ...view,
-              sort: view.sort.map((sort) => {
-                return sort.property === property
-                  ? { ...sort, order: clickedProp }
-                  : sort;
-              }),
-            }
-          : view;
-      }),
-    );
+    const updatedSort = { ...selectedView.sort, order: clickedProp };
 
-    await updateDoc(doc(userDbRef, 'views', selectedView.id), {
+    const updatedView = {
       ...selectedView,
       sort: selectedView.sort.map((sort) => {
-        return sort.property === property
-          ? { ...sort, order: clickedProp }
-          : sort;
+        return sort.property === property ? updatedSort : sort;
       }),
-    });
+    };
+
+    setViews((prevViews) =>
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
+    );
+
+    await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
   };
 
   return (

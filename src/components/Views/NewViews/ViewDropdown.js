@@ -78,19 +78,19 @@ const ViewDropdown = forwardRef(
       [views, input],
     );
 
-
     const handleKeyDown = async (e) => {
       if (e.key !== 'Enter' || isErrorMsg || !input) return;
       setIsDropdown(false);
 
-      setViews((prev) => {
-        return prev.map((view) => {
-          return view.id === selectedView.id ? { ...view, name: input } : view;
-        });
-      });
+      const updatedView = { ...selectedView, name: input };
+
+      const { id } = selectedView;
+      setViews((prev) =>
+        prev.map((view) => (view.id === id ? updatedView : view)),
+      );
 
       try {
-        await updateDoc(viewRef, { ...selectedView, name: input });
+        await updateDoc(viewRef, updatedView);
       } catch (e) {
         console.error(e);
       }

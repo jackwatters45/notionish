@@ -95,7 +95,7 @@ const NewViewPopup = (props) => {
     addView(newView);
 
     try {
-      await setDoc(doc(userDbRef, 'views', id), { ...newView });
+      await setDoc(doc(userDbRef, 'views', id), newView);
     } catch (err) {
       console.log(err);
     }

@@ -1,10 +1,12 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import filterOptions from './filterHelpers';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
+import capitalizeFirstLetter from '../../utils/helpers/camelCaseToSentenceCase';
 
 const Select = styled.div`
   display: flex;
@@ -58,28 +60,47 @@ const FilterRow = styled.div`
   }
 `;
 
-const FilterTypeDropdown = (props) => {
-  const { selectedView, filterType, property } = props;
-  const { views, setViews } = useContext(DatabaseContext);
+const FilterTypeDropdown = ({
+  selectedView,
+  filterType,
+  property,
+  setViews,
+  currentFilter,
+}) => {
   const selectButton = useRef();
-  const { isDropdown, ...popupProps } = usePopup({}, selectButton);
+  const { userDbRef } = useContext(DatabaseContext);
+  const { isDropdown, ...popupProps } = usePopup('', selectButton);
 
-  const handleSelectProperty = (clickedProp) => {
-    const viewsCopy = [...views];
-    const getSelected = viewsCopy.find((view) => view === selectedView);
+  const handleSelectProperty = async (clickedProp) => {
+    console.log(clickedProp);
+    console.log(currentFilter);
+    const updatedFilter = { ...currentFilter, type: clickedProp };
 
-    const editedProp = getSelected.filter.find(
-      (el) => el.property === property,
+    const updatedView = {
+      ...selectedView,
+      filter: selectedView.filter.map((filter) => {
+        return filter.property === property ? updatedFilter : filter;
+      }),
+    };
+    setViews((prevViews) =>
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
-    editedProp.type = clickedProp;
 
-    setTimeout(() => setViews(viewsCopy));
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  const memoizedFilterTypeName = useMemo(() => {
+    return capitalizeFirstLetter(filterType);
+  }, [filterType]);
 
   return (
     <div>
       <Select ref={selectButton}>
-        <SelectText>{filterType.name}</SelectText>
+        <SelectText>{memoizedFilterTypeName}</SelectText>
         <Icon path={mdiChevronDown} size={0.6} />
       </Select>
       {isDropdown && (
@@ -87,10 +108,7 @@ const FilterTypeDropdown = (props) => {
           {Object.keys(filterOptions).map((key) => {
             const { name, id } = filterOptions[key];
             return (
-              <FilterRow
-                key={id}
-                onClick={() => handleSelectProperty(filterOptions[key])}
-              >
+              <FilterRow key={id} onClick={() => handleSelectProperty(key)}>
                 {name}
               </FilterRow>
             );

@@ -45,7 +45,7 @@ const Popup = styled.div`
 `;
 
 const PropertyDropdown = (props) => {
-  const { icon, selectedView, type, property, setViews } = props;
+  const { icon, selectedView, type, property, setViews, properties } = props;
   const { userDbRef } = useContext(DatabaseContext);
   const selectButton = useRef();
   const { isDropdown, ...popupProps } = usePopup('', selectButton);
@@ -96,6 +96,7 @@ const PropertyDropdown = (props) => {
             alreadyUsed={alreadyUsed}
             handleSelectProperty={handleSelectProperty}
             text={'Search for a property...'}
+            properties={properties}
           />
         </Popup>
       )}

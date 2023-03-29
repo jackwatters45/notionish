@@ -1,4 +1,7 @@
 const isFilter = (property, searchEl, propertyType) => {
+  if (!searchEl) return true;
+  if (!property) return false;
+
   if (propertyType === 'date') {
     if (!property) return false;
     const dateString = property.toLocaleDateString();
@@ -12,6 +15,9 @@ const isFilter = (property, searchEl, propertyType) => {
 };
 
 const isNotFilter = (property, searchEl, propertyType) => {
+  if (!searchEl) return true;
+  if (!property) return false;
+
   if (propertyType === 'date') {
     if (!property) return false;
     const dateString = property.toLocaleDateString();
@@ -25,6 +31,9 @@ const isNotFilter = (property, searchEl, propertyType) => {
 };
 
 const containsFilter = (property, searchEl, propertyType) => {
+  if (!searchEl) return true;
+  if (!property) return false;
+
   if (propertyType === 'date') {
     if (!property) return false;
     const dateString = property.toLocaleDateString();
@@ -38,6 +47,9 @@ const containsFilter = (property, searchEl, propertyType) => {
 };
 
 const notContainsFilter = (property, searchEl, propertyType) => {
+  if (!searchEl) return true;
+  if (!property) return false;
+
   if (propertyType === 'date') {
     if (!property) return false;
     const dateString = property.toLocaleDateString();
@@ -61,14 +73,18 @@ const filterOptions = {
   },
 };
 
-export const applyFilters = (newTodos, filter) => {
-  filter.forEach(({ property, type, searchEl }) => {
-    newTodos = newTodos.filter((todo) => {
-      const filteredProperty = todo[property.id];
-      return type.filterFunc(filteredProperty, searchEl, property.type);
-    });
-  });
-  return newTodos;
+export const applyFilters = (newDbItems, filterArr) => {
+  return filterArr.reduce((filteredItems, filter) => {
+    const { type: filterType, property: filteredProperty, searchEl } = filter;
+    const filterFunction = filterOptions[filterType].filterFunc;
+    return filteredItems.filter((dbItem) =>
+      filterFunction(
+        dbItem[filteredProperty.id],
+        searchEl,
+        filteredProperty.type,
+      ),
+    );
+  }, newDbItems);
 };
 
 export default filterOptions;

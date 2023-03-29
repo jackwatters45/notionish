@@ -36,12 +36,11 @@ const StyledIcon = styled(Icon)`
   }
 `;
 
-const CurrentFilters = (props) => {
-  const { selectedView, removeFilter } = props;
-
+const CurrentFilters = ({ selectedView, removeFilter, setViews, properties }) => {
   return (
     <Container>
-      {selectedView.filter.map(({ property, type, searchEl }) => {
+      {selectedView.filter.map((filter) => {
+        const { property, type, searchEl } = filter;
         const { icon } = propertyData[property.type];
         return (
           <Row key={property.id}>
@@ -51,16 +50,22 @@ const CurrentFilters = (props) => {
                 property={property}
                 selectedView={selectedView}
                 icon={icon}
+                setViews={setViews}
+                properties={properties}
               />
               <FilterTypeDropdown
                 property={property}
                 selectedView={selectedView}
                 filterType={type}
+                setViews={setViews}
+                currentFilter={filter}
               />
               <FilterInput
                 searchEl={searchEl}
                 property={property}
                 selectedView={selectedView}
+                setViews={setViews}
+                currentFilter={filter}
               />
             </LeftColumn>
             <StyledIcon

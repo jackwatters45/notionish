@@ -47,14 +47,15 @@ const SearchPopup = ({
   const handleSearchInputChange = (e) => setSearchInput(e.target.value);
 
   const searchArr = useMemo(() => {
-    const usedProperties = alreadyUsed?.map((sort) => sort.property) ?? [];
+    const usedProperties = alreadyUsed?.map((el) => el.property) ?? [];
 
     return usedProperties.some(Boolean)
-      ? properties.filter(
-          (prop) =>
-            !usedProperties.includes(prop) &&
-            prop.id.includes(searchInput.toLowerCase()),
-        )
+      ? properties.filter((prop) => {
+          return (
+            !usedProperties.some((usedProp) => usedProp.id === prop.id) &&
+            prop.id.includes(searchInput.toLowerCase())
+          );
+        })
       : properties;
   }, [searchInput, properties, alreadyUsed]);
 

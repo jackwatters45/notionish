@@ -41,22 +41,17 @@ const CurrentSorts = ({ selectedView, setViews }) => {
   const { userDbRef } = useContext(DatabaseContext);
 
   const removeSort = async (property) => {
+    const updatedView = {
+      ...selectedView,
+      sort: selectedView.sort.filter((sort) => sort.property !== property),
+    };
+
     setViews((prevViews) =>
-      prevViews.map((view) => {
-        return view === selectedView
-          ? {
-              ...view,
-              sort: view.sort.filter((sort) => sort.property !== property),
-            }
-          : view;
-      }),
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
 
     try {
-      await updateDoc(doc(userDbRef, 'views', selectedView.id), {
-        ...selectedView,
-        sort: selectedView.sort.filter((sort) => sort.property !== property),
-      });
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
     } catch (e) {
       console.error(e);
     }
