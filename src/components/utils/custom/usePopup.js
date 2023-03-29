@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 
 const usePopup = (props = '', buttonRef) => {
   const dropdownRef = useRef();
@@ -11,7 +11,7 @@ const usePopup = (props = '', buttonRef) => {
     return window.innerWidth - pickerRightLoc < 0 ? { right: 0 } : {};
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const showPopup = () => setIsDropdown(true);
     const hidePopup = () => setIsDropdown(false);
 
@@ -19,17 +19,19 @@ const usePopup = (props = '', buttonRef) => {
       if (buttonRef.current?.contains(e.target) && !isDropdown)
         return showPopup();
 
+      if (!dropdownRef.current) return;
+
       if (isDropdown && !dropdownRef.current?.contains(e.target))
         return hidePopup();
     };
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isDropdown) hidePopup();
     };
-    window.addEventListener('click', handleClick);
+    window.addEventListener('mousedown', handleClick);
     document.addEventListener('keydown', handleEscape);
     return () => {
       window.removeEventListener('click', handleClick);
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleEscape);
     };
   }, [buttonRef, isDropdown, dropdownRef]);
 
