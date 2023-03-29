@@ -26,8 +26,8 @@ const StyledNewButton = styled(NewButton)`
   margin: 4px;
 `;
 
-const AddGroup = ({ width, groups, addGroup, propId }) => {
-  const { userDbRef } = useContext(DatabaseContext);
+const AddGroup = ({ width, groups, propertyId, propertyName }) => {
+  const { userDbRef, setProperties } = useContext(DatabaseContext);
 
   const [isAddingGroup, setIsAddingGroup] = useState(false);
   const handleClickAddGroupBtn = () => setIsAddingGroup(true);
@@ -42,9 +42,17 @@ const AddGroup = ({ width, groups, addGroup, propId }) => {
     setIsAddingGroup(false);
     setGroupInput();
 
-    addGroup(newGroup);
+    // TODO Broken
+    setProperties((prev) =>
+      prev.map((prop) => {
+        return prop.id === propertyName
+          ? { ...prop, values: [...groups, newGroup] }
+          : prop;
+      }),
+    );
+
     const addGroupToFirestore = async () => {
-      const propertyRef = doc(userDbRef, 'properties', propId);
+      const propertyRef = doc(userDbRef, 'properties', propertyId);
       await updateDoc(propertyRef, { values: [...groups, newGroup] });
     };
     addGroupToFirestore();

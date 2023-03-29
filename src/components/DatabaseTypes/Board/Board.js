@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Group from './Group/Group';
 import AddGroup from './Group/AddGroup';
 import { DatabaseContext } from '../../../context/context';
-import useArrayOfObjects from '../../utils/custom/useArrayOfObjects';
 
 const GroupsContainer = styled.div`
   display: flex;
@@ -15,15 +14,17 @@ const Board = (props) => {
   const {
     editedTodos,
     selectedView,
-    propertyData = { id: 'CWn4hkG8N6XTyhPxLhnI', name: 'project' },
+    propertyName = 'project',
+    propertyId = 'CWn4hkG8N6XTyhPxLhnI',
   } = props;
   const { properties } = useContext(DatabaseContext);
 
-  const [groups, setGroups, removeGroup, addGroup] = useArrayOfObjects();
-  useEffect(() => {
-    const property = properties.find(({ id }) => id === propertyData.name);
-    setGroups(property.values);
-  }, [properties, propertyData, setGroups]);
+  // might still want to get property data from context
+
+  const groups = useMemo(() => {
+    const property = properties.find(({ id }) => id === propertyName);
+    return property.values;
+  }, [properties, propertyName]);
 
   const groupsContainerRef = useRef();
   const [maxHeight, setMaxHeight] = useState();
@@ -40,8 +41,8 @@ const Board = (props) => {
               key={group.id}
               group={group}
               groups={groups}
-              propertyData={propertyData}
-              removeGroup={removeGroup}
+              propertyName={propertyName}
+              propertyId={propertyId}
               editedTodos={editedTodos}
               dragHeight={maxHeight}
               selectedView={selectedView}
@@ -49,14 +50,15 @@ const Board = (props) => {
           );
         })}
       <Group
+        propertyName={propertyName}
         editedTodos={editedTodos}
         dragHeight={maxHeight}
         selectedView={selectedView}
       />
       <AddGroup
         width={260}
-        addGroup={addGroup}
-        propId={propertyData.id}
+        propertyId={propertyId}
+        propertyName={propertyName}
         groups={groups}
       />
     </GroupsContainer>

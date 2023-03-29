@@ -132,3 +132,29 @@ input[type="date"] {
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(100%);
 }
+
+/* Loading animation - ChatGpt */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+  margin-top: 250px;
+}
+
+.loading-logo {
+  width: 50px;
+  height: 50px;
+  transform-origin: center;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

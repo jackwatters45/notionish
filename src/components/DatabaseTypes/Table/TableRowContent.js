@@ -137,7 +137,7 @@ const TableRowContent = ({ dbItem }) => {
       key={dbItem.id}
     >
       {isHovered && (
-        <DragButton ref={drag}>
+        <DragButton className={dbItem.id} ref={drag}>
           <Icon path={mdiDrag} size={1} color={'var(--empty-font-color'} />
         </DragButton>
       )}

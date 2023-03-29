@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import CardDone from '../../utils/components/CardDone';
 import NameProperty from '../../Properties/NameProperty';
-import { SidebarContext } from '../../../context/context';
 import { useDrag } from 'react-dnd';
+import { Link } from 'react-router-dom';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px;
@@ -31,9 +31,7 @@ const StyledNameProp = styled(NameProperty)`
 
 // TODO cursor for while dragging??
 
-const DbItem = ({ dbItem }) => {
-  const { toggleSidebar } = useContext(SidebarContext);
-
+const DbItemCard = ({ dbItem }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'dbItem',
     item: { todoId: dbItem.id },
@@ -41,21 +39,22 @@ const DbItem = ({ dbItem }) => {
   }));
 
   return (
-    <TodoContainer
-      className="dbItem"
-      onClick={(e) => toggleSidebar(e, dbItem)}
-      ref={drag}
-      style={{ opacity: isDragging ? 0.5 : 1 }}
-    >
-      <StyledNameProp
-        name={'name'}
-        className="dbItem"
-        data={dbItem}
-        placeholder="Type a name..."
-      />
-      <CardDone className="dbItem" dbItem={dbItem} />
-    </TodoContainer>
+    <Link to={`${dbItem.id}`}>
+      <TodoContainer
+        ref={drag}
+        className={dbItem.id}
+        style={{ opacity: isDragging ? 0.5 : 1 }}
+      >
+        <StyledNameProp
+          name={'name'}
+          className={dbItem.id}
+          data={dbItem}
+          placeholder="Type a name..."
+        />
+        <CardDone  dbItem={dbItem} />
+      </TodoContainer>
+    </Link>
   );
 };
 
-export default DbItem;
+export default DbItemCard;

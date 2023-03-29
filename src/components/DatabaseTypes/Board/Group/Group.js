@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect, useMemo } from 'react';
-import DbItem from '../Todo';
+import DbItemCard from '../DbItemCard';
 import Icon from '@mdi/react';
 import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
-import { v5 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import NewButton from '../../../utils/components/NewButton';
 import GroupTitle from './GroupTitle';
 import { DatabaseContext } from '../../../../context/context';
@@ -57,7 +57,8 @@ const Group = (props) => {
   const {
     group,
     groups,
-    propertyData,
+    propertyName,
+    propertyId,
     editedTodos,
     dragHeight,
     selectedView,
@@ -69,12 +70,12 @@ const Group = (props) => {
   const [groupDbItems, setGroupDbItems] = useState([]);
   // chat gpt suggested memoizing the filtered edited todos
   const filteredEditedTodos = useMemo(() => {
-    return editedTodos.filter((dbItemGroup) =>
-      !group
-        ? !dbItemGroup.propertyId
-        : dbItemGroup.propertyId?.id === group.id,
-    );
-  }, [editedTodos, group]);
+    return editedTodos.filter((dbItemGroup) => {
+      return !group
+        ? !dbItemGroup[propertyName]
+        : dbItemGroup[propertyName]?.id === group.id;
+    });
+  }, [editedTodos, group, propertyName]);
   useEffect(() => {
     setGroupDbItems(filteredEditedTodos);
   }, [filteredEditedTodos]);
@@ -92,25 +93,50 @@ const Group = (props) => {
     await addDoc(collection(userDbRef, 'dbItems'), newDbItem);
   };
 
+  // const updatedGroups = groups.map(({ id }) => {
+  //   return group.id === id ? { ...group, name: groupNameInput } : group;
+  // });
+
+  // const batch = writeBatch(db);
+  // const propertyRef = doc(userDbRef, 'properties', propertyId);
+  // batch.update(propertyRef, { values: updatedGroups });
+
+  // setDbItems((prev) =>
+  //   prev.map((item) => {
+  //     const updatedGroup = updatedGroups.find(
+  //       ({ id }) => item[propertyName]?.id === id,
+  //     );
+  //     if (!updatedGroup) return item;
+
+  //     const dbItemRef = doc(userDbRef, 'dbItems', item.id);
+  //     batch.update(dbItemRef, { [propertyName]: updatedGroups });
+
+  //     return { ...item, [propertyName]: updatedGroup };
+  //   }),
+  // );
+
+  // await batch.commit();
+
   // batch - added using suggestion generated from ChatGpt
   const handleRemoveGroup = async (groupId) => {
     // remove group from properties
+    const _updatedGroups = ''
     const updatedGroups = removeGroup(groupId);
     const dbItemsCopy = [...dbItems];
 
     const batch = writeBatch(db);
-    const propertyRef = doc(userDbRef, 'properties', propertyData.id);
+    const propertyRef = doc(userDbRef, 'properties', propertyId);
     batch.update(propertyRef, { values: updatedGroups });
 
     // update db items if necessary
     dbItemsCopy.forEach((item) => {
-      if (updatedGroups.find(({ id }) => item[propertyData.name]?.id === id))
+      if (updatedGroups.find(({ id }) => item[propertyName]?.id === id))
         return;
 
-      item[propertyData.name] = null;
+      item[propertyName] = null;
 
       const dbItemRef = doc(userDbRef, 'dbItems', item.id);
-      batch.update(dbItemRef, { [propertyData.name]: null });
+      batch.update(dbItemRef, { [propertyName]: null });
     });
 
     await batch.commit();
@@ -165,7 +191,7 @@ const Group = (props) => {
   );
 
   return (
-    <dropcontainer ref={drop} style={{ minHeight: `${dragHeight}px`, opacity }}>
+    <div ref={drop} style={{ minHeight: `${dragHeight}px`, opacity }}>
       <GroupContainer
         onMouseEnter={group ? handleMouseEnter : undefined}
         onMouseLeave={group ? handleMouseLeave : undefined}
@@ -174,7 +200,8 @@ const Group = (props) => {
           <GroupTitle
             group={group}
             groups={groups}
-            property={propertyData}
+            propertyName={propertyName}
+            propertyId={propertyId}
             groupDbItems={groupDbItems}
           />
           <TrashIcon
@@ -187,12 +214,12 @@ const Group = (props) => {
         <DbItemsContainer>
           {groupDbItems &&
             groupDbItems.map((dbItem) => (
-              <DbItem dbItem={dbItem} key={dbItem.id} />
+              <DbItemCard dbItem={dbItem} key={dbItem.id} />
             ))}
         </DbItemsContainer>
         <StyledNewButton onClick={handleAddDbItem} text={'New'} />
       </GroupContainer>
-    </dropcontainer>
+    </div>
   );
 };
 

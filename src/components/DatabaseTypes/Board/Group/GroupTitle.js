@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiSubdirectoryArrowLeft } from '@mdi/js';
 import { DatabaseContext } from '../../../../context/context';
-import { doc, writeBatch } from 'firebase/firestore';
+import {
+  doc,
+  writeBatch,
+} from 'firebase/firestore';
 import { db } from '../../../../firebase';
 
 const StyledNameContainer = styled.div`
@@ -59,40 +62,56 @@ const StyledButton = styled.button`
   }
 `;
 
-const GroupTitle = ({ group, groups, propertyData }) => {
-  const { userDbRef, dbItems, setDbItems } = useContext(DatabaseContext);
+const GroupTitle = ({ group, groups, propertyId, propertyName }) => {
+  const { userDbRef, setDbItems, setProperties } = useContext(DatabaseContext);
   const inputRef = useRef();
 
   const [isEditing, setIsEditing] = useState(false);
   const handleClickName = () => setTimeout(() => setIsEditing(true));
   const closeInput = () => setIsEditing(false);
 
-  const [groupNameInput, setGroupNameInput] = useState(group ? group.name : '');
+  const [nameInput, setGroupNameInput] = useState(group ? group.name : '');
   const handleChange = (e) => setGroupNameInput(e.target.value);
   const submitInput = async () => {
-    if (group.name === groupNameInput) return;
+    if (group.name === nameInput) return;
 
-    const groupsCopy = [...groups];
-    const groupCopy = groupsCopy.find(({ id }) => id === group.id);
-    groupCopy.name = groupNameInput;
+    const name = nameInput;
+
+    setProperties((prev) =>
+      prev.map((prop) => {
+        if (prop.id !== propertyId) return prop;
+        return {
+          ...prop,
+          values: prop.values.map((value) => {
+            return value.id === group.id ? { ...value, name } : value;
+          }),
+        };
+      }),
+    );
 
     const batch = writeBatch(db);
-    const propertyRef = doc(userDbRef, 'properties', propertyData.id);
-    batch.update(propertyRef, { values: groupsCopy });
+    const propertyRef = doc(userDbRef, 'properties', propertyId);
+    const getValues = (values) => {
+      return values.map((value) =>
+        value.id === group.id ? { ...value, name } : value,
+      );
+    };
+    batch.update(propertyRef, { values: getValues(groups) });
 
-    const dbItemsCopy = [...dbItems];
-    dbItemsCopy.forEach((item) => {
-      if (groupsCopy.find(({ id }) => item[propertyData.name]?.id !== id))
-        return;
+    setDbItems((prev) =>
+      prev.map((item) => {
+        if (item[propertyName]?.id !== group.id) return item;
 
-      item[propertyData.name] = groupCopy;
+        const dbItemRef = doc(userDbRef, 'dbItems', item.id);
+        batch.update(dbItemRef, {
+          [propertyName]: { ...item[propertyName], name },
+        });
 
-      const dbItemRef = doc(userDbRef, 'dbItems', item.id);
-      batch.update(dbItemRef, { [propertyData.name]: groupCopy });
-    });
+        return { ...item, [propertyName]: { ...item[propertyName], name } };
+      }),
+    );
 
     await batch.commit();
-    setDbItems(dbItemsCopy);
 
     closeInput();
   };
@@ -122,7 +141,7 @@ const GroupTitle = ({ group, groups, propertyData }) => {
       {isEditing && group && (
         <GroupNameInput ref={inputRef}>
           <StyledInput
-            value={groupNameInput}
+            value={nameInput}
             onInput={handleChange}
             onKeyDown={handleEnterInput}
             placeholder="Rename project"

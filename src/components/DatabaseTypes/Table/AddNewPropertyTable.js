@@ -1,4 +1,5 @@
 import Icon from '@mdi/react';
+import PropTypes from 'prop-types';
 import React, {
   useCallback,
   useContext,
@@ -11,6 +12,7 @@ import propertyData from '../../utils/helpers/propertyHelpers';
 import { mdiPlus } from '@mdi/js';
 import usePopup from '../../utils/custom/usePopup';
 import { DatabaseContext, SidebarContext } from '../../../context/context';
+import { addDoc, collection } from 'firebase/firestore';
 
 const ButtonDiv = styled.div`
   overflow: hidden;
@@ -74,8 +76,8 @@ const ErrorMsg = styled.span`
   color: rgb(235, 87, 87);
 `;
 
-const AddNewPropertyTable = (props) => {
-  const { properties, setProperties } = useContext(DatabaseContext);
+const AddNewPropertyTable = () => {
+  const { userDbRef, properties, addProperty } = useContext(DatabaseContext);
   const { setIsPopupVisible } = useContext(SidebarContext);
 
   const buttonRef = useRef();
@@ -96,26 +98,33 @@ const AddNewPropertyTable = (props) => {
 
   const handleKeyDown = (e) => {
     if (e.key !== 'Enter') return;
-    addProperty(e);
+    handleAddProperty(e);
   };
 
-  const addProperty = (e) => {
-    e.preventDefault();
+  const handleAddProperty = async () => {
     if (isErrorMsg || !nameInput) return;
 
     const newProperty = {
       name: nameInput,
       id: nameInput.toLowerCase(),
       type: type,
+      values: type === 'Select' ? [] : null,
     };
 
-    setProperties([...properties, newProperty]);
+    try {
+      addProperty(newProperty);
+      await addDoc(collection(userDbRef, 'properties'), newProperty);
+    } catch (err) {
+      console.log(err);
+    }
     resetAddingNew();
   };
 
   const [isErrorMsg, setIsErrorMsg] = useState(false);
   useEffect(() => {
-    setIsErrorMsg(properties.find(({ id }) => id === nameInput) ? true : false);
+    setIsErrorMsg(
+      !!properties.find(({ id }) => id === nameInput.toLowerCase()),
+    );
   }, [properties, nameInput]);
 
   const handleSubmit = (e) => e.preventDefault();
@@ -167,6 +176,30 @@ const AddNewPropertyTable = (props) => {
       )}
     </div>
   );
+};
+
+// generated using ChatGpt
+AddNewPropertyTable.propTypes = {
+  userDbRef: PropTypes.object,
+  properties: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      values: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.object,
+        PropTypes.arrayOf(
+          PropTypes.shape({
+            value: PropTypes.string.isRequired,
+            label: PropTypes.string.isRequired,
+          }),
+        ),
+      ]),
+    }),
+  ),
+  addProperty: PropTypes.func,
+  setIsPopupVisible: PropTypes.func,
 };
 
 export default AddNewPropertyTable;

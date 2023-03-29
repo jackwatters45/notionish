@@ -8,12 +8,14 @@ const Container = styled.div`
   overflow: auto;
 `;
 
-const DatabaseContent = ({ selectedView, editedTodos }) => (
-  <DndProvider backend={HTML5Backend}>
-    <Container>
-      {viewsData[selectedView.type].getComponent(editedTodos, selectedView)}
-    </Container>
-  </DndProvider>
-);
+const DatabaseContent = ({ selectedView, editedDbItems }) => {
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <Container>
+        {viewsData[selectedView.type].getComponent(editedDbItems, selectedView)}
+      </Container>
+    </DndProvider>
+  );
+};
 
 export default DatabaseContent;
