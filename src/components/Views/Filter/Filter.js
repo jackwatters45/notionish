@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import NewButton from '../../utils/components/NewButton';
 import usePopup from '../../utils/custom/usePopup';
-import AddFilter from './AddFilter';
-import CurrentFilters from './CurrentFilters';
+import AddFilter from './AddFilter/AddFilter';
+import CurrentFilters from './CurrentFilters/CurrentFilters';
 import { DatabaseContext } from '../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
 
@@ -41,7 +41,7 @@ const Option = styled.div`
 const Filter = (props) => {
   const buttonRef = useRef();
   const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, setIsDropdown, ...popup } = usePopup(props, buttonRef);
+  const { isDropdown, setIsDropdown, ...popup } = usePopup(buttonRef, props);
   const { selectedView, setViews, properties } = props;
 
   // TODO isAddingFilter stuff

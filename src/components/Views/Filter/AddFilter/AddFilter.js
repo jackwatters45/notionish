@@ -1,15 +1,13 @@
 import React, { useCallback, useContext, useState } from 'react';
 import FilterPopup from './FilterPopup';
-import SearchPopup from '../Utils/SearchPopup';
-import { DatabaseContext } from '../../../context/context';
+import SearchPopup from '../../Utils/SearchPopup';
+import { DatabaseContext } from '../../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
 
 const AddFilter = (props) => {
   const { selectedView, handleEnterFilter, properties, setViews } = props;
   const { userDbRef } = useContext(DatabaseContext);
 
-  // TODO
-  // const [isClickedFilterType, setIsClickedFilterType] = useState(false);
   const [currentFilter, setCurrentFilter] = useState();
 
   const handleSelectProperty = useCallback(

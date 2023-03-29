@@ -66,8 +66,6 @@ const CurrentSorts = ({ selectedView, setViews, properties }) => {
           <Row key={property.id}>
             <LeftColumn>
               <Icon path={mdiDrag} size={0.9} />
-              {/*const { icon, selectedView, type, property, setViews, properties } = props;
-               */}
               <PropertyDropdown
                 setViews={setViews}
                 type={'sort'}

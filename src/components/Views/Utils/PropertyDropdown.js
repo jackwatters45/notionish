@@ -48,7 +48,7 @@ const PropertyDropdown = (props) => {
   const { icon, selectedView, type, property, setViews, properties } = props;
   const { userDbRef } = useContext(DatabaseContext);
   const selectButton = useRef();
-  const { isDropdown, ...popupProps } = usePopup('', selectButton);
+  const { isDropdown, ...popupProps } = usePopup(selectButton);
   // TODO typically this has set isDropdown to false
 
   const handleSelectProperty = async (clickedProp) => {

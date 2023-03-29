@@ -47,8 +47,8 @@ const Sort = (props) => {
   const { selectedView, setViews, properties } = props;
   const { userDbRef } = useContext(DatabaseContext);
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
-    props,
     buttonRef,
+    props,
   );
 
   const [isAddingNewSort, setIsAddingNewSort] = useState(false);

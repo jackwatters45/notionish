@@ -2,11 +2,11 @@ import React, { useContext, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
-import usePopup from '../../utils/custom/usePopup';
-import filterOptions from './filterHelpers';
-import { DatabaseContext } from '../../../context/context';
+import usePopup from '../../../utils/custom/usePopup';
+import filterOptions from '../filterHelpers';
+import { DatabaseContext } from '../../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
-import capitalizeFirstLetter from '../../utils/helpers/camelCaseToSentenceCase';
+import capitalizeFirstLetter from '../../../utils/helpers/camelCaseToSentenceCase';
 
 const Select = styled.div`
   display: flex;
@@ -69,7 +69,7 @@ const FilterTypeDropdown = ({
 }) => {
   const selectButton = useRef();
   const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, setIsDropdown, ...popupProps } = usePopup('', selectButton);
+  const { isDropdown, setIsDropdown, ...popupProps } = usePopup(selectButton);
 
   const handleSelectProperty = async (clickedProp) => {
     setIsDropdown(false);

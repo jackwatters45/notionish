@@ -68,8 +68,8 @@ const NewViewPopup = (props) => {
   const buttonRef = useRef();
   const { views, addView } = props;
   const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
-    props,
     buttonRef,
+    props,
   );
   const { userDbRef } = useContext(DatabaseContext);
 

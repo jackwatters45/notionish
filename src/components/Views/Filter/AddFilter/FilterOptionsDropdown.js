@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import filterOptions from './filterHelpers';
+import filterOptions from '../filterHelpers';
 import styled from 'styled-components';
 
 const DropdownContainer = styled.div`
@@ -31,7 +31,6 @@ const Option = styled.div`
 `;
 
 const FilterOptionsDropdown = forwardRef(({ handleClickFilterOption }, ref) => {
-
   return (
     <DropdownContainer ref={ref}>
       {Object.keys(filterOptions).map((key) => {

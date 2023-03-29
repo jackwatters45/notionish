@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import FilterOptionsDropdown from './FilterOptionsDropdown';
-import usePopup from '../../utils/custom/usePopup';
-import { DatabaseContext } from '../../../context/context';
+import usePopup from '../../../utils/custom/usePopup';
+import { DatabaseContext } from '../../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
 
 const ChooseFilter = styled.div`
@@ -58,7 +58,7 @@ const StyledInput = styled.input`
 const FilterPopup = (props) => {
   const buttonRef = useRef();
   const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, ...dropdown } = usePopup('', buttonRef);
+  const { isDropdown, ...dropdown } = usePopup(buttonRef);
   const { currentFilter, selectedView, handleEnterFilter, setViews } = props;
   const { property, type, searchEl } = currentFilter;
 

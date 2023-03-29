@@ -30,7 +30,7 @@ const SelectedView = styled.div`
 
 const View = (props) => {
   const buttonRef = useRef();
-  const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
+  const { isDropdown, ...popupProps } = usePopup(buttonRef, props);
 
   const {
     data: { type, name },

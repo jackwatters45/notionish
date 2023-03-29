@@ -68,10 +68,7 @@ const OrderDropdown = ({
   const { userDbRef } = useContext(DatabaseContext);
 
   const orderButton = useRef();
-  const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
-    '',
-    orderButton,
-  );
+  const { isDropdown, setIsDropdown, ...popupProps } = usePopup(orderButton);
 
   const handleSelectProperty = async (clickedProp) => {
     setIsDropdown(false);

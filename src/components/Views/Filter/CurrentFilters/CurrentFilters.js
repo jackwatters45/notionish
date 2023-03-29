@@ -2,8 +2,8 @@ import Icon from '@mdi/react';
 import React from 'react';
 import styled from 'styled-components';
 import { mdiClose } from '@mdi/js';
-import propertyData from '../../utils/helpers/propertyHelpers';
-import PropertyDropdown from '../Utils/PropertyDropdown';
+import propertyData from '../../../utils/helpers/propertyHelpers';
+import PropertyDropdown from '../../Utils/PropertyDropdown';
 import FilterTypeDropdown from './FilterTypeDropdown';
 import FilterInput from './FilterInput';
 
@@ -36,7 +36,12 @@ const StyledIcon = styled(Icon)`
   }
 `;
 
-const CurrentFilters = ({ selectedView, removeFilter, setViews, properties }) => {
+const CurrentFilters = ({
+  selectedView,
+  removeFilter,
+  setViews,
+  properties,
+}) => {
   return (
     <Container>
       {selectedView.filter.map((filter) => {
