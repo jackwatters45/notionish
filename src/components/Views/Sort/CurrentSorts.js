@@ -37,7 +37,7 @@ const StyledIcon = styled(Icon)`
   }
 `;
 
-const CurrentSorts = ({ selectedView, setViews }) => {
+const CurrentSorts = ({ selectedView, setViews, properties }) => {
   const { userDbRef } = useContext(DatabaseContext);
 
   const removeSort = async (property) => {
@@ -66,15 +66,19 @@ const CurrentSorts = ({ selectedView, setViews }) => {
           <Row key={property.id}>
             <LeftColumn>
               <Icon path={mdiDrag} size={0.9} />
+              {/*const { icon, selectedView, type, property, setViews, properties } = props;
+               */}
               <PropertyDropdown
                 setViews={setViews}
                 type={'sort'}
                 property={property}
                 selectedView={selectedView}
                 icon={icon}
+                properties={properties}
               />
               <OrderDropdown
                 property={property}
+                currentSort={sort}
                 selectedView={selectedView}
                 order={order}
                 setViews={setViews}

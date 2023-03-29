@@ -42,12 +42,6 @@ const Option = styled.div`
   }
 `;
 
-// TODO util properties
-// TODO make sorts actually work -> uncomment editedTodos useEffect
-// TODO go through use popup and switch order of parameters
-// TODO need to make sure popup is closing when I want it to
-// TODO chatGpt to clean up
-// TODO -> Filter
 const Sort = (props) => {
   const buttonRef = useRef();
   const { selectedView, setViews, properties } = props;
@@ -58,20 +52,20 @@ const Sort = (props) => {
   );
 
   const [isAddingNewSort, setIsAddingNewSort] = useState(false);
-  // TODO removed setTimeout
   const handleClickAddNew = () => setIsAddingNewSort(true);
 
   const addSort = useCallback(
     async (property) => {
       setIsAddingNewSort(false);
 
+      console.log(property);
       const updatedSort = [
         ...selectedView.sort,
-        { property, order: 'Ascending' },
+        { property: property, order: 'Ascending' },
       ];
 
       const updatedView = { ...selectedView, sort: updatedSort };
-      
+
       setViews((prevViews) =>
         prevViews.map((view) => (view === selectedView ? updatedView : view)),
       );
@@ -96,7 +90,11 @@ const Sort = (props) => {
         <DropdownContainer {...popupProps}>
           {selectedView.sort.length && !isAddingNewSort ? (
             <>
-              <CurrentSorts selectedView={selectedView} setViews={setViews} />
+              <CurrentSorts
+                selectedView={selectedView}
+                setViews={setViews}
+                properties={properties}
+              />
               <NewButton text={'Add sort'} onClick={handleClickAddNew} />
             </>
           ) : (

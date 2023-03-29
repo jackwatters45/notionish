@@ -69,11 +69,10 @@ const FilterTypeDropdown = ({
 }) => {
   const selectButton = useRef();
   const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, ...popupProps } = usePopup('', selectButton);
+  const { isDropdown, setIsDropdown, ...popupProps } = usePopup('', selectButton);
 
   const handleSelectProperty = async (clickedProp) => {
-    console.log(clickedProp);
-    console.log(currentFilter);
+    setIsDropdown(false);
     const updatedFilter = { ...currentFilter, type: clickedProp };
 
     const updatedView = {

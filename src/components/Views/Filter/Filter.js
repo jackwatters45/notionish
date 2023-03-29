@@ -46,10 +46,9 @@ const Filter = (props) => {
 
   // TODO isAddingFilter stuff
   const [isAddingFilter, setIsAddingFilter] = useState();
-  // TODO remove timeouts
-  const handleClickAddNew = () => setTimeout(() => setIsAddingFilter(true));
+  const handleClickAddNew = () => setIsAddingFilter(true);
   const handleEnterFilter = (e) => {
-    if (e.key === 'Enter') setTimeout(() => setIsAddingFilter(false));
+    if (e.key === 'Enter') setIsAddingFilter(false);
   };
   useEffect(() => {
     setIsAddingFilter(!selectedView.filter?.length);

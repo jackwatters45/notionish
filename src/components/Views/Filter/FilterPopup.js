@@ -58,7 +58,7 @@ const StyledInput = styled.input`
 const FilterPopup = (props) => {
   const buttonRef = useRef();
   const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, setIsDropdown, ...dropdown } = usePopup('', buttonRef);
+  const { isDropdown, ...dropdown } = usePopup('', buttonRef);
   const { currentFilter, selectedView, handleEnterFilter, setViews } = props;
   const { property, type, searchEl } = currentFilter;
 
@@ -76,8 +76,6 @@ const FilterPopup = (props) => {
 
   const handleClickFilterOption = useCallback(
     async (option) => {
-      setIsDropdown(false);
-
       const updatedFilter = { ...currentFilter, type: option };
       const updatedView = getUpdatedView(updatedFilter);
 
@@ -91,14 +89,7 @@ const FilterPopup = (props) => {
         console.log(e);
       }
     },
-    [
-      currentFilter,
-      getUpdatedView,
-      selectedView,
-      setIsDropdown,
-      setViews,
-      userDbRef,
-    ],
+    [currentFilter, getUpdatedView, selectedView, setViews, userDbRef],
   );
 
   const [filterInput, setFilterInput] = useState(searchEl);

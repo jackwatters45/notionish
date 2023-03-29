@@ -1,66 +1,35 @@
-const isFilter = (property, searchEl, propertyType) => {
+const filterFuncBase = (property, searchEl, propertyType, comparator) => {
   if (!searchEl) return true;
   if (!property) return false;
 
-  if (propertyType === 'date') {
-    if (!property) return false;
-    const dateString = property.toLocaleDateString();
-    return dateString.name.toLowerCase() === searchEl.toLowerCase();
+  if (!['date', 'select', 'text'].includes(propertyType)) {
+    console.error(`Invalid property type: ${propertyType}`);
+    return false;
   }
 
-  if (propertyType === 'select')
-    return property.name.toLowerCase() === searchEl.toLowerCase();
-
-  return property.toLowerCase() === searchEl.toLowerCase();
-};
-
-const isNotFilter = (property, searchEl, propertyType) => {
-  if (!searchEl) return true;
-  if (!property) return false;
-
   if (propertyType === 'date') {
-    if (!property) return false;
     const dateString = property.toLocaleDateString();
-    return dateString.name.toLowerCase() !== searchEl.toLowerCase();
+    return comparator(dateString.toLowerCase(), searchEl.toLowerCase());
   }
 
-  if (propertyType === 'select')
-    return property.name.toLowerCase() !== searchEl.toLowerCase();
-
-  return property.toLowerCase() !== searchEl.toLowerCase();
-};
-
-const containsFilter = (property, searchEl, propertyType) => {
-  if (!searchEl) return true;
-  if (!property) return false;
-
-  if (propertyType === 'date') {
-    if (!property) return false;
-    const dateString = property.toLocaleDateString();
-    return dateString.toLowerCase().includes(searchEl.toLowerCase());
+  if (propertyType === 'select') {
+    return comparator(property.name.toLowerCase(), searchEl.toLowerCase());
   }
 
-  if (propertyType === 'select')
-    return property.name.toLowerCase().includes(searchEl.toLowerCase());
-
-  return property.toLowerCase().includes(searchEl.toLowerCase());
+  return comparator(property.toLowerCase(), searchEl.toLowerCase());
 };
 
-const notContainsFilter = (property, searchEl, propertyType) => {
-  if (!searchEl) return true;
-  if (!property) return false;
+const isFilter = (property, searchEl, propertyType) =>
+  filterFuncBase(property, searchEl, propertyType, (a, b) => a === b);
 
-  if (propertyType === 'date') {
-    if (!property) return false;
-    const dateString = property.toLocaleDateString();
-    return !dateString.toLowerCase().includes(searchEl.toLowerCase());
-  }
+const isNotFilter = (property, searchEl, propertyType) =>
+  filterFuncBase(property, searchEl, propertyType, (a, b) => a !== b);
 
-  if (propertyType === 'select')
-    return !property.name.toLowerCase().includes(searchEl.toLowerCase());
+const containsFilter = (property, searchEl, propertyType) =>
+  filterFuncBase(property, searchEl, propertyType, (a, b) => a.includes(b));
 
-  return !property.toLowerCase().includes(searchEl.toLowerCase());
-};
+const notContainsFilter = (property, searchEl, propertyType) =>
+  filterFuncBase(property, searchEl, propertyType, (a, b) => !a.includes(b));
 
 const filterOptions = {
   is: { name: 'Is', id: 'is', filterFunc: isFilter },
@@ -74,8 +43,18 @@ const filterOptions = {
 };
 
 export const applyFilters = (newDbItems, filterArr) => {
+  if (!Array.isArray(newDbItems) || !Array.isArray(filterArr)) {
+    throw new Error('Invalid input: both arguments should be arrays.');
+  }
+
   return filterArr.reduce((filteredItems, filter) => {
     const { type: filterType, property: filteredProperty, searchEl } = filter;
+
+    if (!filterOptions.hasOwnProperty(filterType)) {
+      console.error(`Invalid filter type: ${filterType}`);
+      return filteredItems;
+    }
+
     const filterFunction = filterOptions[filterType].filterFunc;
     return filteredItems.filter((dbItem) =>
       filterFunction(

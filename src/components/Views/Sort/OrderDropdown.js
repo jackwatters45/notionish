@@ -58,7 +58,13 @@ const Row = styled.div`
   }
 `;
 
-const OrderDropdown = ({ order, property, selectedView, setViews }) => {
+const OrderDropdown = ({
+  order,
+  property,
+  selectedView,
+  setViews,
+  currentSort,
+}) => {
   const { userDbRef } = useContext(DatabaseContext);
 
   const orderButton = useRef();
@@ -70,7 +76,7 @@ const OrderDropdown = ({ order, property, selectedView, setViews }) => {
   const handleSelectProperty = async (clickedProp) => {
     setIsDropdown(false);
 
-    const updatedSort = { ...selectedView.sort, order: clickedProp };
+    const updatedSort = { ...currentSort, order: clickedProp };
 
     const updatedView = {
       ...selectedView,
