@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { memo, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import Sidebar from './Sidebar/Sidebar';
-import ViewsNav from './Views/ViewsNav';
-import DatabaseContent from './DatabaseTypes/DatabaseContent';
-import sortFunction from './Views/Sort/sortHelpers';
-import { DatabaseContext, SidebarContext } from '../context/context';
-import { applyFilters } from './Views/Filter/filterHelpers';
-import useArrayOfObjects from './utils/custom/useArrayOfObjects';
+import Sidebar from '../Sidebar/Sidebar';
+import ViewsNav from '../Views/ViewsNav';
+import DatabaseContent from '../DatabaseTypes/DatabaseContent';
+import sortFunction from '../Views/Sort/sortHelpers';
+import { DatabaseContext, SidebarContext } from '../../context/context';
+import { applyFilters } from '../Views/Filter/filterHelpers';
+import useArrayOfObjects from '../utils/custom/useArrayOfObjects';
 import { collection, getDocs } from 'firebase/firestore';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 const MainContentContainer = styled.div`
   display: flex;
@@ -21,6 +23,7 @@ const MainContent = ({ userDbRef }) => {
   // fetching Data
   const [dbItems, setDbItems, removeDbItem, addDbItem] = useArrayOfObjects();
   useEffect(() => {
+    if (!userDbRef) return;
     const fetchDbItems = async () => {
       const dbItemsRef = collection(userDbRef, 'dbItems');
       const dbItemsSnapshot = await getDocs(dbItemsRef);
@@ -37,11 +40,12 @@ const MainContent = ({ userDbRef }) => {
 
   const [views, setViews, removeView, addView] = useArrayOfObjects();
   useEffect(() => {
+    if (!userDbRef) return;
     const fetchView = async () => {
       const viewsRef = collection(userDbRef, 'views');
       const viewsSnapshot = await getDocs(viewsRef);
       const newViewsArr = viewsSnapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
+        return { ...doc.data() };
       });
       setViews(newViewsArr);
     };
@@ -51,6 +55,7 @@ const MainContent = ({ userDbRef }) => {
   const [properties, setProperties, removeProperty, addProperty] =
     useArrayOfObjects();
   useEffect(() => {
+    if (!userDbRef) return;
     const fetchProperties = async () => {
       const propsCollection = collection(userDbRef, 'properties');
       const propsSnapshot = await getDocs(propsCollection);
@@ -151,26 +156,27 @@ const MainContent = ({ userDbRef }) => {
     setIsPopupVisible,
   };
 
+  if (!views.length) return;
+  console.log(views);
   return (
     <>
       <DatabaseContext.Provider value={databaseValues}>
         <SidebarContext.Provider value={sidebarValues}>
           <MainContentContainer style={{ width: getContentWidth() }}>
-            <ViewsNav
+            <ViewsNav handleClickUnselectedView={handleClickUnselectedView} />
+
+            <DatabaseContent
               selectedView={selectedView}
-              handleClickUnselectedView={handleClickUnselectedView}
+              editedTodos={editedTodos}
             />
-            {selectedView && (
-              <DatabaseContent
-                selectedView={selectedView}
-                editedTodos={editedTodos}
-              />
-            )}
           </MainContentContainer>
+
           <Sidebar
             ref={sidebarRef}
             sidebarWidth={sidebarWidth}
             setSidebarWidth={setSidebarWidth}
+            closeSidebar={closeSidebar}
+            isSidebarVisible={isSidebarVisible}
           />
         </SidebarContext.Provider>
       </DatabaseContext.Provider>

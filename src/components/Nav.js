@@ -111,9 +111,13 @@ const Nav = ({ user }) => {
 
   return (
     <Container>
-      <Link to={'/'}>
+      {user ? (
+        <Link to={'/'}>
+          <Header>Notion Todo Clone</Header>
+        </Link>
+      ) : (
         <Header>Notion Todo Clone</Header>
-      </Link>
+      )}
       <LoginContainer>
         {user ? (
           <>

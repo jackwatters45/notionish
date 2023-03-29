@@ -113,7 +113,7 @@ const AddNewPropertySidebar = ({ className, text }) => {
 
   const [isErrorMsg, setIsErrorMsg] = useState(false);
   useEffect(() => {
-    setIsErrorMsg(properties.find(({ id }) => id === nameInput) ? true : false);
+    setIsErrorMsg(properties.find(({ id }) => id === nameInput));
   }, [properties, nameInput]);
 
   useEffect(() => {
@@ -136,24 +136,20 @@ const AddNewPropertySidebar = ({ className, text }) => {
   return (
     <Container className={className}>
       <StyledNewButton onClick={handleClick} text={text} ref={buttonRef} />
-      {!isAddingNew ? (
-        ''
-      ) : (
+      {isAddingNew && (
         <AddPropContainer onKeyDown={handleKeyDown} ref={dropdownRef}>
           <StyledInput
             autoFocus
             placeholder="Property name"
             onChange={handleNameChange}
           />
-          {isErrorMsg ? (
+          {isErrorMsg && (
             <>
               <hr />
               <ErrorMsg>
                 A property named {nameInput} already exists in this database.
               </ErrorMsg>
             </>
-          ) : (
-            ''
           )}
           <hr />
           <TypeLabel>Type</TypeLabel>

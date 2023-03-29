@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
 import { tabPress } from '../utils/helpers/cursorHelpers';
@@ -11,8 +11,9 @@ import NotesProperty from '../Properties/NotesProperty';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
 import AddNewPropertySidebar from './AddNewPropertySidebar';
-import { DatabaseContext, SidebarContext } from '../../context/context';
 import { hoverStyle } from '../utils/theme';
+import { DatabaseContext } from '../../context/context';
+import { doc, deleteDoc, getDoc } from 'firebase/firestore';
 
 const PropertiesContainer = styled.form`
   padding: 32px 48px 0 48px;
@@ -66,13 +67,32 @@ const StyledAddPropButton = styled(AddNewPropertySidebar)`
   margin: 0 0 10px 5px;
 `;
 
-const SidebarContents = () => {
-  const { properties, removeDbItem } = useContext(DatabaseContext);
-  const { selectedTodo, closeSidebar } = useContext(SidebarContext);
+const SidebarContents = ({
+  dbItemId,
+  dbItems,
+  properties,
+  removeDbItem,
+  handleClickClose,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
-  const handleRemoveTodoAndSidebar = () => {
-    if (selectedTodo) removeDbItem(selectedTodo.id);
-    closeSidebar();
+  const getDbItem = useCallback(() => {
+    return dbItems.find((item) => item.id === dbItemId);
+  }, [dbItems, dbItemId]);
+  const [selectedDbItem, setSelectedDbItem] = useState(getDbItem());
+  useEffect(() => {
+    setSelectedDbItem(getDbItem());
+  }, [getDbItem]);
+
+  const handleDeleteTodoAndCloseSidebar = async () => {
+    console.log(removeDbItem(dbItemId));
+    
+    const ref = doc(userDbRef, 'dbItems', dbItemId);
+    const snapShot = await getDoc(ref);
+    console.log(snapShot.data());
+    await deleteDoc(doc(userDbRef, 'dbItems', dbItemId));
+    
+    handleClickClose();
   };
 
   useEffect(() => {
@@ -82,14 +102,18 @@ const SidebarContents = () => {
 
   return (
     <PropertiesContainer id="properties">
-      <TodoName name={'name'} data={selectedTodo} autoFocus />
+      <TodoName name={'name'} data={selectedDbItem} autoFocus />
       {properties.map(({ name, type }) => {
         const { icon, getComponent } = propertyData[type];
         return (
           <PropertyRow key={name}>
-            <StyledPropertyLabel icon={icon} data={selectedTodo} name={name} />
+            <StyledPropertyLabel
+              icon={icon}
+              data={selectedDbItem}
+              name={name}
+            />
             <StyledPropertyValue>
-              {getComponent(name, selectedTodo)}
+              {getComponent(name, selectedDbItem)}
             </StyledPropertyValue>
           </PropertyRow>
         );
@@ -99,14 +123,14 @@ const SidebarContents = () => {
         <DoneButton
           path={emptyCheckboxIcon}
           size={0.85}
-          onClick={handleRemoveTodoAndSidebar}
+          onClick={handleDeleteTodoAndCloseSidebar}
         />
       </PropertyRow>
       <StyledAddPropButton text={'Add a property'} />
       <hr />
       <StyledNotes
         name={'notes'}
-        data={selectedTodo}
+        data={selectedDbItem}
         placeholder={'Add notes here...'}
       />
     </PropertiesContainer>
