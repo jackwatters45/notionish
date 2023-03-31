@@ -27,6 +27,7 @@ const ViewsContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 1px;
+  overflow: hidden;
 `;
 
 const UnselectedView = styled.div`
@@ -41,6 +42,7 @@ const UnselectedView = styled.div`
   max-width: 220px;
   font-weight: 700;
   margin-bottom: 6px;
+  white-space: nowrap;
   &:hover {
     background-color: rgba(255, 255, 255, 0.055);
     border-radius: 4px;
@@ -50,7 +52,7 @@ const UnselectedView = styled.div`
 const Options = styled.div`
   display: flex;
   gap: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 6.5px;
 `;
 
 const ViewsNav = ({

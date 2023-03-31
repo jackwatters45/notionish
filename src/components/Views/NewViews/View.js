@@ -16,6 +16,7 @@ const ViewContainer = styled.div`
   max-width: 220px;
   font-weight: 700;
   margin-bottom: 4px;
+  white-space: nowrap;
   &:hover {
     background-color: rgba(255, 255, 255, 0.055);
     border-radius: 4px;
