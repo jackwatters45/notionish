@@ -118,9 +118,9 @@ const AddPropertyModal = ({
     await batch.commit();
   };
 
-  const handleKeyDown = (e) => {
-    if (!isErrorMsg && !!propertyNameInput && e.key === 'Enter')
-      addNewProperty();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isErrorMsg && !!propertyNameInput) addNewProperty();
   };
 
   const isErrorMsg = useMemo(() => {
@@ -128,11 +128,7 @@ const AddPropertyModal = ({
   }, [properties, propertyNameInput]);
 
   return (
-    <AddPropContainer
-      onKeyDown={handleKeyDown}
-      onSubmit={(e) => e.preventDefault()}
-      {...modalProps}
-    >
+    <AddPropContainer onSubmit={handleSubmit} {...modalProps}>
       <button style={{ display: 'none' }} type="submit" />
       <StyledInput
         autoFocus

@@ -1,8 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import useModal from '../../utils/custom/useModal';
-import LabelDropdown from './LabelDropdown';
+import LabelModal from './LabelModal';
 
 const Label = styled.div`
   gap: 8px;
@@ -11,26 +10,29 @@ const Label = styled.div`
   align-items: center;
   height: 34px;
   cursor: pointer;
-  // border-radius: 4px;
-`;
-
-const StyledIcon = styled(Icon)`
-  margin: 1px 0 0 0;
 `;
 
 const PropertyLabel = (props) => {
   const buttonRef = useRef();
-  const { icon, name, className, disabled } = props;
 
-  const { isDropdown, ...popupProps } = useModal(buttonRef, props);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleClickPropertyLabel = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
 
+  const { icon, selectedProperty, className, disabled } = props;
   return (
     <div>
-      <Label ref={buttonRef} className={className}>
-        <StyledIcon path={icon} size={0.75} />
-        <p>{name}</p>
+      <Label
+        onClick={handleClickPropertyLabel}
+        ref={buttonRef}
+        className={className}
+      >
+        <Icon path={icon} size={0.75} />
+        <p>{selectedProperty?.name}</p>
       </Label>
-      {isDropdown && !disabled && <LabelDropdown {...popupProps} />}
+      {isModalVisible && !disabled && (
+        <LabelModal buttonRef={buttonRef} closeModal={closeModal} {...props} />
+      )}
     </div>
   );
 };
