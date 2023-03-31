@@ -1,7 +1,6 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
-import { tabPress } from '../utils/helpers/cursorHelpers';
 import Icon from '@mdi/react';
 import {
   mdiCheckboxOutline as checkboxIcon,
@@ -10,12 +9,13 @@ import {
 import NotesProperty from '../Properties/NotesProperty';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
-import AddNewPropertySidebar from './AddNewPropertySidebar';
+
 import { hoverStyle } from '../utils/theme';
 import { DatabaseContext } from '../../context/context';
-import { doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { doc, deleteDoc } from 'firebase/firestore';
+import AddNewPropertySidebar from './AddNewPropertySidebar';
 
-const PropertiesContainer = styled.form`
+const PropertiesContainer = styled.div`
   padding: 32px 48px 0 48px;
   height: 100%;
   display: flex;
@@ -67,38 +67,32 @@ const StyledAddPropButton = styled(AddNewPropertySidebar)`
   margin: 0 0 10px 5px;
 `;
 
+// TODO make sure all small components work
 const SidebarContents = ({
   dbItemId,
   dbItems,
+  setDbItems,
   properties,
+  addProperty,
   removeDbItem,
   handleClickClose,
 }) => {
   const { userDbRef } = useContext(DatabaseContext);
 
-  const getDbItem = useCallback(() => {
+  const selectedDbItem = useMemo(() => {
     return dbItems.find((item) => item.id === dbItemId);
-  }, [dbItems, dbItemId]);
-  const [selectedDbItem, setSelectedDbItem] = useState(getDbItem());
-  useEffect(() => {
-    setSelectedDbItem(getDbItem());
-  }, [getDbItem]);
+  }, [dbItemId, dbItems]);
 
   const handleDeleteTodoAndCloseSidebar = async () => {
-    console.log(removeDbItem(dbItemId));
-    
-    const ref = doc(userDbRef, 'dbItems', dbItemId);
-    const snapShot = await getDoc(ref);
-    console.log(snapShot.data());
-    await deleteDoc(doc(userDbRef, 'dbItems', dbItemId));
-    
     handleClickClose();
-  };
 
-  useEffect(() => {
-    window.addEventListener('keydown', tabPress);
-    return () => window.removeEventListener('keydown', tabPress);
-  }, []);
+    try {
+      removeDbItem(dbItemId);
+      await deleteDoc(doc(userDbRef, 'dbItems', dbItemId));
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <PropertiesContainer id="properties">
@@ -126,7 +120,11 @@ const SidebarContents = ({
           onClick={handleDeleteTodoAndCloseSidebar}
         />
       </PropertyRow>
-      <StyledAddPropButton text={'Add a property'} />
+      <StyledAddPropButton
+        properties={properties}
+        addProperty={addProperty}
+        setDbItems={setDbItems}
+      />
       <hr />
       <StyledNotes
         name={'notes'}

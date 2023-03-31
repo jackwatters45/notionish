@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../../utils/theme';
 import DatePicker from './DatePicker';
-import usePopup from '../../utils/custom/usePopup';
+import useModal from '../../utils/custom/useModal';
 
 const DatePickerContainer = styled.div`
   ${propertySharedStyle};
@@ -27,7 +27,7 @@ const DateProperty = (props) => {
     ...editableDivProps
   } = useEditableDiv(props);
 
-  const { isDropdown, ...popupProps } = usePopup(props, dateButtonRef);
+  const { isDropdown, ...popupProps } = useModal(dateButtonRef, props);
 
   return (
     <DatePickerContainer>

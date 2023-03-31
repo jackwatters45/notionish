@@ -1,11 +1,11 @@
 import Icon from '@mdi/react';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import propertyData from '../../../utils/helpers/propertyHelpers';
-import useModal from '../../../utils/custom/useModal';
-import { DatabaseContext } from '../../../../context/context';
+import propertyData from '../utils/helpers/propertyHelpers';
+import useModal from '../utils/custom/useModal';
+import { DatabaseContext } from '../../context/context';
 import { collection, doc, getDocs, writeBatch } from 'firebase/firestore';
-import { db } from '../../../../firebase';
+import { db } from '../../firebase';
 import { v4 as uuid } from 'uuid';
 
 const AddPropContainer = styled.form`

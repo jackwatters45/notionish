@@ -2,7 +2,7 @@ import Icon from '@mdi/react';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { mdiPlus } from '@mdi/js';
-import AddPropertyModal from './AddPropertyModal';
+import AddPropertyModal from '../AddPropertyModal';
 
 const AddNewButton = styled.div`
   overflow: hidden;

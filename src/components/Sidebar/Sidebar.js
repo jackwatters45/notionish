@@ -38,16 +38,17 @@ const Sidebar = ({
   sidebarWidth,
   setSidebarWidth,
   dbItems,
+  setDbItems,
   properties,
+  addProperty,
   removeDbItem,
 }) => {
   const { dbItemId } = useParams();
+
   const sidebarRef = useRef();
 
   const navigate = useNavigate();
-  const navigateToParent = useCallback(() => {
-    navigate('../');
-  }, [navigate]);
+  const navigateToParent = useCallback(() => navigate('../'), [navigate]);
 
   const isFirstRender = useRef(true);
 
@@ -118,11 +119,12 @@ const Sidebar = ({
         path={mdiChevronDoubleRight}
         size={1}
       />
-      {/* TODO dealing with click isDone */}
       <SidebarContents
         dbItemId={dbItemId}
         dbItems={dbItems}
+        setDbItems={setDbItems}
         properties={properties}
+        addProperty={addProperty}
         removeDbItem={removeDbItem}
         handleClickClose={handleClickClose}
       />

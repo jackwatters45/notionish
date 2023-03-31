@@ -7,7 +7,7 @@ import propertyData, {
 import NewButton from '../../utils/components/NewButton';
 import { v4 as uuid } from 'uuid';
 import PropertyLabel from '../../Properties/Labels/PropertyLabel';
-import AddNewPropertyTable from './AddProperty/AddNewPropertyTable';
+import AddNewPropertyTable from './AddNewPropertyTable';
 import { DatabaseContext } from '../../../context/context';
 import TableRowContent from './TableRowContent';
 import { useDrop } from 'react-dnd';

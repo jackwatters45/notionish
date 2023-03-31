@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../../utils/theme';
 import SelectDropdown from './SelectDropdown';
-import usePopup from '../../utils/custom/usePopup';
+import useModal from '../../utils/custom/useModal';
 
 const SelectContainer = styled.div`
   ${propertySharedStyle};
@@ -42,7 +42,7 @@ const SelectProperty = (props) => {
     ...editableDivProps
   } = useEditableDiv({ ...props, disabled: true });
 
-  const { isDropdown, ...popupProps } = usePopup(props, selectButtonRef);
+  const { isDropdown, ...popupProps } = useModal(selectButtonRef, props);
 
   // html used to be html.name below
   return (

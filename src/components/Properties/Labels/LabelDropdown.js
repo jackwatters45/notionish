@@ -1,6 +1,11 @@
 import { mdiDeleteOutline, mdiRenameBoxOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { forwardRef, useContext, useEffect, useState } from 'react';
+import React, {
+  forwardRef,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import { DatabaseContext } from '../../../context/context';
 
@@ -70,7 +75,6 @@ const LabelDropdown = forwardRef((props, ref) => {
   };
 
   const [nameInput, setNameInput] = useState('');
-  const [isErrorMsg, setIsErrorMsg] = useState(false);
   const handleChange = (e) => setNameInput(e.target.value);
 
   const handleKeyDown = (e) => {
@@ -90,9 +94,9 @@ const LabelDropdown = forwardRef((props, ref) => {
     setProperties(propertiesCopy);
   };
 
-  useEffect(() => {
-    setIsErrorMsg(properties.find(({ id }) => id === nameInput) ? true : false);
-  }, [properties, nameInput]);
+  const isErrorMsg = useMemo(() => {
+    return !!properties.find(({ id }) => id === nameInput);
+  }, [nameInput, properties]);
 
   return (
     <DropdownContainer ref={ref} style={style}>

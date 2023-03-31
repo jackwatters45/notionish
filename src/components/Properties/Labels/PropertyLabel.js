@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import usePopup from '../../utils/custom/usePopup';
+import useModal from '../../utils/custom/useModal';
 import LabelDropdown from './LabelDropdown';
 
 const Label = styled.div`
@@ -22,7 +22,7 @@ const PropertyLabel = (props) => {
   const buttonRef = useRef();
   const { icon, name, className, disabled } = props;
 
-  const { isDropdown, ...popupProps } = usePopup(props, buttonRef);
+  const { isDropdown, ...popupProps } = useModal(buttonRef, props);
 
   return (
     <div>
