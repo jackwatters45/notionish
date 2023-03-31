@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { mdiAlphabeticalVariant } from '@mdi/js';
 import propertyData, {
@@ -7,11 +7,11 @@ import propertyData, {
 import NewButton from '../../utils/components/NewButton';
 import { v4 as uuid } from 'uuid';
 import PropertyLabel from '../../Properties/Labels/PropertyLabel';
-import AddNewPropertyTable from './AddNewPropertyTable';
+import AddNewPropertyTable from './AddProperty/AddNewPropertyTable';
 import { DatabaseContext } from '../../../context/context';
 import TableRowContent from './TableRowContent';
 import { useDrop } from 'react-dnd';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, doc } from 'firebase/firestore';
 
 const Container = styled.div`
   min-width: 100%;
@@ -83,46 +83,48 @@ const StyledNewButton = styled(NewButton)`
   }
 `;
 
-const Table = (props) => {
-  const { editedTodos, selectedView } = props;
-  const { userDbRef, dbItems, setDbItems, addDbItem, properties } =
-    useContext(DatabaseContext);
+const Table = ({
+  editedDbItems,
+  selectedView,
+  properties,
+  addProperty,
+  setDbItems,
+  addDbItem,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
   const addTodo = async () => {
     const newDbItem = {
-      name: '',
+      name: null,
       id: uuid(),
-      notes: '',
+      notes: null,
       ...getPropertiesObj(properties),
     };
 
-    addDbItem(newDbItem);
-    await addDoc(collection(userDbRef, 'dbItems'), newDbItem);
+    try {
+      addDbItem(newDbItem);
+      await addDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const dropItem = ({ todoId }, offset) => {
-    const dbCopy = [...dbItems];
-    const droppedItem = dbCopy.find(({ id }) => todoId === id);
-
-    const { y } = offset;
-    const tableStart = 195;
-
-    const tablePositionY = y - tableStart;
-    const rowHeight = 35;
-    const newIndex = Math.floor(tablePositionY / rowHeight);
-
-    dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
-    dbCopy.splice(newIndex, 0, droppedItem);
-
-    setDbItems(dbCopy);
+    // const dbCopy = [...dbItems];
+    // const droppedItem = dbCopy.find(({ id }) => todoId === id);
+    // const { y } = offset;
+    // const tableStart = 195;
+    // const tablePositionY = y - tableStart;
+    // const rowHeight = 35;
+    // const newIndex = Math.floor(tablePositionY / rowHeight);
+    // dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
+    // dbCopy.splice(newIndex, 0, droppedItem);
+    // setDbItems(dbCopy);
   };
 
-  const [forbidDrop, setForbidDrop] = useState(false);
-  useEffect(() => {
-    if (!selectedView) return;
-    setForbidDrop(!!selectedView.sort.length);
+  const forbidDrop = useMemo(() => {
+    return selectedView?.sort?.length;
   }, [selectedView]);
-
   const [{ opacity }, drop] = useDrop(
     () => ({
       accept: 'dbItem',
@@ -141,15 +143,22 @@ const Table = (props) => {
           name={'Name'}
           disabled={true}
         />
-        {properties.map((property) => {
-          const { name, id, type } = property;
+        {properties?.map(({ name, id, type }) => {
           const { icon } = propertyData[type];
-          return <HeaderCell key={id} name={name} icon={icon} data={''} />;
+          return <HeaderCell key={id} name={name} icon={icon} />;
         })}
-        <AddNewPropertyTable />
+        <AddNewPropertyTable
+          properties={properties}
+          addProperty={addProperty}
+          setDbItems={setDbItems}
+        />
       </Header>
-      {editedTodos.map((dbItem) => (
-        <TableRowContent key={dbItem.id} dbItem={dbItem} />
+      {editedDbItems?.map((dbItem) => (
+        <TableRowContent
+          key={dbItem.id}
+          dbItem={dbItem}
+          properties={properties}
+        />
       ))}
       <BottomRow>
         <StyledNewButton onClick={addTodo} text={'New'} />

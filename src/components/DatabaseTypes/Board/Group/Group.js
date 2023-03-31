@@ -1,15 +1,23 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import DbItemCard from '../DbItemCard';
+import React, { useState, useContext, useCallback, useMemo } from 'react';
+import DbItemCard from './DbItemCard';
 import Icon from '@mdi/react';
 import { mdiDeleteOutline } from '@mdi/js';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import NewButton from '../../../utils/components/NewButton';
-import GroupTitle from './GroupTitle';
+import GroupTitle from './GroupTitle/GroupTitle';
 import { DatabaseContext } from '../../../../context/context';
 import { getPropertiesObj } from '../../../utils/helpers/propertyHelpers';
 import { useDrop } from 'react-dnd';
-import { addDoc, collection, doc, writeBatch } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
 import { db } from '../../../../firebase';
 
 const GroupContainer = styled.div`
@@ -53,131 +61,131 @@ const StyledNewButton = styled(NewButton)`
   margin-top: 4px;
 `;
 
-const Group = (props) => {
-  const {
-    group,
-    groups,
-    propertyName,
-    propertyId,
-    editedTodos,
-    dragHeight,
-    selectedView,
-    removeGroup,
-  } = props;
-  const { userDbRef, addDbItem, dbItems, setDbItems, properties } =
-    useContext(DatabaseContext);
+// make sure everything is actually being used
+const Group = ({
+  group,
+  selectedProperty,
+  properties,
+  setProperties,
+  addDbItem,
+  setDbItems,
+  dragHeight,
+  selectedView,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
-  const [groupDbItems, setGroupDbItems] = useState([]);
-  // chat gpt suggested memoizing the filtered edited todos
-  const filteredEditedTodos = useMemo(() => {
-    return editedTodos.filter((dbItemGroup) => {
-      return !group
-        ? !dbItemGroup[propertyName]
-        : dbItemGroup[propertyName]?.id === group.id;
-    });
-  }, [editedTodos, group, propertyName]);
-  useEffect(() => {
-    setGroupDbItems(filteredEditedTodos);
-  }, [filteredEditedTodos]);
-
+  const { groupData, groupDbItems } = group;
   const handleAddDbItem = async () => {
     const newDbItem = {
-      name: '',
+      name: null,
       id: uuid(),
-      notes: '',
+      notes: null,
       ...getPropertiesObj(properties),
-      project: group,
+      [selectedProperty.name]: groupData,
     };
 
-    addDbItem(newDbItem);
-    await addDoc(collection(userDbRef, 'dbItems'), newDbItem);
+    try {
+      addDbItem(newDbItem);
+      await addDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  // const updatedGroups = groups.map(({ id }) => {
-  //   return group.id === id ? { ...group, name: groupNameInput } : group;
-  // });
+  const removeGroupFromProperty = useCallback(
+    (groupId, batch) => {
+      const updatedPropertyValues = selectedProperty.values.filter(
+        ({ id }) => id !== groupId,
+      );
 
-  // const batch = writeBatch(db);
-  // const propertyRef = doc(userDbRef, 'properties', propertyId);
-  // batch.update(propertyRef, { values: updatedGroups });
+      const updatedProperty = {
+        ...selectedProperty,
+        values: updatedPropertyValues,
+      };
 
-  // setDbItems((prev) =>
-  //   prev.map((item) => {
-  //     const updatedGroup = updatedGroups.find(
-  //       ({ id }) => item[propertyName]?.id === id,
-  //     );
-  //     if (!updatedGroup) return item;
+      setProperties((prevProperties) =>
+        prevProperties.map((property) => {
+          return property.id === selectedProperty.id
+            ? updatedProperty
+            : property;
+        }),
+      );
 
-  //     const dbItemRef = doc(userDbRef, 'dbItems', item.id);
-  //     batch.update(dbItemRef, { [propertyName]: updatedGroups });
+      batch.update(doc(userDbRef, 'properties', selectedProperty.id), {
+        values: updatedPropertyValues,
+      });
+    },
+    [selectedProperty, setProperties, userDbRef],
+  );
 
-  //     return { ...item, [propertyName]: updatedGroup };
-  //   }),
-  // );
+  const updateDbItems = useCallback(
+    async (groupId, batch) => {
+      setDbItems((prevDbItems) =>
+        prevDbItems.map((dbItem) => {
+          return dbItem?.[selectedProperty.name]?.id === groupId
+            ? { ...dbItem, [selectedProperty.name]: null }
+            : dbItem;
+        }),
+      );
 
-  // await batch.commit();
+      try {
+        const collectionRef = collection(userDbRef, 'dbItems');
+        const q = query(
+          collectionRef,
+          where(`${selectedProperty.name}.id`, '==', groupId),
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          batch.update(doc.ref, { [selectedProperty.name]: null });
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [selectedProperty, setDbItems, userDbRef],
+  );
 
-  // batch - added using suggestion generated from ChatGpt
   const handleRemoveGroup = async (groupId) => {
-    // remove group from properties
-    const _updatedGroups = ''
-    const updatedGroups = removeGroup(groupId);
-    const dbItemsCopy = [...dbItems];
-
     const batch = writeBatch(db);
-    const propertyRef = doc(userDbRef, 'properties', propertyId);
-    batch.update(propertyRef, { values: updatedGroups });
 
-    // update db items if necessary
-    dbItemsCopy.forEach((item) => {
-      if (updatedGroups.find(({ id }) => item[propertyName]?.id === id))
-        return;
+    removeGroupFromProperty(groupId, batch);
+    await updateDbItems(groupId, batch);
 
-      item[propertyName] = null;
-
-      const dbItemRef = doc(userDbRef, 'dbItems', item.id);
-      batch.update(dbItemRef, { [propertyName]: null });
-    });
-
-    await batch.commit();
-    setDbItems(dbItemsCopy);
+    try {
+      await batch.commit();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const [isShowTrashIcon, setIsShowTrashIcon] = useState(false);
   const handleMouseEnter = () => setIsShowTrashIcon(true);
   const handleMouseLeave = () => setIsShowTrashIcon(false);
 
-  // TODO no clue how to get dragged item id
+  // TODO useMemo (maybe idk thats what auto complete said??)
   const dropItem = ({ dbItemId }, offset) => {
-    const dbCopy = [...dbItems];
-    const droppedItem = dbCopy.find(({ id }) => {
-      console.log(id);
-      console.log(dbItemId);
-      return dbItemId === id;
-    });
-
-    droppedItem.project = group;
-
-    const { y } = offset;
-    const firstItemStart = 210;
-    const tablePositionY = y - firstItemStart;
-
-    const rowHeight = 71.19;
-    let newIndex = Math.floor(tablePositionY / rowHeight);
-
-    if (newIndex < 0) newIndex = 0;
-    if (newIndex > groupDbItems.length - 1) newIndex = groupDbItems.length - 1;
-
-    dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
-    dbCopy.splice(newIndex, 0, droppedItem);
-
-    setDbItems(dbCopy);
+    // const dbCopy = [...dbItems];
+    // const droppedItem = dbCopy.find(({ id }) => {
+    //   console.log(id);
+    //   console.log(dbItemId);
+    //   return dbItemId === id;
+    // });
+    // droppedItem.project = group;
+    // const { y } = offset;
+    // const firstItemStart = 210;
+    // const tablePositionY = y - firstItemStart;
+    // const rowHeight = 71.19;
+    // let newIndex = Math.floor(tablePositionY / rowHeight);
+    // if (newIndex < 0) newIndex = 0;
+    // if (newIndex > groupDbItems.length - 1) newIndex = groupDbItems.length - 1;
+    // dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
+    // dbCopy.splice(newIndex, 0, droppedItem);
+    // setDbItems(dbCopy);
   };
 
-  const [forbidDrop, setForbidDrop] = useState(false);
-  useEffect(() => {
-    // if (!selectedView) return;
-    setForbidDrop(!!selectedView.sort?.length);
+  // TODO useMemo
+  const forbidDrop = useMemo(() => {
+    return !!selectedView.sort?.length;
   }, [selectedView]);
 
   const [{ opacity }, drop] = useDrop(
@@ -199,16 +207,18 @@ const Group = (props) => {
         <Header>
           <GroupTitle
             group={group}
-            groups={groups}
-            propertyName={propertyName}
-            propertyId={propertyId}
+            groupData={groupData}
+            setDbItems={setDbItems}
+            properties={properties}
+            setProperties={setProperties}
             groupDbItems={groupDbItems}
+            selectedProperty={selectedProperty}
           />
           <TrashIcon
             style={{ display: isShowTrashIcon ? 'block' : 'none' }}
             path={mdiDeleteOutline}
             size={0.75}
-            onClick={() => handleRemoveGroup(group.id)}
+            onClick={() => handleRemoveGroup(groupData.id)}
           />
         </Header>
         <DbItemsContainer>

@@ -1,11 +1,11 @@
 import { mdiPageLayoutSidebarRight, mdiDrag } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { DatabaseContext, SidebarContext } from '../../../context/context';
 import propertyData from '../../utils/helpers/propertyHelpers';
 import NameProperty from '../../Properties/NameProperty';
 import { useDrag } from 'react-dnd';
+import { Link } from 'react-router-dom';
 
 const ContainerDiv = styled.div`
   width: calc(100vw - 50px);
@@ -112,17 +112,10 @@ const DragButton = styled.div`
   transition: background 20ms ease-in 0s;
 `;
 
-const TableRowContent = ({ dbItem }) => {
-  const { toggleSidebar } = useContext(SidebarContext);
-  const { properties } = useContext(DatabaseContext);
-
+const TableRowContent = ({ dbItem, properties }) => {
   const itemRef = useRef();
 
   const [isHovered, setIsHovered] = useState(false);
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-  const handleMouseLeave = () => setIsHovered(false);
 
   const [{ opacity }, drag, dragPreview] = useDrag(() => ({
     type: 'dbItem',
@@ -132,8 +125,8 @@ const TableRowContent = ({ dbItem }) => {
 
   return (
     <ContainerDiv
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       key={dbItem.id}
     >
       {isHovered && (
@@ -145,13 +138,12 @@ const TableRowContent = ({ dbItem }) => {
         <RowName>
           <NameProperty name={'name'} data={dbItem} />
           {isHovered && (
-            <StyledSidebarButton
-              className="dbItem"
-              onClick={(e) => toggleSidebar(e, dbItem)}
-            >
-              <Icon path={mdiPageLayoutSidebarRight} size={0.525} />
-              OPEN
-            </StyledSidebarButton>
+            <Link to={`${dbItem.id}`}>
+              <StyledSidebarButton className="dbItem">
+                <Icon path={mdiPageLayoutSidebarRight} size={0.525} />
+                OPEN
+              </StyledSidebarButton>
+            </Link>
           )}
         </RowName>
         {properties.map((property) => {

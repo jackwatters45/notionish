@@ -8,12 +8,11 @@ const Container = styled.div`
   overflow: auto;
 `;
 
-const DatabaseContent = ({ selectedView, editedDbItems }) => {
+const DatabaseContent = (props) => {
+  const { selectedView } = props;
   return (
     <DndProvider backend={HTML5Backend}>
-      <Container>
-        {viewsData[selectedView.type].getComponent(editedDbItems, selectedView)}
-      </Container>
+      <Container>{viewsData[selectedView.type].getComponent(props)}</Container>
     </DndProvider>
   );
 };

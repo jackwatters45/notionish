@@ -26,8 +26,8 @@ const StyledNewButton = styled(NewButton)`
   margin: 4px;
 `;
 
-const AddGroup = ({ width, groups, propertyId, propertyName }) => {
-  const { userDbRef, setProperties } = useContext(DatabaseContext);
+const AddGroup = ({ selectedProperty, setProperties }) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
   const [isAddingGroup, setIsAddingGroup] = useState(false);
   const handleClickAddGroupBtn = () => setIsAddingGroup(true);
@@ -35,27 +35,28 @@ const AddGroup = ({ width, groups, propertyId, propertyName }) => {
   const [groupInput, setGroupInput] = useState('');
   const handleChange = (e) => setGroupInput(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsAddingGroup(false);
 
     const newGroup = { name: groupInput, id: uuid() };
-    setIsAddingGroup(false);
     setGroupInput();
 
-    // TODO Broken
+    const values = [...selectedProperty.values, newGroup];
+    const updatedProperty = { ...selectedProperty, values };
+
     setProperties((prev) =>
       prev.map((prop) => {
-        return prop.id === propertyName
-          ? { ...prop, values: [...groups, newGroup] }
-          : prop;
+        return prop === selectedProperty ? updatedProperty : prop;
       }),
     );
 
-    const addGroupToFirestore = async () => {
-      const propertyRef = doc(userDbRef, 'properties', propertyId);
-      await updateDoc(propertyRef, { values: [...groups, newGroup] });
-    };
-    addGroupToFirestore();
+    try {
+      const { id } = selectedProperty;
+      await updateDoc(doc(userDbRef, 'properties', id), updatedProperty);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return isAddingGroup ? (
@@ -70,7 +71,7 @@ const AddGroup = ({ width, groups, propertyId, propertyName }) => {
     </AddGroupForm>
   ) : (
     <StyledNewButton
-      width={width}
+      width={260}
       onClick={handleClickAddGroupBtn}
       text={'Add New Project'}
     />

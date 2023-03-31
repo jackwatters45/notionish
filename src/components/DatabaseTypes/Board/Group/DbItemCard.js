@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import CardDone from '../../utils/components/CardDone';
-import NameProperty from '../../Properties/NameProperty';
+import CardDone from '../../../utils/components/CardDone';
+import NameProperty from '../../../Properties/NameProperty';
 import { useDrag } from 'react-dnd';
 import { Link } from 'react-router-dom';
 
@@ -29,8 +29,6 @@ const StyledNameProp = styled(NameProperty)`
   padding: 0 0 6px 0;
 `;
 
-// TODO cursor for while dragging??
-
 const DbItemCard = ({ dbItem }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'dbItem',
@@ -51,7 +49,7 @@ const DbItemCard = ({ dbItem }) => {
           data={dbItem}
           placeholder="Type a name..."
         />
-        <CardDone  dbItem={dbItem} />
+        <CardDone dbItem={dbItem} />
       </TodoContainer>
     </Link>
   );

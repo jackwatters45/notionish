@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import Group from './Group/Group';
 import AddGroup from './Group/AddGroup';
-import { DatabaseContext } from '../../../context/context';
 
 const GroupsContainer = styled.div`
   display: flex;
@@ -10,56 +9,67 @@ const GroupsContainer = styled.div`
   height: 100%;
 `;
 
-const Board = (props) => {
-  const {
-    editedTodos,
-    selectedView,
-    propertyName = 'project',
-    propertyId = 'CWn4hkG8N6XTyhPxLhnI',
-  } = props;
-  const { properties } = useContext(DatabaseContext);
-
-  // might still want to get property data from context
+// TODO check what happens if no todos
+const Board = ({
+  editedDbItems,
+  selectedView,
+  properties,
+  setProperties,
+  setDbItems,
+  addDbItem,
+}) => {
+  const selectedProperty = useMemo(() => {
+    return properties.find(({ id }) => id === 'CWn4hkG8N6XTyhPxLhnI');
+  }, [properties]);
 
   const groups = useMemo(() => {
-    const property = properties.find(({ id }) => id === propertyName);
-    return property.values;
-  }, [properties, propertyName]);
+    const groupedDbItems = editedDbItems.reduce((result, dbItem) => {
+      const groupId = dbItem[selectedProperty.name]?.id ?? 'No Status';
+      if (!result[groupId]) result[groupId] = [];
+      result[groupId].push(dbItem);
+      return result;
+    }, {});
+
+    return selectedProperty.values
+      .map((group) => {
+        return {
+          groupData: group,
+          groupDbItems: groupedDbItems[group.id] ?? [],
+        };
+      })
+      .concat({
+        groupData: null,
+        groupDbItems: groupedDbItems['No Status'] ?? [],
+      });
+  }, [editedDbItems, selectedProperty]);
 
   const groupsContainerRef = useRef();
-  const [maxHeight, setMaxHeight] = useState();
-  useEffect(() => {
-    setMaxHeight(groupsContainerRef?.current.offsetHeight);
+  const maxBoardHeight = useMemo(() => {
+    return groups && groupsContainerRef?.current?.offsetHeight;
   }, [groups]);
 
   return (
     <GroupsContainer ref={groupsContainerRef}>
       {groups &&
         groups.map((group) => {
+          const { groupData } = group;
           return (
             <Group
-              key={group.id}
+              key={groupData?.id ?? 0}
               group={group}
-              groups={groups}
-              propertyName={propertyName}
-              propertyId={propertyId}
-              editedTodos={editedTodos}
-              dragHeight={maxHeight}
+              selectedProperty={selectedProperty}
+              properties={properties}
+              setProperties={setProperties}
               selectedView={selectedView}
+              addDbItem={addDbItem}
+              setDbItems={setDbItems}
+              dragHeight={maxBoardHeight}
             />
           );
         })}
-      <Group
-        propertyName={propertyName}
-        editedTodos={editedTodos}
-        dragHeight={maxHeight}
-        selectedView={selectedView}
-      />
       <AddGroup
-        width={260}
-        propertyId={propertyId}
-        propertyName={propertyName}
-        groups={groups}
+        selectedProperty={selectedProperty}
+        setProperties={setProperties}
       />
     </GroupsContainer>
   );
