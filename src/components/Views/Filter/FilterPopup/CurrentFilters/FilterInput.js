@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { DatabaseContext } from '../../../../context/context';
+import { DatabaseContext } from '../../../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
 
 const Input = styled.input`

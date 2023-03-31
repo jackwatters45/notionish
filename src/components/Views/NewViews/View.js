@@ -1,8 +1,7 @@
 import Icon from '@mdi/react';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
-import ViewDropdown from './ViewDropdown';
-import usePopup from '../../utils/custom/usePopup';
+import ViewModal from './ViewModal';
 import viewsData from '../../utils/helpers/viewHelpers';
 
 const ViewContainer = styled.div`
@@ -28,21 +27,31 @@ const SelectedView = styled.div`
   border-bottom: 2px solid rgba(255, 255, 255, 0.81);
 `;
 
-const View = (props) => {
+const View = ({ selectedView, removeView, setViews, views }) => {
   const buttonRef = useRef();
-  const { isDropdown, ...popupProps } = usePopup(buttonRef, props);
 
-  const {
-    data: { type, name },
-  } = props;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleClickView = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
+
+  const { name, type } = selectedView;
   const { icon } = viewsData[type];
   return (
     <SelectedView>
-      <ViewContainer ref={buttonRef}>
+      <ViewContainer ref={buttonRef} onClick={handleClickView}>
         <Icon path={icon} size={0.75} />
         {name}
       </ViewContainer>
-      {isDropdown && <ViewDropdown {...popupProps} />}
+      {isModalVisible && (
+        <ViewModal
+          buttonRef={buttonRef}
+          closeModal={closeModal}
+          selectedView={selectedView}
+          views={views}
+          setViews={setViews}
+          removeView={removeView}
+        />
+      )}
     </SelectedView>
   );
 };

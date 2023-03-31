@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDown } from '@mdi/js';
 import FilterOptionsDropdown from './FilterOptionsDropdown';
-import usePopup from '../../../utils/custom/usePopup';
-import { DatabaseContext } from '../../../../context/context';
+import { DatabaseContext } from '../../../../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
 
 const ChooseFilter = styled.div`
@@ -55,12 +54,15 @@ const StyledInput = styled.input`
   }
 `;
 
-const FilterPopup = (props) => {
-  const buttonRef = useRef();
-  const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, ...dropdown } = usePopup(buttonRef);
+const SelectNewFilterProperty = (props) => {
   const { currentFilter, selectedView, handleEnterFilter, setViews } = props;
-  const { property, type, searchEl } = currentFilter;
+  const { userDbRef } = useContext(DatabaseContext);
+
+  const buttonRef = useRef();
+
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const handleClickFilterType = () => setIsDropdownVisible(true);
+  const closeDropdown = () => setIsDropdownVisible(false);
 
   const getUpdatedView = useCallback(
     (updatedFilter) => {
@@ -74,24 +76,7 @@ const FilterPopup = (props) => {
     [currentFilter, selectedView],
   );
 
-  const handleClickFilterOption = useCallback(
-    async (option) => {
-      const updatedFilter = { ...currentFilter, type: option };
-      const updatedView = getUpdatedView(updatedFilter);
-
-      setViews((prevViews) =>
-        prevViews.map((view) => (view === selectedView ? updatedView : view)),
-      );
-
-      try {
-        await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    [currentFilter, getUpdatedView, selectedView, setViews, userDbRef],
-  );
-
+  const { property, type, searchEl } = currentFilter;
   const [filterInput, setFilterInput] = useState(searchEl);
   const handleFilterInputChange = async (e) => {
     setFilterInput(e.target.value);
@@ -115,14 +100,15 @@ const FilterPopup = (props) => {
       <ChooseFilter>
         {property.name}
         <FilterType>
-          <FilterButton ref={buttonRef}>
+          <FilterButton onClick={handleClickFilterType} ref={buttonRef}>
             {type.name}
             <Icon path={mdiChevronDown} size={0.6} />
           </FilterButton>
-          {isDropdown && (
+          {isDropdownVisible && (
             <FilterOptionsDropdown
-              {...dropdown}
-              handleClickFilterOption={handleClickFilterOption}
+              buttonRef={buttonRef}
+              closeDropdown={closeDropdown}
+              {...props}
             />
           )}
         </FilterType>
@@ -138,4 +124,4 @@ const FilterPopup = (props) => {
   );
 };
 
-export default FilterPopup;
+export default SelectNewFilterProperty;

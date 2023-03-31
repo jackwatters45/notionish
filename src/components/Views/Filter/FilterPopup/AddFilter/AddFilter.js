@@ -1,15 +1,19 @@
 import React, { useCallback, useContext, useState } from 'react';
-import FilterPopup from './FilterPopup';
-import SearchPopup from '../../Utils/SearchPopup';
-import { DatabaseContext } from '../../../../context/context';
+import SelectNewFilterProperty from './SelectNewFilterProperty/SelectNewFilterProperty';
+import SearchDropdown from '../../../Utils/SearchDropdown';
+import { DatabaseContext } from '../../../../../context/context';
 import { doc, updateDoc } from 'firebase/firestore';
 
-const AddFilter = (props) => {
-  const { selectedView, handleEnterFilter, properties, setViews } = props;
+const AddFilter = ({
+  selectedView,
+  handleEnterFilter,
+  properties,
+  setViews,
+}) => {
   const { userDbRef } = useContext(DatabaseContext);
 
   const [currentFilter, setCurrentFilter] = useState();
-
+  
   const handleSelectProperty = useCallback(
     async (property) => {
       const newFilter = { property: property, type: 'contains', searchEl: '' };
@@ -36,14 +40,14 @@ const AddFilter = (props) => {
   return (
     <>
       {!currentFilter ? (
-        <SearchPopup
+        <SearchDropdown
           alreadyUsed={selectedView.filter}
           handleSelectProperty={handleSelectProperty}
           text={'Filter by...'}
           properties={properties}
         />
       ) : (
-        <FilterPopup
+        <SelectNewFilterProperty
           currentFilter={currentFilter}
           selectedView={selectedView}
           handleEnterFilter={handleEnterFilter}

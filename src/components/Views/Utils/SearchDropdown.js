@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import propertyData from '../../utils/helpers/propertyHelpers';
 
-const FilterRow = styled.div`
+const SearchOption = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -18,7 +18,7 @@ const FilterRow = styled.div`
   }
 `;
 
-const StyledInput = styled.input`
+const SearchInput = styled.input`
   margin: 6px 6px 12px;
   display: flex;
   align-items: center;
@@ -37,7 +37,7 @@ const StyledInput = styled.input`
   }
 `;
 
-const SearchPopup = ({
+const SearchDropdown = ({
   handleSelectProperty,
   text,
   alreadyUsed,
@@ -61,7 +61,7 @@ const SearchPopup = ({
 
   return (
     <>
-      <StyledInput
+      <SearchInput
         autoFocus
         placeholder={text}
         value={searchInput}
@@ -71,14 +71,14 @@ const SearchPopup = ({
         const { name, id, type } = property;
         const { icon } = propertyData[type];
         return (
-          <FilterRow key={id} onClick={() => handleSelectProperty(property)}>
+          <SearchOption key={id} onClick={() => handleSelectProperty(property)}>
             <Icon path={icon} size={0.75} />
             {name}
-          </FilterRow>
+          </SearchOption>
         );
       })}
     </>
   );
 };
 
-export default SearchPopup;
+export default SearchDropdown;

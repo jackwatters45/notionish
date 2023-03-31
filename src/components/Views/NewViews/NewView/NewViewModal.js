@@ -1,23 +1,13 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
-import { mdiPlus } from '@mdi/js';
-import usePopup from '../../utils/custom/usePopup';
-import viewsData from '../../utils/helpers/viewHelpers';
+import useModal from '../../../utils/custom/useModal';
+import viewsData from '../../../utils/helpers/viewHelpers';
 import { v4 as uuid } from 'uuid';
-import { DatabaseContext } from '../../../context/context';
+import { DatabaseContext } from '../../../../context/context';
 import { doc, setDoc } from 'firebase/firestore';
 
-const StyledIcon = styled(Icon)`
-  padding: 1px;
-  margin-bottom: 2px;
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.055);
-    border-radius: 4px;
-  }
-`;
-
-const DropdownContainer = styled.div`
+const DropdownContainer = styled.form`
   width: 220px;
   position: absolute;
   display: flex;
@@ -64,14 +54,10 @@ const ErrorMsg = styled.span`
   color: rgb(235, 87, 87);
 `;
 
-const NewViewPopup = (props) => {
-  const buttonRef = useRef();
-  const { views, addView } = props;
-  const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
-    buttonRef,
-    props,
-  );
+const NewViewModal = ({ views, addView, buttonRef, closeModal }) => {
   const { userDbRef } = useContext(DatabaseContext);
+
+  const modalProps = useModal(buttonRef, closeModal);
 
   const [input, setInput] = useState('');
   const handleNameChange = (e) => setInput(e.target.value);
@@ -81,7 +67,7 @@ const NewViewPopup = (props) => {
 
   const handleKeyDown = async (e) => {
     if (e.key !== 'Enter' || isErrorMsg || !input) return;
-    setIsDropdown(false);
+    closeModal();
 
     const id = uuid();
     const newView = {
@@ -106,45 +92,41 @@ const NewViewPopup = (props) => {
   }, [views, input]);
 
   return (
-    <div>
-      <StyledIcon ref={buttonRef} path={mdiPlus} size={0.9} />
-      {isDropdown && (
-        <DropdownContainer {...popupProps} onKeyDown={handleKeyDown}>
-          <StyledInput
-            autoFocus
-            placeholder="Property name"
-            onChange={handleNameChange}
-          />
-          {isErrorMsg && (
-            <>
-              <hr />
-              <ErrorMsg>
-                A view named {input} already exists in this database.
-              </ErrorMsg>
-            </>
-          )}
+    <DropdownContainer {...modalProps} onKeyDown={handleKeyDown}>
+      <StyledInput
+        autoFocus
+        placeholder="Property name"
+        onChange={handleNameChange}
+      />
+      <button style={{ display: 'none' }} type="submit" />
+      {isErrorMsg && (
+        <>
           <hr />
-          <TypeLabel>Type</TypeLabel>
-          {Object.keys(viewsData).map((viewType) => {
-            const { name, icon } = viewsData[viewType];
-            return (
-              <AddViewRow
-                key={viewType}
-                onClick={() => handleClickType(viewType)}
-                style={{
-                  backgroundColor:
-                    type === viewType ? 'rgba(255, 255, 255, 0.11)' : '',
-                }}
-              >
-                <Icon path={icon} size={0.75} />
-                {name}
-              </AddViewRow>
-            );
-          })}
-        </DropdownContainer>
+          <ErrorMsg>
+            A view named {input} already exists in this database.
+          </ErrorMsg>
+        </>
       )}
-    </div>
+      <hr />
+      <TypeLabel>Type</TypeLabel>
+      {Object.keys(viewsData).map((viewType) => {
+        const { name, icon } = viewsData[viewType];
+        return (
+          <AddViewRow
+            key={viewType}
+            onClick={() => handleClickType(viewType)}
+            style={{
+              backgroundColor:
+                type === viewType ? 'rgba(255, 255, 255, 0.11)' : '',
+            }}
+          >
+            <Icon path={icon} size={0.75} />
+            {name}
+          </AddViewRow>
+        );
+      })}
+    </DropdownContainer>
   );
 };
 
-export default NewViewPopup;
+export default NewViewModal;

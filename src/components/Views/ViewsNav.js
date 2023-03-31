@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import View from './NewViews/View';
-import NewViewPopup from './NewViews/NewViewPopup';
 import viewsData from '../utils/helpers/viewHelpers';
 import Filter from './Filter/Filter';
 import Sort from './Sort/Sort';
 import { Link } from 'react-router-dom';
+import NewView from './NewViews/NewView/NewView';
 
 const NavContainer = styled.div`
   display: flex;
@@ -71,7 +71,7 @@ const ViewsNav = ({
             return view === selectedView ? (
               <View
                 key={name}
-                data={view}
+                selectedView={view}
                 views={views}
                 setViews={setViews}
                 removeView={removeView}
@@ -85,7 +85,7 @@ const ViewsNav = ({
               </Link>
             );
           })}
-          <NewViewPopup views={views} setViews={setViews} addView={addView} />
+          <NewView views={views} addView={addView} />
         </ViewsContainer>
         <Options>
           <Filter

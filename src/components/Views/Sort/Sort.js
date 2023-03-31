@@ -1,32 +1,9 @@
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import NewButton from '../../utils/components/NewButton';
-import usePopup from '../../utils/custom/usePopup';
-import SearchPopup from '../Utils/SearchPopup';
-import CurrentSorts from './CurrentSorts';
-import { DatabaseContext } from '../../../context/context';
-import { doc, updateDoc } from 'firebase/firestore';
 
-const DropdownContainer = styled.div`
-  min-width: 290px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  background: var(--secondary-background-color);
-  transition: background 20ms ease-in 0s;
-  padding: 8px 12px;
-  border-radius: 4px;
-  box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
-    rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
-`;
+import SortModal from './SortDropdown/SortModal';
 
-const Option = styled.div`
+const SortButton = styled.div`
   user-select: none;
   transition: background 20ms ease-in 0s;
   cursor: pointer;
@@ -44,68 +21,25 @@ const Option = styled.div`
 
 const Sort = (props) => {
   const buttonRef = useRef();
-  const { selectedView, setViews, properties } = props;
-  const { userDbRef } = useContext(DatabaseContext);
-  const { isDropdown, setIsDropdown, ...popupProps } = usePopup(
-    buttonRef,
-    props,
-  );
 
-  const [isAddingNewSort, setIsAddingNewSort] = useState(false);
-  const handleClickAddNew = () => setIsAddingNewSort(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleClickSort = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
 
-  const addSort = useCallback(
-    async (property) => {
-      setIsAddingNewSort(false);
-
-      console.log(property);
-      const updatedSort = [
-        ...selectedView.sort,
-        { property: property, order: 'Ascending' },
-      ];
-
-      const updatedView = { ...selectedView, sort: updatedSort };
-
-      setViews((prevViews) =>
-        prevViews.map((view) => (view === selectedView ? updatedView : view)),
-      );
-
-      try {
-        await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    [selectedView, setViews, userDbRef],
-  );
-
+  const { selectedView } = props;
   const isSort = useMemo(() => !!selectedView?.sort.length, [selectedView]);
 
   return (
     <div>
-      <Option ref={buttonRef} style={{ color: isSort && 'rgb(35, 131, 226)' }}>
+      <SortButton
+        ref={buttonRef}
+        onClick={handleClickSort}
+        style={{ color: isSort && 'rgb(35, 131, 226)' }}
+      >
         Sort
-      </Option>
-      {isDropdown && (
-        <DropdownContainer {...popupProps}>
-          {selectedView.sort.length && !isAddingNewSort ? (
-            <>
-              <CurrentSorts
-                selectedView={selectedView}
-                setViews={setViews}
-                properties={properties}
-              />
-              <NewButton text={'Add sort'} onClick={handleClickAddNew} />
-            </>
-          ) : (
-            <SearchPopup
-              alreadyUsed={selectedView.sort}
-              properties={properties}
-              handleSelectProperty={addSort}
-              text={'Sort by...'}
-            />
-          )}
-        </DropdownContainer>
+      </SortButton>
+      {isModalVisible && (
+        <SortModal buttonRef={buttonRef} closeModal={closeModal} {...props} />
       )}
     </div>
   );

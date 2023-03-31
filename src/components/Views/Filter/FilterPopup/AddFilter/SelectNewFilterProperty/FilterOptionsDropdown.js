@@ -1,6 +1,9 @@
-import React, { forwardRef } from 'react';
-import filterOptions from '../filterHelpers';
+import React, { useContext } from 'react';
+import filterOptions from '../../../filterHelpers';
 import styled from 'styled-components';
+import { doc, updateDoc } from 'firebase/firestore';
+import { DatabaseContext } from '../../../../../../context/context';
+import useModal from '../../../../../utils/custom/useModal';
 
 const DropdownContainer = styled.div`
   margin-top: 24px;
@@ -30,9 +33,35 @@ const Option = styled.div`
   }
 `;
 
-const FilterOptionsDropdown = forwardRef(({ handleClickFilterOption }, ref) => {
+const FilterOptionsDropdown = ({
+  selectedView,
+  setViews,
+  currentFilter,
+  buttonRef,
+  closeDropdown,
+  getUpdatedView,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
+
+  const modalProps = useModal(buttonRef, closeDropdown);
+
+  const handleClickFilterOption = async (option) => {
+    const updatedFilter = { ...currentFilter, type: option };
+    const updatedView = getUpdatedView(updatedFilter);
+
+    setViews((prevViews) =>
+      prevViews.map((view) => (view === selectedView ? updatedView : view)),
+    );
+
+    try {
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <DropdownContainer ref={ref}>
+    <DropdownContainer {...modalProps}>
       {Object.keys(filterOptions).map((key) => {
         const option = filterOptions[key];
         return (
@@ -46,6 +75,6 @@ const FilterOptionsDropdown = forwardRef(({ handleClickFilterOption }, ref) => {
       })}
     </DropdownContainer>
   );
-});
+};
 
 export default FilterOptionsDropdown;

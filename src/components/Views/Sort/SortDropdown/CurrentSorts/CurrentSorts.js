@@ -2,11 +2,11 @@ import Icon from '@mdi/react';
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { mdiDrag, mdiClose } from '@mdi/js';
-import propertyData from '../../utils/helpers/propertyHelpers';
-import OrderDropdown from './OrderDropdown';
-import PropertyDropdown from '../Utils/PropertyDropdown';
+import propertyData from '../../../../utils/helpers/propertyHelpers';
+import ChangeSortOrder from './ChangeSortOrder/ChangeSortOrder';
+import ChangeProperty from '../../../Utils/ChangeProperty/ChangeProperty';
 import { doc, updateDoc } from 'firebase/firestore';
-import { DatabaseContext } from '../../../context/context';
+import { DatabaseContext } from '../../../../../context/context';
 
 const Container = styled.div`
   margin: 6px 0;
@@ -66,7 +66,7 @@ const CurrentSorts = ({ selectedView, setViews, properties }) => {
           <Row key={property.id}>
             <LeftColumn>
               <Icon path={mdiDrag} size={0.9} />
-              <PropertyDropdown
+              <ChangeProperty
                 setViews={setViews}
                 type={'sort'}
                 property={property}
@@ -74,7 +74,7 @@ const CurrentSorts = ({ selectedView, setViews, properties }) => {
                 icon={icon}
                 properties={properties}
               />
-              <OrderDropdown
+              <ChangeSortOrder
                 property={property}
                 currentSort={sort}
                 selectedView={selectedView}

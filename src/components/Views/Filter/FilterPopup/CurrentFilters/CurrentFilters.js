@@ -2,10 +2,10 @@ import Icon from '@mdi/react';
 import React from 'react';
 import styled from 'styled-components';
 import { mdiClose } from '@mdi/js';
-import propertyData from '../../../utils/helpers/propertyHelpers';
-import PropertyDropdown from '../../Utils/PropertyDropdown';
-import FilterTypeDropdown from './FilterTypeDropdown';
+import propertyData from '../../../../utils/helpers/propertyHelpers';
+import ChangeProperty from '../../../Utils/ChangeProperty/ChangeProperty';
 import FilterInput from './FilterInput';
+import FilterType from './FilterType/FilterType';
 
 const Container = styled.div`
   margin: 6px 0;
@@ -21,13 +21,13 @@ const Row = styled.div`
   gap: 8px;
 `;
 
-const LeftColumn = styled.div`
+const CurrentFiltersSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
 
-const StyledIcon = styled(Icon)`
+const DeleteButton = styled(Icon)`
   cursor: pointer;
   padding: 1px;
   &:hover {
@@ -49,8 +49,8 @@ const CurrentFilters = ({
         const { icon } = propertyData[property.type];
         return (
           <Row key={property.id}>
-            <LeftColumn>
-              <PropertyDropdown
+            <CurrentFiltersSection>
+              <ChangeProperty
                 type={'filter'}
                 property={property}
                 selectedView={selectedView}
@@ -58,7 +58,7 @@ const CurrentFilters = ({
                 setViews={setViews}
                 properties={properties}
               />
-              <FilterTypeDropdown
+              <FilterType
                 property={property}
                 selectedView={selectedView}
                 filterType={type}
@@ -72,8 +72,8 @@ const CurrentFilters = ({
                 setViews={setViews}
                 currentFilter={filter}
               />
-            </LeftColumn>
-            <StyledIcon
+            </CurrentFiltersSection>
+            <DeleteButton
               onClick={() => removeFilter(property)}
               path={mdiClose}
               size={0.8}
