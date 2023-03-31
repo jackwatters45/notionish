@@ -76,9 +76,9 @@ export default propertyData;
 
 export const getPropertiesObj = (properties) => {
   return Object.fromEntries(
-    properties.map(({ id, type }) => {
+    properties.map(({ name, type }) => {
       const { defaultValue } = propertyData[type];
-      return [id, defaultValue];
+      return [name, defaultValue];
     }),
   );
 };

@@ -2,13 +2,9 @@ import { mdiDeveloperBoard, mdiTable } from '@mdi/js';
 import Table from '../../DatabaseTypes/Table/Table';
 import Board from '../../DatabaseTypes/Board/Board';
 
-const getBoardView = (editedTodos, selectedView) => {
-  return <Board editedTodos={editedTodos} selectedView={selectedView} />;
-};
+const getBoardView = (props) => <Board {...props} />;
 
-const getTableView = (editedTodos, selectedView) => {
-  return <Table editedTodos={editedTodos} selectedView={selectedView} />;
-};
+const getTableView = (props) => <Table {...props} />;
 
 const viewsData = {
   board: {

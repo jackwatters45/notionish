@@ -11,7 +11,7 @@ import AddNewPropertyTable from './AddProperty/AddNewPropertyTable';
 import { DatabaseContext } from '../../../context/context';
 import TableRowContent from './TableRowContent';
 import { useDrop } from 'react-dnd';
-import { addDoc, doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 
 const Container = styled.div`
   min-width: 100%;
@@ -103,7 +103,7 @@ const Table = ({
 
     try {
       addDbItem(newDbItem);
-      await addDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
+      await setDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
     } catch (e) {
       console.log(e);
     }

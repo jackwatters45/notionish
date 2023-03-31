@@ -10,11 +10,11 @@ import { DatabaseContext } from '../../../../context/context';
 import { getPropertiesObj } from '../../../utils/helpers/propertyHelpers';
 import { useDrop } from 'react-dnd';
 import {
-  addDoc,
   collection,
   doc,
   getDocs,
   query,
+  setDoc,
   where,
   writeBatch,
 } from 'firebase/firestore';
@@ -86,7 +86,7 @@ const Group = ({
 
     try {
       addDbItem(newDbItem);
-      await addDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
+      await setDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
     } catch (e) {
       console.log(e);
     }
