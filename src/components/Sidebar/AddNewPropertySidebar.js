@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
-import AddPropertyModal from '../DatabaseTypes/AddPropertyModal';
+import AddPropertyModal from '../Properties/AddPropertyModal';
 import NewButton from '../utils/components/NewButton';
 
 const Container = styled.div`

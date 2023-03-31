@@ -72,9 +72,11 @@ const SidebarContents = ({
   dbItemId,
   dbItems,
   setDbItems,
-  properties,
-  addProperty,
   removeDbItem,
+  properties,
+  setProperties,
+  addProperty,
+  removeProperty,
   handleClickClose,
 }) => {
   const { userDbRef } = useContext(DatabaseContext);
@@ -97,14 +99,18 @@ const SidebarContents = ({
   return (
     <PropertiesContainer id="properties">
       <TodoName name={'name'} data={selectedDbItem} autoFocus />
-      {properties.map(({ name, type }) => {
+      {properties.map((property) => {
+        const { name, type } = property;
         const { icon, getComponent } = propertyData[type];
         return (
           <PropertyRow key={name}>
             <StyledPropertyLabel
               icon={icon}
-              data={selectedDbItem}
-              name={name}
+              selectedProperty={property}
+              properties={properties}
+              setProperties={setProperties}
+              removeProperty={removeProperty}
+              setDbItems={setDbItems}
             />
             <StyledPropertyValue>
               {getComponent(name, selectedDbItem)}
@@ -113,7 +119,11 @@ const SidebarContents = ({
         );
       })}
       <PropertyRow>
-        <PropertyLabel icon={checkboxIcon} name={'Done?'} disabled={true} />
+        <PropertyLabel
+          icon={checkboxIcon}
+          selectedProperty={{ name: 'Done?' }}
+          disabled={true}
+        />
         <DoneButton
           path={emptyCheckboxIcon}
           size={0.85}
@@ -127,7 +137,7 @@ const SidebarContents = ({
       />
       <hr />
       <StyledNotes
-        name={'notes'}
+        selectedProperty={{ name: 'notes' }}
         data={selectedDbItem}
         placeholder={'Add notes here...'}
       />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useLayoutEffect, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDoubleRight } from '@mdi/js';
@@ -40,7 +40,9 @@ const Sidebar = ({
   dbItems,
   setDbItems,
   properties,
+  setProperties,
   addProperty,
+  removeProperty,
   removeDbItem,
 }) => {
   const { dbItemId } = useParams();
@@ -74,7 +76,7 @@ const Sidebar = ({
     [isResizing, sidebarRef, setSidebarWidth],
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.addEventListener('mousemove', resize);
     window.addEventListener('mouseup', stopResizing);
     return () => {
@@ -83,7 +85,7 @@ const Sidebar = ({
     };
   }, [resize, stopResizing]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleClick = (e) => {
       if (isFirstRender.current) {
         isFirstRender.current = false;
@@ -101,10 +103,10 @@ const Sidebar = ({
     const handleEscape = (e) => {
       if (e.key === 'Escape') navigateToParent();
     };
-    window.addEventListener('click', handleClick);
+    window.addEventListener('mousedown', handleClick);
     document.addEventListener('keydown', handleEscape);
     return () => {
-      window.removeEventListener('click', handleClick);
+      window.removeEventListener('mousedown', handleClick);
       document.removeEventListener('keydown', handleEscape);
     };
   }, [dbItemId, navigateToParent, sidebarRef]);
@@ -124,7 +126,9 @@ const Sidebar = ({
         dbItems={dbItems}
         setDbItems={setDbItems}
         properties={properties}
+        setProperties={setProperties}
         addProperty={addProperty}
+        removeProperty={removeProperty}
         removeDbItem={removeDbItem}
         handleClickClose={handleClickClose}
       />
