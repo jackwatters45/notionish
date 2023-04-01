@@ -1,7 +1,8 @@
 import React, {
-  forwardRef,
+  useCallback,
   useContext,
-  useEffect,
+  useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -9,6 +10,10 @@ import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiDrag } from '@mdi/js';
 import { DatabaseContext } from '../../../context/context';
+import useModal from '../../utils/custom/useModal';
+import { v4 as uuid } from 'uuid';
+import { doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { db } from '../../../firebase';
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -23,7 +28,7 @@ const DropdownContainer = styled.div`
   flex-direction: column;
 `;
 
-const Current = styled.div`
+const Current = styled.form`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -50,6 +55,14 @@ const CategoryName = styled.div`
 `;
 
 const StyledInput = styled.input``;
+
+const ErrorMsg = styled.span`
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 12px;
+  font-size: 12px;
+  color: rgb(235, 87, 87);
+  box-shadow: rgb(255 255 255 / 13%) 0px -1px inset;
+`;
 
 const Categories = styled.div`
   padding: 6px 4px;
@@ -79,67 +92,154 @@ const DropdownRow = styled.div`
   }
 `;
 
-const SelectDropdown = forwardRef(({ style, data, propId }, ref) => {
-  const { setTodos, todos, projects, setProjects } =
-    useContext(DatabaseContext);
+const SelectDropdown = ({
+  data,
+  selectedProperty,
+  setDbItems,
+  setProperties,
+  buttonRef,
+  closeDropdown,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
+  const dbItemDoc = doc(userDbRef, 'dbItems', data.id);
 
-  const selectProject = (project) => {
-    const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === data.id);
-    todoCopy[propId] = project;
-    setTodos(todosCopy);
-  };
-
-  const currentValueRef = useRef();
-  const [inputWidth, setInputWidth] = useState(1);
-  useEffect(() => {
-    setInputWidth(
-      !currentValueRef.current
-        ? 253
-        : 245 - currentValueRef.current.offsetWidth,
-    );
-  }, [todos]);
+  const dropdownProps = useModal(buttonRef, closeDropdown);
 
   const [input, setInput] = useState('');
   const handleChange = (e) => setInput(e.target.value);
-  const handleKeyDown = (e) => {
-    if (e.key !== 'Enter') return;
+  const resetInput = () => setInput('');
 
-    const newProject = input;
-    setProjects([...projects, newProject]);
-    selectProject(newProject);
-    setInput('');
+  const isErrorMsg = useMemo(() => {
+    return !!selectedProperty.values.find(({ name }) => name === input);
+  }, [selectedProperty, input]);
+
+  const handleClickPropertyValue = async (value) => {
+    closeDropdown();
+
+    setDbItems((prevDbItems) =>
+      prevDbItems.map((item) => {
+        return item.id === data.id
+          ? { ...item, [selectedProperty.name]: value }
+          : item;
+      }),
+    );
+
+    try {
+      await updateDoc(dbItemDoc, { [selectedProperty.name]: value });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
+  const ChangeDbPropertyValueInput = useCallback(
+    (batch, newValue) => {
+      setDbItems((prevDbItems) =>
+        prevDbItems.map((item) => {
+          return item.id === data.id
+            ? { ...item, [selectedProperty.name]: newValue }
+            : item;
+        }),
+      );
+
+      try {
+        batch.update(dbItemDoc, { [selectedProperty.name]: newValue });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [setDbItems, data.id, selectedProperty.name, dbItemDoc],
+  );
+
+  const addValueToProperty = useCallback(
+    async (batch, newValue) => {
+      const updatedValues = [...selectedProperty.values, newValue];
+      const updatedProp = { ...selectedProperty, values: updatedValues };
+
+      setProperties((prevProperties) =>
+        prevProperties.map((property) => {
+          return property.id === selectedProperty.id ? updatedProp : property;
+        }),
+      );
+
+      try {
+        batch.update(doc(userDbRef, 'properties', selectedProperty.id), {
+          values: updatedValues,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [selectedProperty, setProperties, userDbRef],
+  );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (isErrorMsg || !input) return;
+
+    const batch = writeBatch(db);
+
+    const newValue = { id: uuid(), name: input };
+    resetInput();
+
+    try {
+      ChangeDbPropertyValueInput(batch, newValue);
+      await addValueToProperty(batch, newValue);
+
+      await batch.commit();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const currentValueRef = useRef();
+  const [inputWidth, setInputWidth] = useState(0);
+  useLayoutEffect(() => {
+    const newWidth = currentValueRef.current
+      ? 245 - currentValueRef.current?.offsetWidth
+      : 253;
+    setInputWidth(newWidth);
+  }, [inputWidth, data, selectedProperty.name]);
+
   return (
-    <DropdownContainer ref={ref} style={style}>
-      <Current>
-        {data.project && (
-          <CategoryName ref={currentValueRef}>{data.project.name}</CategoryName>
+    <DropdownContainer {...dropdownProps}>
+      <Current onSubmit={handleSubmit}>
+        {data[selectedProperty.name]?.name && (
+          <CategoryName ref={currentValueRef}>
+            {data[selectedProperty.name]?.name}
+          </CategoryName>
         )}
         <StyledInput
           autoFocus
           style={{ width: `${inputWidth}px` }}
           value={input}
           onChange={handleChange}
-          onKeyDown={handleKeyDown}
         />
+        <button style={{ display: 'none' }} type="submit" />
       </Current>
+      {isErrorMsg && (
+        <ErrorMsg>
+          A {selectedProperty.name} named {input} already exists in this
+          database.
+        </ErrorMsg>
+      )}
       <Categories>
         <StyledOptionsText>Select an option or create one</StyledOptionsText>
-        {projects.map((project) => (
-          <DropdownRow key={project} onClick={() => selectProject(project)}>
+        {selectedProperty.values.map((value) => (
+          <DropdownRow
+            key={value.id}
+            onClick={() => handleClickPropertyValue(value)}
+          >
             <Icon
               path={mdiDrag}
               size={0.85}
               color={'var(--secondary-font-color)'}
             />
-            <CategoryName>{project.name}</CategoryName>
+            <CategoryName>{value.name}</CategoryName>
           </DropdownRow>
         ))}
       </Categories>
     </DropdownContainer>
   );
-});
+};
 
 export default SelectDropdown;

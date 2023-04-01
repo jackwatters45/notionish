@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../../utils/theme';
 import SelectDropdown from './SelectDropdown';
-import useModal from '../../utils/custom/useModal';
 
 const SelectContainer = styled.div`
   ${propertySharedStyle};
@@ -35,26 +34,36 @@ const ButtonContainer = styled.div`
 `;
 
 const SelectProperty = (props) => {
-  const {
-    innerRef: selectButtonRef,
-    html,
-    style: _,
-    ...editableDivProps
-  } = useEditableDiv({ ...props, disabled: true });
+  const buttonRef = useRef();
 
-  const { isDropdown, ...popupProps } = useModal(selectButtonRef, props);
+  const { html, ...editableDivProps } = useEditableDiv({
+    ...props,
+    disabled: true,
+  });
 
-  // html used to be html.name below
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const handleClickSelectButton = () => setIsDropdownVisible(true);
+  const closeDropdown = () => setIsDropdownVisible(false);
+
+  const { name } = html;
+
+  // TODO placeholder
   return (
     <SelectContainer>
-      <ButtonContainer ref={selectButtonRef}>
+      <ButtonContainer onClick={handleClickSelectButton} ref={buttonRef}>
         {html && (
           <SelectButtonBackground>
-            <StyledContentEditable {...editableDivProps} html={html.name} />
+            <StyledContentEditable html={name} {...editableDivProps} />
           </SelectButtonBackground>
         )}
       </ButtonContainer>
-      {isDropdown ? <SelectDropdown {...popupProps} /> : ''}
+      {isDropdownVisible && (
+        <SelectDropdown
+          buttonRef={buttonRef}
+          closeDropdown={closeDropdown}
+          {...props}
+        />
+      )}
     </SelectContainer>
   );
 };
