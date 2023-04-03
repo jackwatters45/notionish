@@ -123,7 +123,10 @@ export const getNextMonth = (month, year) =>
 // Calendar builder for a month in the specified year
 // Returns an array of the calendar dates.
 // Each calendar date is represented as an array => [YYYY, MM, DD]
-const calendarDates = (month = THIS_MONTH, year = THIS_YEAR) => {
+const calendarDates = (monthVal, yearVal) => {
+  const month = monthVal ?? THIS_MONTH;
+  const year = yearVal ?? THIS_YEAR;
+
   // Get number of days in the month and the month's first day
   const monthDays = getMonthDays(month, year);
   const monthFirstDay = getMonthFirstDay(month, year);
@@ -170,3 +173,34 @@ const calendarDates = (month = THIS_MONTH, year = THIS_YEAR) => {
 };
 
 export default calendarDates;
+
+export const findMonth = (
+  dateArr,
+  shortenedMonthList = SHORTENED_CALENDAR_MONTHS,
+  monthList = CALENDAR_MONTHS,
+) => {
+  const lowerCaseDateArr = dateArr.map((datePart) => datePart.toLowerCase());
+
+  return (
+    shortenedMonthList.find((el) =>
+      lowerCaseDateArr.some((datePart) =>
+        datePart.includes(el.name.toLowerCase()),
+      ),
+    ) ||
+    monthList.find((el) =>
+      lowerCaseDateArr.some((datePart) => datePart.includes(el.toLowerCase())),
+    )
+  );
+};
+
+export const isValidYear = (year) => year.length % 2 === 0 && year.length <= 4;
+
+export const createNewDate = (newMonth, dateArr) => {
+  const dateIdx = dateArr[0].includes(newMonth.name);
+  const dayIdx = dateIdx ? 1 : 0;
+
+  const newDateString = `${newMonth.num + 1}/${dateArr[dayIdx]}/${dateArr[2]}`;
+
+  const newDate = new Date(newDateString);
+  return isDate(newDate) ? newDate : null;
+};

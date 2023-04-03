@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useEffect, useState } from 'react';
+import React, { useContext, Fragment, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import calendarDates, {
@@ -8,29 +8,32 @@ import calendarDates, {
   WEEK_DAYS,
   CALENDAR_MONTHS,
   formatDateInput,
-  SHORTENED_CALENDAR_MONTHS,
   isDate,
+  findMonth,
+  isValidYear,
+  createNewDate,
 } from './calendarHelpers';
 import Icon from '@mdi/react';
 import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import { DatabaseContext } from '../../../context/context';
+import useModal from '../../utils/custom/useModal';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const DropDown = styled.div`
   position: absolute;
-  // margin: 30px 0px;
   width: 270px;
   background: var(--secondary-background-color);
   box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px,
     rgb(15 15 15 / 20%) 0px 3px 6px, rgb(15 15 15 / 40%) 0px 9px 24px;
   border-radius: 20px;
   overflow: hidden;
-  padding: 6px 0;
+  padding: 6px 0 0;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
 `;
 
-const InputDiv = styled.div`
+const InputForm = styled.form`
   padding: 8px 14px;
   display: flex;
 `;
@@ -105,16 +108,19 @@ const TodayCell = styled.div`
     border-radius: 4px;
   }
 `;
+
 const TodayCellBackgroundCircle = styled.div`
   width: 80%;
   height: 80%;
   border-radius: 50%;
   background-color: rgb(235, 87, 87);
 `;
+
 const SelectedCell = styled.div`
   border-radius: 4px;
   background-color: rgb(35, 131, 226);
 `;
+
 const RegularCell = styled.div`
   &:hover {
     background-color: rgba(255, 255, 255, 0.055);
@@ -122,127 +128,130 @@ const RegularCell = styled.div`
   }
 `;
 
-const DatePicker = forwardRef(({ style, data, propId }, ref) => {
-  const { setTodos, todos } = useContext(DatabaseContext);
+const ClearButton = styled.div`
+  padding: 12px 24px 10px;
+  box-shadow: rgb(255 255 255 / 13%) 0px 1px inset;
+  user-select: none;
+  transition: background 20ms ease-in 0s;
+`;
 
-  const [date, setDate] = useState('');
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
+const DatePicker = ({
+  data,
+  selectedProperty,
+  setDbItems,
+  buttonRef,
+  closeDatePicker,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
-  useEffect(() => {
-    const addDateToState = () => {
-      const date = data.date || new Date();
-      setDate(date);
-      setMonth(date.getMonth());
-      setYear(date.getFullYear());
-    };
-    addDateToState();
-  }, [data.date]);
+  const datePickerProps = useModal(buttonRef, closeDatePicker);
 
-  const changeDate = (date) => {
-    setDate(date);
-    setMonth(date.getMonth());
-    setYear(date.getFullYear());
+  const currentDate = new Date();
+  const initialDate = data?.Date ?? null;
+  const initialMonth = initialDate
+    ? initialDate.getMonth()
+    : currentDate.getMonth();
+  const initialYear = initialDate
+    ? initialDate.getFullYear()
+    : currentDate.getFullYear();
 
-    const todosCopy = [...todos];
-    const todoCopy = todosCopy.find(({ id }) => id === data.id);
-    todoCopy[propId] = date;
-    setTodos(todosCopy);
+  const [date, setDate] = useState(initialDate);
+  const [month, setMonth] = useState(initialMonth);
+  const [year, setYear] = useState(initialYear);
+
+  const clearDate = () => {
+    changeDate(null);
   };
 
-  // Handlers
-  const [dateInput, setDateInput] = useState('');
-  const handleInput = (e) => setDateInput(e.target.value);
-  const handleInputEnter = (e) => {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-    e.target.blur();
+  const changeDate = async (date) => {
+    setDate(date);
+    setMonth(date ? date.getMonth() : new Date().getMonth());
+    setYear(date ? date.getFullYear() : new Date().getFullYear());
 
-    const dateArr = e.target.value.toLowerCase().split(/[^a-zA-Z0-9]/);
-    const parsedDateArr = dateArr.map((el) => parseInt(el).toString());
-    // check if input contains a month name (vs all ints)
-    const newMonth = SHORTENED_CALENDAR_MONTHS.find(
-      (el) => dateArr[0].includes(el.name) || dateArr[1].includes(el.name),
+    const updatedProperty = { ...data, [selectedProperty.name]: date };
+    setDbItems((prevDbItems) =>
+      prevDbItems.map((item) => {
+        return item.id === data.id ? updatedProperty : item;
+      }),
     );
 
+    try {
+      await updateDoc(doc(userDbRef, 'dbItems', data.id), updatedProperty);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [dateInput, setDateInput] = useState('');
+  const handleInput = (e) => setDateInput(e.target.value);
+  useEffect(() => {
+    setDateInput(date ? formatDateInput(date) : '');
+  }, [date]);
+
+  const handleSubmitInput = (e) => {
+    e.preventDefault();
+
+    const dateArr = dateInput.toLowerCase().split(/[^a-zA-Z0-9]/);
+    const parsedDateArr = dateArr.map((el) => parseInt(el));
+
+    if (!isValidYear(dateArr[2])) return null;
+
+    const newMonth = findMonth(dateArr);
     if (!newMonth) {
-      if (parsedDateArr[2].length % 2 !== 0 || parsedDateArr[2].length > 4)
-        return;
       const newDate = new Date(parsedDateArr.join('/'));
       return isDate(newDate) ? changeDate(newDate) : false;
     }
 
-    // if month is first 'arg'
-    if (dateArr[0].includes(newMonth.name)) {
-      if (parsedDateArr[2].length % 2 !== 0 || parsedDateArr[2].length > 4)
-        return;
-      const newDateString = `${newMonth.num + 1}/${dateArr[1]}/${dateArr[2]}`;
-      const newDate = new Date(newDateString);
-      return isDate(newDate) ? changeDate(newDate) : false;
-    }
-    // if month is second 'arg'
-    if (dateArr[1].includes(newMonth.name)) {
-      if (parsedDateArr[2].length % 2 !== 0 || parsedDateArr[2].length > 4)
-        return;
-      const newDateString = `${newMonth.num + 1}/${dateArr[0]}/${dateArr[2]}`;
-      const newDate = new Date(newDateString);
-      return isDate(newDate) ? changeDate(newDate) : false;
-    }
-
-    // not perfect and should def show an error message if invalid but I need to move on
+    const newDate = createNewDate(newMonth, dateArr);
+    if (newDate) changeDate(newDate);
   };
 
-  useEffect(() => {
-    if (!date) return;
-    setDateInput(formatDateInput(date));
-  }, [date]);
-
   const handleLeftArrowClick = () => {
-    const { updatedMonth, updatedYear } = getPrevMonth(month, year);
-    setMonth(updatedMonth);
-    setYear(updatedYear);
+    try {
+      const { updatedMonth, updatedYear } = getPrevMonth(month, year);
+      setMonth(updatedMonth);
+      setYear(updatedYear);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleRightArrowClick = () => {
-    const { updatedMonth, updatedYear } = getNextMonth(month, year);
-    setMonth(updatedMonth);
-    setYear(updatedYear);
+    try {
+      const { updatedMonth, updatedYear } = getNextMonth(month, year);
+      setMonth(updatedMonth);
+      setYear(updatedYear);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleDayClick = (e) => {
-    setTimeout(() => {
-      const clickedDateIso = e.target.id.split(',');
-      const newDate = new Date(...clickedDateIso);
-      changeDate(newDate);
-    });
+    const clickedDateIso = e.target.id.split(',');
+    const newDate = new Date(...clickedDateIso);
+    changeDate(newDate);
   };
 
   // shared cell calendar attributes
   const getDefaultAttributes = (dateArr) => {
+    const fontColor =
+      dateArr[1] === month || isSameDay(new Date(...dateArr))
+        ? 'var(--main-font-color)'
+        : 'var(--empty-font-color)';
+
     return {
       onClick: handleDayClick,
-      className: 'calendarCell',
-      key: dateArr,
       id: dateArr,
-      style: {
-        color:
-          dateArr[1] === month || isSameDay(new Date(...dateArr))
-            ? 'var(--main-font-color)'
-            : 'var(--empty-font-color)',
-      },
+      style: { color: fontColor },
     };
   };
 
   return (
-    <DropDown id="datePicker" ref={ref} style={style}>
-      <InputDiv>
-        <StyledInput
-          onChange={handleInput}
-          onKeyDown={handleInputEnter}
-          value={dateInput}
-          autoFocus
-        />
-      </InputDiv>
+    <DropDown {...datePickerProps}>
+      <InputForm onSubmit={handleSubmitInput}>
+        <StyledInput onChange={handleInput} value={dateInput} autoFocus />
+        <button style={{ display: 'none' }} type="submit" />
+      </InputForm>
       <CalendarContainer>
         <SecondRow>
           <MonthYear>
@@ -267,30 +276,36 @@ const DatePicker = forwardRef(({ style, data, propId }, ref) => {
           ))}
           {calendarDates(month, year).map((dateArr) => {
             const defaultAttributes = getDefaultAttributes(dateArr);
-            if (isSameDay(new Date(...dateArr), date)) {
-              return (
-                <SelectedCell {...defaultAttributes}>{dateArr[2]}</SelectedCell>
-              );
-            }
-            if (isSameDay(new Date(...dateArr))) {
-              return (
-                <TodayCell {...defaultAttributes}>
-                  <TodayCellBackgroundCircle>
-                    {dateArr[2]}
-                  </TodayCellBackgroundCircle>
-                </TodayCell>
-              );
-            }
+            const currentDay = new Date(...dateArr);
+            const isToday = isSameDay(currentDay);
+            const isSelectedDay = isSameDay(currentDay, date);
+
             return (
-              <RegularCell {...defaultAttributes}>{dateArr[2]}</RegularCell>
+              <Fragment key={currentDay.toLocaleDateString()}>
+                {isSelectedDay ? (
+                  <SelectedCell {...defaultAttributes}>
+                    {dateArr[2]}
+                  </SelectedCell>
+                ) : isToday ? (
+                  <TodayCell {...defaultAttributes}>
+                    <TodayCellBackgroundCircle>
+                      {dateArr[2]}
+                    </TodayCellBackgroundCircle>
+                  </TodayCell>
+                ) : (
+                  <RegularCell {...defaultAttributes}>{dateArr[2]}</RegularCell>
+                )}
+              </Fragment>
             );
           })}
         </CalendarTable>
       </CalendarContainer>
+      <ClearButton onClick={clearDate}>Clear</ClearButton>
     </DropDown>
   );
-});
+};
 
+// TODO ad prop types
 DatePicker.propTypes = {
   date: PropTypes.instanceOf(Date),
 };

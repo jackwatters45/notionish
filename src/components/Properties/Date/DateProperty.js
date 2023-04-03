@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
 import { propertySharedStyle } from '../../utils/theme';
 import DatePicker from './DatePicker';
-import useModal from '../../utils/custom/useModal';
 
 const DatePickerContainer = styled.div`
   ${propertySharedStyle};
@@ -18,26 +17,34 @@ const StyledContentEditable = styled(ContentEditable)`
 `;
 
 const DateProperty = (props) => {
-  props = { ...props, disabled: true, hoverable: true };
-  const {
-    innerRef: dateButtonRef,
-    onClick: _,
-    html,
-    style,
-    ...editableDivProps
-  } = useEditableDiv(props);
+  const buttonRef = useRef();
 
-  const { isDropdown, ...popupProps } = useModal(dateButtonRef, props);
+  const { html, ...editableDivProps } = useEditableDiv({
+    ...props,
+    disabled: true,
+    hoverable: true,
+  });
+
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const handleClickDateButton = () => setIsDatePickerVisible(true);
+  const closeDatePicker = () => setIsDatePickerVisible(false);
 
   return (
     <DatePickerContainer>
-      <StyledContentEditable
-        {...editableDivProps}
-        html={html ? html.toDateString() : 'Empty'}
-        style={{ ...style, color: html ? '' : 'var(--empty-font-color)' }}
-        innerRef={dateButtonRef}
-      />
-      {isDropdown ? <DatePicker {...popupProps} /> : ''}
+      <div ref={buttonRef} onClick={handleClickDateButton}>
+        <StyledContentEditable
+          {...editableDivProps}
+          html={html ? html.toDateString() : 'Empty'}
+          style={{ color: !html && 'var(--empty-font-color)' }}
+        />
+      </div>
+      {isDatePickerVisible && (
+        <DatePicker
+          buttonRef={buttonRef}
+          closeDatePicker={closeDatePicker}
+          {...props}
+        />
+      )}
     </DatePickerContainer>
   );
 };
