@@ -4,6 +4,7 @@ import { mdiCheckboxBlankOutline } from '@mdi/js';
 import React, { useCallback, useContext } from 'react';
 import { DatabaseContext } from '../../../context/context';
 import { deleteDoc, doc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const DoneContainer = styled.button`
   display: flex;
@@ -17,18 +18,31 @@ const DoneContainer = styled.button`
   cursor: pointer;
 `;
 
-const CardDone = ({ dbItem: { id } }) => {
-  const { userDbRef, removeDbItem } = useContext(DatabaseContext);
+const CardDone = ({ dbItem: { id }, removeDbItem }) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
-  const handleRemoveDbItem = useCallback(async () => {
-    try {
+  const navigate = useNavigate();
+
+  const handleRemoveDbItem = useCallback(
+    async (e) => {
+      // container has onClick event that opens sidebar but if we click the isDone button we don't want to open the sidebar. Ugly fix but I believe it works
+      e.stopPropagation();
+      e.preventDefault();
+      navigate('../');
+
       removeDbItem(id);
-      const docRef = doc(userDbRef, 'dbItems', id);
-      await deleteDoc(docRef);
-    } catch (error) {
-      console.log('Error removing document: ', error);
-    }
-  }, [removeDbItem, id, userDbRef]);
+
+      if (!userDbRef) return;
+
+      try {
+        const docRef = doc(userDbRef, 'dbItems', id);
+        await deleteDoc(docRef);
+      } catch (error) {
+        console.log('Error removing document: ', error);
+      }
+    },
+    [navigate, removeDbItem, id, userDbRef],
+  );
 
   return (
     <DoneContainer onClick={handleRemoveDbItem}>

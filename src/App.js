@@ -10,8 +10,10 @@ import Footer from './components/Footer';
 import RootLayout from './components/RootLayout';
 import Sidebar from './components/Sidebar/Sidebar';
 import useArrayOfObjects from './components/utils/custom/useArrayOfObjects';
-import { DatabaseContext } from './context/context';
+import { DatabaseProvider } from './context/context';
 import notionLogo from './assets/notion-logo-no-background.png';
+import { defaultViews } from './components/utils/helpers/viewHelpers';
+import { defaultProperties } from './components/utils/helpers/propertyHelpers';
 
 const AppContainer = styled.div`
   display: grid;
@@ -21,7 +23,10 @@ const AppContainer = styled.div`
   overflow: hidden;
 `;
 
-// TODO need to allow user to use without logging in and just not saving
+const StyledFooter = styled(Footer)`
+grid-row-start: 3;
+`
+
 const App = () => {
   const [user, setUser] = useState();
   const [userDbRef, setUserDbRef] = useState();
@@ -57,10 +62,11 @@ const App = () => {
     fetchUserDbRef();
   }, [user]);
 
-  const [dbItems, setDbItems, removeDbItem, addDbItem] = useArrayOfObjects();
-  const [views, setViews, removeView, addView] = useArrayOfObjects();
+  const [dbItems, setDbItems, removeDbItem, addDbItem] = useArrayOfObjects([]);
+  const [views, setViews, removeView, addView] =
+    useArrayOfObjects(defaultViews);
   const [properties, setProperties, removeProperty, addProperty] =
-    useArrayOfObjects();
+    useArrayOfObjects(defaultProperties);
 
   // fetching data
   useEffect(() => {
@@ -109,29 +115,15 @@ const App = () => {
       }
     };
     fetchData();
-  }, [setDbItems, setViews, setProperties, userDbRef]);
-
-  const databaseValues = {
-    userDbRef,
-    views,
-    dbItems,
-    setDbItems,
-    removeDbItem,
-    addDbItem,
-    properties,
-    setProperties,
-    removeProperty,
-    addProperty,
-  };
+  }, [setDbItems, setViews, setProperties, userDbRef, user]);
 
   const [sidebarWidth, setSidebarWidth] = useState(400);
 
-  if (!user) return <Nav userDbRef={userDbRef} user={user} />;
   return views?.length ? (
     <BrowserRouter>
       <AppContainer>
         <Nav userDbRef={userDbRef} user={user} />
-        <DatabaseContext.Provider value={databaseValues}>
+        <DatabaseProvider value={{ userDbRef, user }}>
           <Routes>
             <Route
               path="/"
@@ -143,15 +135,17 @@ const App = () => {
                 <RootLayout
                   views={views}
                   setViews={setViews}
-                  removeView={removeView}
                   addView={addView}
+                  removeView={removeView}
                   dbItems={dbItems}
                   setDbItems={setDbItems}
                   addDbItem={addDbItem}
-                  sidebarWidth={sidebarWidth}
+                  removeDbItem={removeDbItem}
                   properties={properties}
                   setProperties={setProperties}
                   addProperty={addProperty}
+                  removeProperty={removeProperty}
+                  sidebarWidth={sidebarWidth}
                 />
               }
             >
@@ -163,18 +157,18 @@ const App = () => {
                     sidebarWidth={sidebarWidth}
                     dbItems={dbItems}
                     setDbItems={setDbItems}
+                    removeDbItem={removeDbItem}
                     properties={properties}
                     setProperties={setProperties}
                     addProperty={addProperty}
                     removeProperty={removeProperty}
-                    removeDbItem={removeDbItem}
                   />
                 }
               />
             </Route>
           </Routes>
-        </DatabaseContext.Provider>
-        <Footer />
+        </DatabaseProvider>
+        <StyledFooter />
       </AppContainer>
     </BrowserRouter>
   ) : (

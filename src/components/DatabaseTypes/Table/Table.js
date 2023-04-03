@@ -14,7 +14,8 @@ import { useDrop } from 'react-dnd';
 import { doc, setDoc } from 'firebase/firestore';
 
 const Container = styled.div`
-  min-width: 100%;
+  min-width: fit-content;
+  width: 100%;
   user-select: none;
   padding-bottom: 50px;
 `;
@@ -23,18 +24,17 @@ const sharedRow = css`
   display: flex;
   background: rgb(25, 25, 25);
   width: 100%;
+  width: fit-content;
   min-height: 33px;
   color: rgba(255, 255, 255, 0.443);
   border-top: 1px solid rgb(47, 47, 47);
   box-shadow: rgb(25 25 25) -3px 0px 0px, rgb(47 47 47) 0px 1px 0px;
-  & > *:hover {
-    background-color: rgba(255, 255, 255, 0.055);
-  }
 `;
 
 const nameColumn = css`
   overflow: hidden;
   display: flex;
+  min-width: 275px;
   width: 275px;
   border-right: 1px solid rgba(255, 255, 255, 0.094);
   user-select: none;
@@ -45,8 +45,10 @@ const nameColumn = css`
 `;
 
 const propertyColumns = css`
+  width: 100%;
   overflow: hidden;
   display: flex;
+  min-width: 200px;
   width: 200px;
   border-right: 1px solid rgba(255, 255, 255, 0.094);
   user-select: none;
@@ -59,24 +61,31 @@ const propertyColumns = css`
 
 const Header = styled.div`
   ${sharedRow}
+  width: 100%;
 `;
 
 const HeaderCellName = styled(PropertyLabel)`
   ${nameColumn};
+  cursor: default;
 `;
 
 const HeaderCell = styled(PropertyLabel)`
   ${propertyColumns}
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.055);
+  }
 `;
 
 const BottomRow = styled.div`
   ${sharedRow};
+  width: 100%;
 `;
 
 const StyledNewButton = styled(NewButton)`
   margin: 0;
   padding: 0;
   height: 33px;
+  width: 100%;
   &:hover {
     border-radius: 0;
     background-color: none;
@@ -102,9 +111,11 @@ const Table = ({
       notes: null,
       ...getPropertiesObj(properties),
     };
+    addDbItem(newDbItem);
+
+    if (!userDbRef) return;
 
     try {
-      addDbItem(newDbItem);
       await setDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
     } catch (e) {
       console.log(e);
@@ -169,8 +180,10 @@ const Table = ({
       {editedDbItems?.map((dbItem) => (
         <TableRowContent
           key={dbItem.id}
-          dbItem={dbItem}
+          setDbItems={setDbItems}
+          selectedDbItem={dbItem}
           properties={properties}
+          setProperties={setProperties}
         />
       ))}
       <BottomRow>

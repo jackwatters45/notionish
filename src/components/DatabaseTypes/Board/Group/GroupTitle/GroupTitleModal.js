@@ -98,31 +98,29 @@ const GroupTitleModal = (props) => {
     );
   }, [selectedProperty?.values, nameInput, groupData.id]);
 
+  // TODO
   const updateProperties = useCallback(
-    (batch, updatedPropertyValue) => {
-      const propertyRef = doc(userDbRef, 'properties', selectedProperty.id);
-
-      const updatedPropertyValues = selectedProperty.values.map((value) =>
-        value.id === groupData.id ? updatedPropertyValue : value,
-      );
-      const updatedProperty = {
-        ...selectedProperty,
-        values: updatedPropertyValues,
-      };
-
+    (updatedProperty) => {
       setProperties((prev) =>
         prev.map((prop) => {
           return prop.id === selectedProperty.id ? updatedProperty : prop;
         }),
       );
-
-      batch.update(propertyRef, { values: updatedPropertyValues });
     },
-    [selectedProperty, groupData.id, setProperties, userDbRef],
+    [selectedProperty, setProperties],
+  );
+
+  const updatePropertiesBackend = useCallback(
+    async (batch, updatedPropertyValues) => {
+      batch.update(doc(userDbRef, 'properties', selectedProperty.id), {
+        values: updatedPropertyValues,
+      });
+    },
+    [selectedProperty.id, userDbRef],
   );
 
   const updateDbItems = useCallback(
-    async (batch, updatedPropertyValue) => {
+    async (updatedPropertyValue) => {
       setDbItems((prevDbItems) =>
         prevDbItems.map((item) => {
           return item[selectedProperty.name]?.id === groupData.id
@@ -130,7 +128,12 @@ const GroupTitleModal = (props) => {
             : item;
         }),
       );
+    },
+    [selectedProperty.name, groupData.id, setDbItems],
+  );
 
+  const updateDbItemsBackend = useCallback(
+    async (batch, updatedPropertyValue) => {
       try {
         const collectionRef = collection(userDbRef, 'dbItems');
         const q = query(
@@ -147,7 +150,7 @@ const GroupTitleModal = (props) => {
         console.log(e);
       }
     },
-    [selectedProperty.name, groupData.id, setDbItems, userDbRef],
+    [groupData.id, selectedProperty.name, userDbRef],
   );
 
   const handleSubmitInput = async () => {
@@ -156,11 +159,24 @@ const GroupTitleModal = (props) => {
     closeModal();
 
     try {
-      const batch = writeBatch(db);
       const updatedPropertyValue = { ...groupData, name: nameInput };
 
-      updateProperties(batch, updatedPropertyValue);
-      await updateDbItems(batch, updatedPropertyValue);
+      const updatedPropertyValues = selectedProperty.values.map((value) =>
+        value.id === groupData.id ? updatedPropertyValue : value,
+      );
+      const updatedProperty = {
+        ...selectedProperty,
+        values: updatedPropertyValues,
+      };
+
+      updateProperties(updatedProperty);
+      updateDbItems(updatedPropertyValue);
+
+      if (!userDbRef) return;
+
+      const batch = writeBatch(db);
+      updatePropertiesBackend(batch, updatedPropertyValues);
+      await updateDbItemsBackend(batch, updatedPropertyValue);
 
       await batch.commit();
     } catch (e) {

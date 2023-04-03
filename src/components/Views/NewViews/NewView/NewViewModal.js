@@ -80,6 +80,8 @@ const NewViewModal = ({ views, addView, buttonRef, closeModal }) => {
 
     addView(newView);
 
+    if (!userDbRef) return;
+
     try {
       await setDoc(doc(userDbRef, 'views', id), newView);
     } catch (err) {

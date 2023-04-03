@@ -17,6 +17,7 @@ const Board = ({
   setProperties,
   setDbItems,
   addDbItem,
+  removeDbItem
 }) => {
   const selectedProperty = useMemo(() => {
     return properties.find(({ id }) => id === 'CWn4hkG8N6XTyhPxLhnI');
@@ -61,8 +62,9 @@ const Board = ({
               properties={properties}
               setProperties={setProperties}
               selectedView={selectedView}
-              addDbItem={addDbItem}
               setDbItems={setDbItems}
+              addDbItem={addDbItem}
+              removeDbItem={removeDbItem}
               dragHeight={maxBoardHeight}
             />
           );

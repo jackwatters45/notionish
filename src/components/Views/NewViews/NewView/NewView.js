@@ -6,6 +6,7 @@ import NewViewModal from './NewViewModal';
 
 const StyledIcon = styled(Icon)`
   padding: 1px;
+  cursor: pointer;
   margin-bottom: 2px;
   &:hover {
     background-color: rgba(255, 255, 255, 0.055);

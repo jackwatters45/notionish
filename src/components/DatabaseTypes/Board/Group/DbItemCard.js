@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import CardDone from '../../../utils/components/CardDone';
 import NameProperty from '../../../Properties/NameProperty';
 import { useDrag } from 'react-dnd';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TodoContainer = styled.div`
   padding: 10px 10px 6px;
@@ -25,34 +25,35 @@ const TodoContainer = styled.div`
 `;
 
 const StyledNameProp = styled(NameProperty)`
-  background-color: inherit;
   padding: 0 0 6px 0;
 `;
 
-const DbItemCard = ({ dbItem, setDbItems }) => {
+const DbItemCard = ({ dbItem, setDbItems, removeDbItem }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'dbItem',
     item: { todoId: dbItem.id },
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
 
+  const navigate = useNavigate();
+  const handleTodoContainerClick = () => navigate(`${dbItem.id}`);
+
   return (
-    <Link to={`${dbItem.id}`}>
-      <TodoContainer
-        ref={drag}
+    <TodoContainer
+      ref={drag}
+      className={dbItem.id}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+      onClick={handleTodoContainerClick}
+    >
+      <StyledNameProp
+        selectedProperty={{ name: 'name' }}
+        data={dbItem}
+        setDbItems={setDbItems}
         className={dbItem.id}
-        style={{ opacity: isDragging ? 0.5 : 1 }}
-      >
-        <StyledNameProp
-          selectedProperty={{ name: 'name' }}
-          data={dbItem}
-          setDbItems={setDbItems}
-          className={dbItem.id}
-          placeholder="Type a name..."
-        />
-        <CardDone dbItem={dbItem} />
-      </TodoContainer>
-    </Link>
+        placeholder="Type a name..."
+      />
+      <CardDone dbItem={dbItem} removeDbItem={removeDbItem} />
+    </TodoContainer>
   );
 };
 

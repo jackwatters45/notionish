@@ -101,7 +101,6 @@ const SelectDropdown = ({
   closeDropdown,
 }) => {
   const { userDbRef } = useContext(DatabaseContext);
-  const dbItemDoc = doc(userDbRef, 'dbItems', data.id);
 
   const dropdownProps = useModal(buttonRef, closeDropdown);
 
@@ -125,14 +124,16 @@ const SelectDropdown = ({
     );
 
     try {
-      await updateDoc(dbItemDoc, { [selectedProperty.name]: value });
+      await updateDoc(doc(userDbRef, 'dbItems', data.id), {
+        [selectedProperty.name]: value,
+      });
     } catch (e) {
       console.log(e);
     }
   };
 
   const ChangeDbPropertyValueInput = useCallback(
-    (batch, newValue) => {
+    (newValue) => {
       setDbItems((prevDbItems) =>
         prevDbItems.map((item) => {
           return item.id === data.id
@@ -140,19 +141,25 @@ const SelectDropdown = ({
             : item;
         }),
       );
+    },
+    [setDbItems, data.id, selectedProperty.name],
+  );
 
+  const ChangeDbPropertyValueInputBackend = useCallback(
+    (batch, newValue) => {
       try {
-        batch.update(dbItemDoc, { [selectedProperty.name]: newValue });
+        batch.update(doc(userDbRef, 'dbItems', data.id), {
+          [selectedProperty.name]: newValue,
+        });
       } catch (e) {
         console.log(e);
       }
     },
-    [setDbItems, data.id, selectedProperty.name, dbItemDoc],
+    [data.id, selectedProperty.name, userDbRef],
   );
 
   const addValueToProperty = useCallback(
-    async (batch, newValue) => {
-      const updatedValues = [...selectedProperty.values, newValue];
+    async (updatedValues) => {
       const updatedProp = { ...selectedProperty, values: updatedValues };
 
       setProperties((prevProperties) =>
@@ -160,7 +167,12 @@ const SelectDropdown = ({
           return property.id === selectedProperty.id ? updatedProp : property;
         }),
       );
+    },
+    [selectedProperty, setProperties],
+  );
 
+  const addValueToPropertyBackend = useCallback(
+    (batch, updatedValues) => {
       try {
         batch.update(doc(userDbRef, 'properties', selectedProperty.id), {
           values: updatedValues,
@@ -169,21 +181,28 @@ const SelectDropdown = ({
         console.log(e);
       }
     },
-    [selectedProperty, setProperties, userDbRef],
+    [selectedProperty.id, userDbRef],
   );
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (isErrorMsg || !input) return;
+
+    const newValue = { id: uuid(), name: input };
+    const updatedValues = [...selectedProperty.values, newValue];
+    resetInput();
+
+    ChangeDbPropertyValueInput(newValue);
+    addValueToProperty(updatedValues);
+
+    if (!userDbRef) return;
 
     const batch = writeBatch(db);
 
-    const newValue = { id: uuid(), name: input };
-    resetInput();
-
     try {
-      ChangeDbPropertyValueInput(batch, newValue);
-      await addValueToProperty(batch, newValue);
+      ChangeDbPropertyValueInputBackend(batch, newValue);
+      await addValueToPropertyBackend(batch, updatedValues);
 
       await batch.commit();
     } catch (e) {
@@ -222,21 +241,24 @@ const SelectDropdown = ({
           database.
         </ErrorMsg>
       )}
+
       <Categories>
         <StyledOptionsText>Select an option or create one</StyledOptionsText>
-        {selectedProperty.values.map((value) => (
-          <DropdownRow
-            key={value.id}
-            onClick={() => handleClickPropertyValue(value)}
-          >
-            <Icon
-              path={mdiDrag}
-              size={0.85}
-              color={'var(--secondary-font-color)'}
-            />
-            <CategoryName>{value.name}</CategoryName>
-          </DropdownRow>
-        ))}
+
+        {!!selectedProperty?.values?.length &&
+          selectedProperty.values.map((value) => (
+            <DropdownRow
+              key={value.id}
+              onClick={() => handleClickPropertyValue(value)}
+            >
+              <Icon
+                path={mdiDrag}
+                size={0.85}
+                color={'var(--secondary-font-color)'}
+              />
+              <CategoryName>{value.name}</CategoryName>
+            </DropdownRow>
+          ))}
       </Categories>
     </DropdownContainer>
   );

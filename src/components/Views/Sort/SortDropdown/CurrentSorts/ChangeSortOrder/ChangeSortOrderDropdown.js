@@ -60,6 +60,8 @@ const ChangeSortOrderDropdown = ({
       prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
 
+    if (!userDbRef) return;
+
     await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
   };
 

@@ -4,9 +4,11 @@ import PropertyLabel from '../Properties/Labels/PropertyLabel';
 import Icon from '@mdi/react';
 import { mdiCheckboxOutline, mdiCheckboxBlankOutline } from '@mdi/js';
 import NotesProperty from '../Properties/NotesProperty';
-import propertyData from '../utils/helpers/propertyHelpers';
+import propertyData, {
+  unhoverableTypes,
+} from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
-import { hoverStyle } from '../utils/theme';
+import { hoverStyle } from '../../context/theme';
 import { DatabaseContext } from '../../context/context';
 import { doc, deleteDoc } from 'firebase/firestore';
 import AddNewPropertySidebar from './AddNewPropertySidebar';
@@ -36,7 +38,7 @@ const StyledPropertyLabel = styled(PropertyLabel)`
   ${hoverStyle};
 `;
 
-const StyledPropertyValue = styled.div`
+const ClickablePropertyValue = styled.div`
   ${hoverStyle};
   & > div:focus {
     background: rgb(37, 37, 37);
@@ -83,9 +85,11 @@ const SidebarContents = ({
 
   const handleDeleteTodoAndCloseSidebar = async () => {
     handleClickClose();
+    removeDbItem(dbItemId);
+
+    if (!userDbRef) return;
 
     try {
-      removeDbItem(dbItemId);
       await deleteDoc(doc(userDbRef, 'dbItems', dbItemId));
     } catch (e) {
       console.log(e);
@@ -103,6 +107,14 @@ const SidebarContents = ({
       {properties.map((property) => {
         const { name, type } = property;
         const { icon, getComponent } = propertyData[type];
+
+        const component = getComponent({
+          selectedProperty: property,
+          data: selectedDbItem,
+          setDbItems: setDbItems,
+          setProperties: setProperties,
+        });
+
         return (
           <PropertyRow key={name}>
             <StyledPropertyLabel
@@ -113,14 +125,11 @@ const SidebarContents = ({
               removeProperty={removeProperty}
               setDbItems={setDbItems}
             />
-            <StyledPropertyValue>
-              {getComponent({
-                selectedProperty: property,
-                data: selectedDbItem,
-                setDbItems: setDbItems,
-                setProperties: setProperties,
-              })}
-            </StyledPropertyValue>
+            {unhoverableTypes.includes(type) ? (
+              <>{component}</>
+            ) : (
+              <ClickablePropertyValue>{component}</ClickablePropertyValue>
+            )}
           </PropertyRow>
         );
       })}

@@ -94,7 +94,7 @@ const LabelModal = ({
   };
 
   const updateProperties = useCallback(
-    (batch, updatedProperty) => {
+    (updatedProperty) => {
       setProperties((prevProperties) =>
         prevProperties.map((property) => {
           return property.id === selectedProperty.id
@@ -102,17 +102,22 @@ const LabelModal = ({
             : property;
         }),
       );
+    },
+    [selectedProperty, setProperties],
+  );
 
+  const updatePropertiesBackend = useCallback(
+    (batch, updatedProperty) => {
       batch.update(
         doc(userDbRef, 'properties', selectedProperty.id),
         updatedProperty,
       );
     },
-    [selectedProperty, userDbRef, setProperties],
+    [selectedProperty.id, userDbRef],
   );
 
   const updateDbItems = useCallback(
-    async (batch, updatedProperty) => {
+    (updatedProperty) => {
       setDbItems((prevDbItems) =>
         prevDbItems.map((item) => {
           return {
@@ -121,7 +126,12 @@ const LabelModal = ({
           };
         }),
       );
+    },
+    [selectedProperty, setDbItems],
+  );
 
+  const updateDbItemsBackend = useCallback(
+    async (batch, updatedProperty) => {
       try {
         const collectionRef = collection(userDbRef, 'dbItems');
         const querySnapshot = await getDocs(collectionRef);
@@ -135,17 +145,24 @@ const LabelModal = ({
         console.log(e);
       }
     },
-    [selectedProperty, userDbRef, setDbItems],
+    [selectedProperty.name, userDbRef],
   );
 
   const renameProperty = async () => {
-    const batch = writeBatch(db);
+    setIsRenaming(false);
 
     const updatedProperty = { ...selectedProperty, name: nameInput };
 
+    updateProperties(updatedProperty);
+    updateDbItems(updatedProperty);
+
+    if (!userDbRef) return;
+
+    const batch = writeBatch(db);
+
     try {
-      updateProperties(batch, updatedProperty);
-      await updateDbItems(batch, updatedProperty);
+      updatePropertiesBackend(batch, updatedProperty);
+      await updateDbItemsBackend(batch, updatedProperty);
 
       await batch.commit();
     } catch (e) {
@@ -155,6 +172,8 @@ const LabelModal = ({
 
   const handleClickRemoveProperty = async (propertyId) => {
     removeProperty(propertyId);
+
+    if (!userDbRef) return;
 
     try {
       await deleteDoc(doc(userDbRef, 'properties', propertyId));
@@ -178,10 +197,12 @@ const LabelModal = ({
             <Icon path={mdiRenameBoxOutline} size={0.75} />
             Rename
           </Row>
-          <Row onClick={() => handleClickRemoveProperty(selectedProperty.id)}>
-            <Icon path={mdiDeleteOutline} size={0.75} />
-            Delete property
-          </Row>
+          {selectedProperty.id !== 'CWn4hkG8N6XTyhPxLhnI' && (
+            <Row onClick={() => handleClickRemoveProperty(selectedProperty.id)}>
+              <Icon path={mdiDeleteOutline} size={0.75} />
+              Delete property
+            </Row>
+          )}
         </>
       ) : (
         <>

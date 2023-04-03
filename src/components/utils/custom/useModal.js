@@ -1,4 +1,4 @@
-import { useRef, useMemo, useLayoutEffect } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 
 const useModal = (buttonRef, closeModal) => {
   const modalRef = useRef();
@@ -9,7 +9,7 @@ const useModal = (buttonRef, closeModal) => {
     return window.innerWidth - pickerRightLoc < 0 ? { right: 0 } : {};
   }, [buttonRef]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const handleClick = (e) => {
       if (!modalRef.current?.contains(e.target)) closeModal();
     };
@@ -23,8 +23,6 @@ const useModal = (buttonRef, closeModal) => {
       document.removeEventListener('mousedown', handleEscape);
     };
   }, [closeModal, modalRef]);
-
-  // console.log('modal active');
 
   return { style: rightPositionStyle, ref: modalRef };
 };

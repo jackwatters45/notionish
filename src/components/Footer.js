@@ -8,21 +8,21 @@ const FooterContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 8px 0; 
+  margin: 8px 0;
 `;
 const Link = styled.a`
   display: flex;
 `;
 
-const Footer = () => {
+const Footer = ({ className }) => {
   return (
-    <FooterContainer>
+    <FooterContainer className={className}>
       <p>Copyright © 2022 jackwatters45</p>
       <Link
         href="https://github.com/jackwatters45/"
         target="_blank"
         rel="noreferrer"
-        title='Github Link'
+        title="Github Link"
       >
         <Icon path={mdiGithub} size={1} />
       </Link>

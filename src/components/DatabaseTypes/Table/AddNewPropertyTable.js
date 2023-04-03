@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { mdiPlus } from '@mdi/js';
 import AddPropertyModal from '../../Properties/AddPropertyModal';
+import { hoverNoBorder } from '../../../context/theme';
 
 const AddNewButton = styled.div`
   overflow: hidden;
@@ -12,6 +13,9 @@ const AddNewButton = styled.div`
   cursor: pointer;
   padding: 0 8px;
   align-items: center;
+  &:hover {
+    ${hoverNoBorder}
+  }
 `;
 
 const StyledIcon = styled(Icon)`

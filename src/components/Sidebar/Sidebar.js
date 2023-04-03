@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useCallback, useRef } from 'react';
+import React, { useState,  useCallback, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDoubleRight } from '@mdi/js';
@@ -76,7 +76,7 @@ const Sidebar = ({
     [isResizing, sidebarRef, setSidebarWidth],
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     window.addEventListener('mousemove', resize);
     window.addEventListener('mouseup', stopResizing);
     return () => {
@@ -85,13 +85,14 @@ const Sidebar = ({
     };
   }, [resize, stopResizing]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const handleClick = (e) => {
       if (isFirstRender.current) {
         isFirstRender.current = false;
         return;
       }
 
+      // TODO this may be the way to control the sidebar close behavior when also popup
       if (
         e.target.classList.contains(dbItemId) ||
         sidebarRef.current?.contains(e.target)

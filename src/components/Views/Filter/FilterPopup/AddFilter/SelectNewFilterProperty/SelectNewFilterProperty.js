@@ -88,6 +88,8 @@ const SelectNewFilterProperty = (props) => {
       prevViews.map((view) => (view === selectedView ? updatedView : view)),
     );
 
+    if (!userDbRef) return;
+
     try {
       await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
     } catch (e) {

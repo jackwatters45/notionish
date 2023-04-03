@@ -26,6 +26,7 @@ const RootLayout = ({
   dbItems,
   setDbItems,
   addDbItem,
+  removeDbItem,
   sidebarWidth,
 }) => {
   const { viewId } = useParams();
@@ -73,6 +74,7 @@ const RootLayout = ({
           dbItems={dbItems}
           setDbItems={setDbItems}
           addDbItem={addDbItem}
+          removeDbItem={removeDbItem}
         />
         <Outlet />
       </MainContentContainer>

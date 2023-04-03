@@ -13,7 +13,7 @@ const AddFilter = ({
   const { userDbRef } = useContext(DatabaseContext);
 
   const [currentFilter, setCurrentFilter] = useState();
-  
+
   const handleSelectProperty = useCallback(
     async (property) => {
       const newFilter = { property: property, type: 'contains', searchEl: '' };
@@ -27,6 +27,8 @@ const AddFilter = ({
       setViews((prevViews) =>
         prevViews.map((view) => (view === selectedView ? updatedView : view)),
       );
+
+      if (!userDbRef) return;
 
       try {
         await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);

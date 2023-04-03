@@ -51,6 +51,8 @@ const AddGroup = ({ selectedProperty, setProperties }) => {
       }),
     );
 
+    if (!userDbRef) return;
+    
     try {
       const { id } = selectedProperty;
       await updateDoc(doc(userDbRef, 'properties', id), updatedProperty);

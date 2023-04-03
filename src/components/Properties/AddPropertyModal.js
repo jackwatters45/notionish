@@ -70,23 +70,33 @@ const AddPropertyModal = ({
   const [selectedType, setPropertyType] = useState('text');
 
   const addPropertyToProperties = useCallback(
-    (batch, newProperty) => {
+    (newProperty) => {
       addProperty(newProperty);
+    },
+    [addProperty],
+  );
 
+  const addPropertyToPropertiesBackend = useCallback(
+    async (batch, newProperty) => {
       const newDocRef = doc(userDbRef, 'properties', newProperty.id);
       batch.set(newDocRef, newProperty);
     },
-    [addProperty, userDbRef],
+    [userDbRef],
   );
 
   const addPropertyToDbItems = useCallback(
-    async (batch, newProperty) => {
+    (newProperty) => {
       setDbItems((prevDbItems) =>
         prevDbItems.map((item) => {
           return { ...item, [newProperty.name]: null };
         }),
       );
+    },
+    [setDbItems],
+  );
 
+  const addPropertyToDbItemsBackend = useCallback(
+    async (batch, newProperty) => {
       try {
         const collectionRef = collection(userDbRef, 'dbItems');
         const querySnapshot = await getDocs(collectionRef);
@@ -97,9 +107,10 @@ const AddPropertyModal = ({
         console.log(e);
       }
     },
-    [setDbItems, userDbRef],
+    [userDbRef],
   );
 
+  // TODO idk if did right
   const addNewProperty = async () => {
     closeModal();
 
@@ -110,11 +121,14 @@ const AddPropertyModal = ({
       values: selectedType === 'Select' ? [] : null,
     };
 
+    addPropertyToProperties(newProperty);
+    addPropertyToDbItems(newProperty);
+
+    if (!userDbRef) return;
+
     const batch = writeBatch(db);
-
-    addPropertyToProperties(batch, newProperty);
-    await addPropertyToDbItems(batch, newProperty);
-
+    addPropertyToPropertiesBackend(batch, newProperty);
+    await addPropertyToDbItemsBackend(batch, newProperty);
     await batch.commit();
   };
 
@@ -148,14 +162,18 @@ const AddPropertyModal = ({
       <TypeLabel>Type</TypeLabel>
       {Object.keys(propertyData).map((propertyType) => {
         const { name, icon } = propertyData[propertyType];
+        if (propertyType === 'created') return null;
         return (
           <AddPropRow
             key={propertyType}
             onClick={() => setPropertyType(propertyType)}
-            style={{
-              backgroundColor:
-                propertyType === selectedType && 'rgba(255, 255, 255, 0.11)',
-            }}
+            style={
+              propertyType === selectedType
+                ? {
+                    backgroundColor: 'rgba(255, 255, 255, 0.11)',
+                  }
+                : {}
+            }
           >
             <Icon path={icon} size={0.75} />
             {name}

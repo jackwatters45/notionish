@@ -31,6 +31,8 @@ const useEditableDiv = ({
         }),
       );
 
+      if (!userDbRef) return;
+
       try {
         await updateDoc(doc(userDbRef, 'dbItems', data.id), {
           [selectedProperty.name]: input,

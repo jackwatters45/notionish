@@ -35,6 +35,8 @@ export const sharedRow = css`
   width: calc(100% - 50px);
   background: rgb(25, 25, 25);
   min-height: 33px;
+  width: 100%;
+  min-width: fit-content;
   color: rgba(255, 255, 255, 0.443);
   border-top: 1px solid rgb(47, 47, 47);
   box-shadow: rgb(25 25 25) -3px 0px 0px, rgb(47 47 47) 0px 1px 0px;
@@ -46,6 +48,7 @@ export const sharedRow = css`
 export const nameColumn = css`
   overflow: hidden;
   display: flex;
+  min-width: 275px;
   width: 275px;
   border-right: 1px solid rgba(255, 255, 255, 0.094);
   user-select: none;
@@ -58,6 +61,7 @@ export const nameColumn = css`
 export const propertyColumns = css`
   overflow: hidden;
   display: flex;
+  min-width: 200px;
   width: 200px;
   border-right: 1px solid rgba(255, 255, 255, 0.094);
   user-select: none;
@@ -112,14 +116,19 @@ const DragButton = styled.div`
   transition: background 20ms ease-in 0s;
 `;
 
-const TableRowContent = ({ dbItem, properties }) => {
+const TableRowContent = ({
+  properties,
+  setProperties,
+  selectedDbItem,
+  setDbItems,
+}) => {
   const itemRef = useRef();
 
   const [isHovered, setIsHovered] = useState(false);
 
   const [{ opacity }, drag, dragPreview] = useDrag(() => ({
     type: 'dbItem',
-    item: { todoId: dbItem.id },
+    item: { todoId: selectedDbItem.id },
     collect: (monitor) => ({ opacity: !!monitor.isDragging() ? 0.5 : 1 }),
   }));
 
@@ -127,18 +136,24 @@ const TableRowContent = ({ dbItem, properties }) => {
     <ContainerDiv
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      key={dbItem.id}
+      key={selectedDbItem.id}
     >
       {isHovered && (
-        <DragButton className={dbItem.id} ref={drag}>
+        <DragButton className={selectedDbItem.id} ref={drag}>
           <Icon path={mdiDrag} size={1} color={'var(--empty-font-color'} />
         </DragButton>
       )}
       <TableRow ref={dragPreview} style={{ opacity }}>
         <RowName>
-          <NameProperty name={'name'} data={dbItem} />
+          <NameProperty
+            data={selectedDbItem}
+            selectedProperty={{ name: 'name' }}
+            setDbItems={setDbItems}
+            className={selectedDbItem.id}
+            placeholder="Type a name..."
+          />
           {isHovered && (
-            <Link to={`${dbItem.id}`}>
+            <Link to={`${selectedDbItem.id}`}>
               <StyledSidebarButton className="dbItem">
                 <Icon path={mdiPageLayoutSidebarRight} size={0.525} />
                 OPEN
@@ -147,11 +162,16 @@ const TableRowContent = ({ dbItem, properties }) => {
           )}
         </RowName>
         {properties.map((property) => {
-          const { id, type, name } = property;
+          const { id, type } = property;
           const { getComponent } = propertyData[type];
           return (
             <RowCell ref={itemRef} key={id}>
-              {getComponent(name, dbItem)}
+              {getComponent({
+                selectedProperty: property,
+                data: selectedDbItem,
+                setDbItems: setDbItems,
+                setProperties: setProperties,
+              })}
             </RowCell>
           );
         })}

@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 import Icon from '@mdi/react';
 import { mdiGoogle, mdiGithub, mdiFacebook } from '@mdi/js';
-import { hoverStyle } from './utils/theme';
+import { hoverStyle } from '../context/theme';
 import { Link } from 'react-router-dom';
 
 const Container = styled.div`
@@ -111,13 +111,9 @@ const Nav = ({ user }) => {
 
   return (
     <Container>
-      {user ? (
-        <Link to={'/'}>
-          <Header>Notion Todo Clone</Header>
-        </Link>
-      ) : (
+      <Link to={'/'}>
         <Header>Notion Todo Clone</Header>
-      )}
+      </Link>
       <LoginContainer>
         {user ? (
           <>
@@ -126,7 +122,7 @@ const Nav = ({ user }) => {
           </>
         ) : (
           <>
-            <LoginText>Login to save your todos</LoginText>
+            <LoginText>Login to save your data</LoginText>
             <LoginIcons>
               <StyledButton onClick={loginGoogle}>
                 <StyledPopupIcon path={mdiGoogle} size={0.9} />

@@ -47,6 +47,8 @@ const ChangePropertyDropdown = ({
       }),
     );
 
+    if (!userDbRef) return;
+
     try {
       await updateDoc(doc(userDbRef, 'views', selectedView.id), {
         ...selectedView,

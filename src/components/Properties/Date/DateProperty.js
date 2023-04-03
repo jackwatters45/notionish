@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
-import { propertySharedStyle } from '../../utils/theme';
+import { propertySharedStyle } from '../../../context/theme';
 import DatePicker from './DatePicker';
 
 const DatePickerContainer = styled.div`
@@ -22,7 +22,6 @@ const DateProperty = (props) => {
   const { html, ...editableDivProps } = useEditableDiv({
     ...props,
     disabled: true,
-    hoverable: true,
   });
 
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);

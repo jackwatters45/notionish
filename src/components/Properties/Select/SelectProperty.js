@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import styled from 'styled-components';
 import useEditableDiv from '../../utils/custom/useEditableDiv';
-import { propertySharedStyle } from '../../utils/theme';
+import { propertySharedStyle } from '../../../context/theme';
 import SelectDropdown from './SelectDropdown';
 
 const SelectContainer = styled.div`

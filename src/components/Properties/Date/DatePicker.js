@@ -18,6 +18,7 @@ import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import { DatabaseContext } from '../../../context/context';
 import useModal from '../../utils/custom/useModal';
 import { doc, updateDoc } from 'firebase/firestore';
+import { hoverStyle } from '../../../context/theme';
 
 const DropDown = styled.div`
   position: absolute;
@@ -104,8 +105,7 @@ const TableHeader = styled.div`
 
 const TodayCell = styled.div`
   &:hover {
-    background-color: rgba(255, 255, 255, 0.055);
-    border-radius: 4px;
+    ${hoverStyle}
   }
 `;
 
@@ -133,6 +133,10 @@ const ClearButton = styled.div`
   box-shadow: rgb(255 255 255 / 13%) 0px 1px inset;
   user-select: none;
   transition: background 20ms ease-in 0s;
+  cursor: pointer;
+  :hover {
+    ${hoverStyle}
+  }
 `;
 
 const DatePicker = ({
@@ -175,6 +179,8 @@ const DatePicker = ({
       }),
     );
 
+    if (!userDbRef) return;
+    
     try {
       await updateDoc(doc(userDbRef, 'dbItems', data.id), updatedProperty);
     } catch (e) {

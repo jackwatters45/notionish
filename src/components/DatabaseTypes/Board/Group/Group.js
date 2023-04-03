@@ -43,6 +43,7 @@ const Header = styled.div`
 
 const TrashIcon = styled(Icon)`
   color: var(--secondary-font-color);
+  cursor: pointer;
   padding: 1px;
   border-radius: 4px;
   margin-right: 8px;
@@ -69,6 +70,7 @@ const Group = ({
   setProperties,
   addDbItem,
   setDbItems,
+  removeDbItem,
   dragHeight,
   selectedView,
 }) => {
@@ -84,8 +86,11 @@ const Group = ({
       [selectedProperty.name]: groupData,
     };
 
+    addDbItem(newDbItem);
+
+    if (!userDbRef) return;
+
     try {
-      addDbItem(newDbItem);
       await setDoc(doc(userDbRef, 'dbItems', newDbItem.id), newDbItem);
     } catch (e) {
       console.log(e);
@@ -93,11 +98,7 @@ const Group = ({
   };
 
   const removeGroupFromProperty = useCallback(
-    (groupId, batch) => {
-      const updatedPropertyValues = selectedProperty.values.filter(
-        ({ id }) => id !== groupId,
-      );
-
+    (updatedPropertyValues) => {
       const updatedProperty = {
         ...selectedProperty,
         values: updatedPropertyValues,
@@ -110,16 +111,21 @@ const Group = ({
             : property;
         }),
       );
+    },
+    [selectedProperty, setProperties],
+  );
 
+  const removeGroupFromPropertyBackend = useCallback(
+    (batch, updatedPropertyValues) => {
       batch.update(doc(userDbRef, 'properties', selectedProperty.id), {
         values: updatedPropertyValues,
       });
     },
-    [selectedProperty, setProperties, userDbRef],
+    [selectedProperty.id, userDbRef],
   );
 
   const updateDbItems = useCallback(
-    async (groupId, batch) => {
+    (groupId) => {
       setDbItems((prevDbItems) =>
         prevDbItems.map((dbItem) => {
           return dbItem?.[selectedProperty.name]?.id === groupId
@@ -127,7 +133,11 @@ const Group = ({
             : dbItem;
         }),
       );
-
+    },
+    [selectedProperty, setDbItems],
+  );
+  const updateDbItemsBackend = useCallback(
+    async (batch, groupId) => {
       try {
         const collectionRef = collection(userDbRef, 'dbItems');
         const q = query(
@@ -142,16 +152,26 @@ const Group = ({
         console.log(e);
       }
     },
-    [selectedProperty, setDbItems, userDbRef],
+    [selectedProperty, userDbRef],
   );
 
   const handleRemoveGroup = async (groupId) => {
     const batch = writeBatch(db);
 
-    removeGroupFromProperty(groupId, batch);
-    await updateDbItems(groupId, batch);
+    const updatedPropertyValues = selectedProperty.values.filter(
+      ({ id }) => id !== groupId,
+    );
+
+    removeGroupFromProperty(updatedPropertyValues);
+    updateDbItems(groupId);
+
+    if (!userDbRef) return;
+
+    console.log('userDbRef', userDbRef);
 
     try {
+      removeGroupFromPropertyBackend(batch, updatedPropertyValues);
+      await updateDbItemsBackend(batch, groupId);
       await batch.commit();
     } catch (e) {
       console.log(e);
@@ -183,7 +203,6 @@ const Group = ({
     // setDbItems(dbCopy);
   };
 
-  // TODO useMemo
   const forbidDrop = useMemo(() => {
     return !!selectedView.sort?.length;
   }, [selectedView]);
@@ -201,8 +220,8 @@ const Group = ({
   return (
     <div ref={drop} style={{ minHeight: `${dragHeight}px`, opacity }}>
       <GroupContainer
-        onMouseEnter={group ? handleMouseEnter : undefined}
-        onMouseLeave={group ? handleMouseLeave : undefined}
+        onMouseEnter={groupData ? handleMouseEnter : undefined}
+        onMouseLeave={groupData ? handleMouseLeave : undefined}
       >
         <Header>
           <GroupTitle
@@ -228,6 +247,7 @@ const Group = ({
                 key={dbItem.id}
                 dbItem={dbItem}
                 setDbItems={setDbItems}
+                removeDbItem={removeDbItem}
               />
             ))}
         </DbItemsContainer>

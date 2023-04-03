@@ -70,14 +70,13 @@ const ViewModal = ({
   closeModal,
 }) => {
   const { userDbRef } = useContext(DatabaseContext);
-  const viewRef = doc(userDbRef, 'views', selectedView.id);
 
   const modalProps = useModal(buttonRef, closeModal);
 
   const [isRenaming, setIsRenaming] = useState(false);
   const handleClickRename = () => setIsRenaming(true);
 
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(selectedView.name ?? '');
   const handleChange = (e) => setInput(e.target.value);
   const isErrorMsg = useMemo(() => {
     return !!views.find(({ name }) => name === input);
@@ -94,8 +93,10 @@ const ViewModal = ({
       prev.map((view) => (view.id === id ? updatedView : view)),
     );
 
+    if (!userDbRef) return;
+
     try {
-      await updateDoc(viewRef, updatedView);
+      await updateDoc(doc(userDbRef, 'views', selectedView.id), updatedView);
     } catch (e) {
       console.error(e);
     }
@@ -106,8 +107,10 @@ const ViewModal = ({
 
     removeView(selectedView.id);
 
+    if (!userDbRef) return;
+
     try {
-      await deleteDoc(viewRef);
+      await deleteDoc(doc(userDbRef, 'views', selectedView.id));
     } catch (e) {
       console.error(e);
     }
@@ -133,9 +136,10 @@ const ViewModal = ({
               autoFocus
               onChange={handleChange}
               onKeyDown={handleKeyDown}
+              value={input}
             />
             <button style={{ display: 'none' }} type="submit" />
-            {isErrorMsg && (
+            {isErrorMsg && input !== selectedView?.name && (
               <>
                 <hr />
                 <ErrorMsg>

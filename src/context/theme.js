@@ -21,3 +21,9 @@ export const hoverStyle = css`
     border-radius: 4px;
   }
 `;
+
+export const hoverNoBorder = css`
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.055);
+  }
+`;

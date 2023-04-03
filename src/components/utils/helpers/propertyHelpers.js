@@ -74,3 +74,22 @@ export const getPropertiesObj = (properties) => {
     }),
   );
 };
+
+export const unhoverableTypes = ['created'];
+
+export const defaultProperties = [
+  {
+    id: 'CWn4hkG8N6XTyhPxLhnI',
+    name: 'Project',
+    type: 'select',
+    values: [],
+  },
+  {
+    id: 'Doz5O0mAftJQdrVJpJlY',
+    name: 'Priority',
+    type: 'text',
+    values: [],
+  },
+  { id: 'LeW7Ymaij0aBqchI0dRQ', name: 'Date', type: 'date', values: [] },
+  { id: 'ycH0wDAhQiR5zCY24VPu', name: 'Created', type: 'created' },
+];

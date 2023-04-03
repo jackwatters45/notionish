@@ -1,6 +1,7 @@
 import { mdiDeveloperBoard, mdiTable } from '@mdi/js';
 import Table from '../../DatabaseTypes/Table/Table';
 import Board from '../../DatabaseTypes/Board/Board';
+import { v4 as uuid } from 'uuid';
 
 const getBoardView = (props) => <Board {...props} />;
 
@@ -19,12 +20,14 @@ const viewsData = {
   },
 };
 
+
+
 export default viewsData;
 
 export const defaultViews = [
   {
     name: 'Board',
-    id: 'board',
+    id: uuid(),
     type: 'board',
     icon: mdiDeveloperBoard,
     sort: [],
@@ -32,7 +35,7 @@ export const defaultViews = [
   },
   {
     name: 'Table',
-    id: 'table',
+    id: uuid(),
     type: 'table',
     icon: mdiTable,
     sort: [],
