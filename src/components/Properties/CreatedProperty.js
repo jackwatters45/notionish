@@ -17,12 +17,14 @@ const StyledContentEditable = styled(ContentEditable)`
 
 // pretty much a disabled text property with the date formatted
 const CreatedProperty = (props) => {
-  props = { ...props, disabled: true };
-  const { html: _, ...editableDivProps } = useEditableDiv(props);
+  const { selectedProperty, data } = props;
 
-  const formatDate = () => new Date(props.data.created).toDateString();
+  const propertyValue = data[selectedProperty.name];
+  const formattedDate = new Date(propertyValue).toDateString();
 
-  return <StyledContentEditable html={formatDate()} {...editableDivProps} />;
+  const editableDivProps = useEditableDiv({ ...props, disabled: true });
+
+  return <StyledContentEditable {...editableDivProps} html={formattedDate} />;
 };
 
 export default CreatedProperty;

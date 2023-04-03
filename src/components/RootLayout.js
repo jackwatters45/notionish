@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import ViewsNav from './Views/ViewsNav';
 import DatabaseContent from './DatabaseTypes/DatabaseContent';
@@ -20,7 +20,12 @@ const RootLayout = ({
   removeView,
   addView,
   properties,
+  setProperties,
+  addProperty,
+  removeProperty,
   dbItems,
+  setDbItems,
+  addDbItem,
   sidebarWidth,
 }) => {
   const { viewId } = useParams();
@@ -61,6 +66,13 @@ const RootLayout = ({
           editedDbItems={editedDbItems}
           selectedView={selectedView}
           views={views}
+          properties={properties}
+          setProperties={setProperties}
+          addProperty={addProperty}
+          removeProperty={removeProperty}
+          dbItems={dbItems}
+          setDbItems={setDbItems}
+          addDbItem={addDbItem}
         />
         <Outlet />
       </MainContentContainer>

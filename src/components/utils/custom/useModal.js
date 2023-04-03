@@ -11,7 +11,7 @@ const useModal = (buttonRef, closeModal) => {
 
   useLayoutEffect(() => {
     const handleClick = (e) => {
-      if (!modalRef.current?.contains(e.target)) return closeModal();
+      if (!modalRef.current?.contains(e.target)) closeModal();
     };
     const handleEscape = (e) => {
       if (e.key === 'Escape') closeModal();

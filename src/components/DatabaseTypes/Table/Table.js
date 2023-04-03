@@ -87,7 +87,9 @@ const Table = ({
   editedDbItems,
   selectedView,
   properties,
+  setProperties,
   addProperty,
+  removeProperty,
   setDbItems,
   addDbItem,
 }) => {
@@ -140,12 +142,23 @@ const Table = ({
       <Header>
         <HeaderCellName
           icon={mdiAlphabeticalVariant}
-          name={'Name'}
+          selectedProperty={{ name: 'Name' }}
           disabled={true}
         />
-        {properties?.map(({ name, id, type }) => {
+        {properties?.map((property) => {
+          const { id, type } = property;
           const { icon } = propertyData[type];
-          return <HeaderCell key={id} name={name} icon={icon} />;
+          return (
+            <HeaderCell
+              key={id}
+              icon={icon}
+              selectedProperty={property}
+              properties={properties}
+              setProperties={setProperties}
+              removeProperty={removeProperty}
+              setDbItems={setDbItems}
+            />
+          );
         })}
         <AddNewPropertyTable
           properties={properties}

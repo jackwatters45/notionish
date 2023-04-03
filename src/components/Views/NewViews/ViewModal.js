@@ -39,7 +39,7 @@ const ViewOption = styled.div`
   }
 `;
 
-const NewViewName = styled.div`
+const NewViewName = styled.form`
   display: flex;
   flex-direction: column;
   transition: background 20ms ease-in 0s;
@@ -134,6 +134,7 @@ const ViewModal = ({
               onChange={handleChange}
               onKeyDown={handleKeyDown}
             />
+            <button style={{ display: 'none' }} type="submit" />
             {isErrorMsg && (
               <>
                 <hr />

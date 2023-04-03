@@ -1,49 +1,61 @@
-import {
-  useRef,
-  useContext,
-  useCallback,
-  useLayoutEffect,
-} from 'react';
+import { useRef, useContext, useCallback, useLayoutEffect } from 'react';
 import { cursorToEndLine } from '../helpers/cursorHelpers';
 import { DatabaseContext } from '../../../context/context';
+import { doc, updateDoc } from 'firebase/firestore';
 
-const useEditableDiv = (props) => {
-  const { data, autoFocus, disabled, className, placeholder = 'Empty' } = props;
-  const { setDbItems } = useContext(DatabaseContext);
+const useEditableDiv = ({
+  data,
+  selectedProperty,
+  autoFocus,
+  disabled,
+  className,
+  placeholder,
+  setDbItems,
+}) => {
+  const { userDbRef } = useContext(DatabaseContext);
 
   const editableRef = useRef();
 
-  // Default change handler
-  // const handleChange = (e) => {
-  //   const todosCopy = [...dbItems];
-  //   const todoCopy = todosCopy.find(({ id }) => id === data.id);
-  //   todoCopy[e.currentTarget.id] = e.currentTarget.innerText;
-  //   setDbItems(todosCopy);
-  // };
+  const handleChange = useCallback(
+    async (e) => {
+      const input =
+        selectedProperty.name === 'notes'
+          ? e.currentTarget.innerHTML
+          : e.target.value;
 
-  const handleChange = useCallback((e) => {
-    const { id, innerText } = e.currentTarget;
-    setDbItems((prevTodos) =>
-      prevTodos.map((dbItem) =>
-        dbItem.id === data.id ? { ...dbItem, [id]: innerText } : dbItem,
-      ),
-    );
-  }, [data.id, setDbItems]);
+      const updatedDbItem = { ...data, [selectedProperty.name]: input };
+
+      setDbItems((prevTodos) =>
+        prevTodos.map((dbItem) => {
+          return dbItem.id === data.id ? updatedDbItem : dbItem;
+        }),
+      );
+
+      try {
+        await updateDoc(doc(userDbRef, 'dbItems', data.id), {
+          [selectedProperty.name]: input,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [data, selectedProperty, setDbItems, userDbRef],
+  );
 
   // Enter -> blur property
-  const disableNewlines = useCallback((e) => {
+  const disableNewlines = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       editableRef.current.blur();
     }
-  }, []);
+  };
 
   // Paste formatting
-  const handlePaste = useCallback((e) => {
+  const handlePaste = (e) => {
     e.preventDefault();
     const text = e.clipboardData.getData('text');
     document.execCommand('insertText', false, text);
-  }, []);
+  };
 
   // Focus -> moves to end of line
   useLayoutEffect(() => {
@@ -51,17 +63,15 @@ const useEditableDiv = (props) => {
       cursorToEndLine(editableRef.current);
   }, [autoFocus, editableRef]);
 
-  const name = props.name?.toLowerCase();
   return {
-    html: data[name] || '',
+    html: data[selectedProperty.name] ?? '',
     onChange: handleChange,
     onKeyDown: disableNewlines,
     onPaste: handlePaste,
     className: className,
     innerRef: editableRef,
-    id: name,
     disabled,
-    placeholder,
+    placeholder: placeholder ?? 'Empty',
   };
 };
 

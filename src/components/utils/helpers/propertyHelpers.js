@@ -13,25 +13,17 @@ import SelectProperty from '../../Properties/Select/SelectProperty';
 import DateProperty from '../../Properties/Date/DateProperty';
 import CreatedProperty from '../../Properties/CreatedProperty';
 
-const getTextProperty = (name, todo) => (
-  <TextProperty name={name} data={todo} />
-);
+const getTextProperty = (props) => <TextProperty {...props} />;
 
-const getNumberProperty = (name, todo) => (
-  <NumberProperty name={name} data={todo} />
-);
+const getNumberProperty = (props) => <NumberProperty {...props} />;
 
-const getUrlProperty = (name, todo) => <UrlProperty name={name} data={todo} />;
+const getUrlProperty = (props) => <UrlProperty {...props} />;
 
-const getDateProperty = (name, todo) => (
-  <DateProperty name={name} data={todo} />
-);
-const getSelectProperty = (name, todo) => (
-  <SelectProperty name={name} data={todo} />
-);
-const getCreatedProperty = (name, todo) => (
-  <CreatedProperty name={name} data={todo} />
-);
+const getDateProperty = (props) => <DateProperty {...props} />;
+
+const getSelectProperty = (props) => <SelectProperty {...props} />;
+
+const getCreatedProperty = (props) => <CreatedProperty {...props} />;
 
 const propertyData = {
   text: {

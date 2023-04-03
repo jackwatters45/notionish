@@ -224,7 +224,11 @@ const Group = ({
         <DbItemsContainer>
           {groupDbItems &&
             groupDbItems.map((dbItem) => (
-              <DbItemCard dbItem={dbItem} key={dbItem.id} />
+              <DbItemCard
+                key={dbItem.id}
+                dbItem={dbItem}
+                setDbItems={setDbItems}
+              />
             ))}
         </DbItemsContainer>
         <StyledNewButton onClick={handleAddDbItem} text={'New'} />

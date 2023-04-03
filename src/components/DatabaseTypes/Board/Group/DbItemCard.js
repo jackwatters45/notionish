@@ -29,7 +29,7 @@ const StyledNameProp = styled(NameProperty)`
   padding: 0 0 6px 0;
 `;
 
-const DbItemCard = ({ dbItem }) => {
+const DbItemCard = ({ dbItem, setDbItems }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'dbItem',
     item: { todoId: dbItem.id },
@@ -44,9 +44,10 @@ const DbItemCard = ({ dbItem }) => {
         style={{ opacity: isDragging ? 0.5 : 1 }}
       >
         <StyledNameProp
-          name={'name'}
-          className={dbItem.id}
+          selectedProperty={{ name: 'name' }}
           data={dbItem}
+          setDbItems={setDbItems}
+          className={dbItem.id}
           placeholder="Type a name..."
         />
         <CardDone dbItem={dbItem} />

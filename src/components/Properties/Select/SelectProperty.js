@@ -28,6 +28,11 @@ const StyledContentEditable = styled(ContentEditable)`
   margin: 0 0 0 6px;
 `;
 
+const EmptyText = styled.div`
+  color: var(--empty-font-color);
+  padding: 0 8px;
+`;
+
 const ButtonContainer = styled.div`
   height: inherit;
   width: inherit;
@@ -46,16 +51,16 @@ const SelectProperty = (props) => {
   const closeDropdown = () => setIsDropdownVisible(false);
 
   const { name } = html;
-
-  // TODO placeholder
   return (
     <SelectContainer>
       <ButtonContainer onClick={handleClickSelectButton} ref={buttonRef}>
-        {html && (
-          <SelectButtonBackground>
+        <SelectButtonBackground>
+          {html ? (
             <StyledContentEditable html={name} {...editableDivProps} />
-          </SelectButtonBackground>
-        )}
+          ) : (
+            <EmptyText>Empty</EmptyText>
+          )}
+        </SelectButtonBackground>
       </ButtonContainer>
       {isDropdownVisible && (
         <SelectDropdown

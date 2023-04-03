@@ -2,14 +2,10 @@ import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import PropertyLabel from '../Properties/Labels/PropertyLabel';
 import Icon from '@mdi/react';
-import {
-  mdiCheckboxOutline as checkboxIcon,
-  mdiCheckboxBlankOutline as emptyCheckboxIcon,
-} from '@mdi/js';
+import { mdiCheckboxOutline, mdiCheckboxBlankOutline } from '@mdi/js';
 import NotesProperty from '../Properties/NotesProperty';
 import propertyData from '../utils/helpers/propertyHelpers';
 import NameProperty from '../Properties/NameProperty';
-
 import { hoverStyle } from '../utils/theme';
 import { DatabaseContext } from '../../context/context';
 import { doc, deleteDoc } from 'firebase/firestore';
@@ -98,7 +94,12 @@ const SidebarContents = ({
 
   return (
     <PropertiesContainer id="properties">
-      <TodoName name={'name'} data={selectedDbItem} autoFocus />
+      <TodoName
+        selectedProperty={{ name: 'name' }}
+        data={selectedDbItem}
+        setDbItems={setDbItems}
+        autoFocus
+      />
       {properties.map((property) => {
         const { name, type } = property;
         const { icon, getComponent } = propertyData[type];
@@ -113,19 +114,24 @@ const SidebarContents = ({
               setDbItems={setDbItems}
             />
             <StyledPropertyValue>
-              {getComponent(name, selectedDbItem)}
+              {getComponent({
+                selectedProperty: property,
+                data: selectedDbItem,
+                setDbItems: setDbItems,
+                setProperties: setProperties,
+              })}
             </StyledPropertyValue>
           </PropertyRow>
         );
       })}
       <PropertyRow>
         <PropertyLabel
-          icon={checkboxIcon}
+          icon={mdiCheckboxOutline}
           selectedProperty={{ name: 'Done?' }}
           disabled={true}
         />
         <DoneButton
-          path={emptyCheckboxIcon}
+          path={mdiCheckboxBlankOutline}
           size={0.85}
           onClick={handleDeleteTodoAndCloseSidebar}
         />
@@ -139,6 +145,7 @@ const SidebarContents = ({
       <StyledNotes
         selectedProperty={{ name: 'notes' }}
         data={selectedDbItem}
+        setDbItems={setDbItems}
         placeholder={'Add notes here...'}
       />
     </PropertiesContainer>

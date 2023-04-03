@@ -78,10 +78,20 @@ const App = () => {
             getDocs(propsCollection),
           ]);
 
+        const convertTimestampsToDate = (data) => {
+          return Object.fromEntries(
+            Object.entries(data).map(([key, value]) => {
+              return [
+                key,
+                value?.seconds ? new Date(value.seconds * 1000) : value,
+              ];
+            }),
+          );
+        };
+
         const newDbItemsArr = dbItemsSnapshot.docs.map((doc) => {
-          const { id } = doc;
-          const { created, ...docData } = doc.data();
-          return { id, ...docData, created: new Date(created.seconds * 1000) };
+          const dbItemData = convertTimestampsToDate(doc.data());
+          return { ...dbItemData };
         });
         setDbItems(newDbItemsArr);
 
@@ -95,7 +105,7 @@ const App = () => {
         });
         setProperties(newPropertiesArr);
       } catch (e) {
-        console.error(e);
+        console.log('Error getting documents: ', e);
       }
     };
     fetchData();
@@ -114,11 +124,6 @@ const App = () => {
     addProperty,
   };
 
-  useEffect(() => {
-    console.log(views);
-  }, [views]);
-
-  // Sidebar + RootLayout width calculation
   const [sidebarWidth, setSidebarWidth] = useState(400);
 
   if (!user) return <Nav userDbRef={userDbRef} user={user} />;
@@ -142,23 +147,30 @@ const App = () => {
                   addView={addView}
                   dbItems={dbItems}
                   setDbItems={setDbItems}
+                  addDbItem={addDbItem}
                   sidebarWidth={sidebarWidth}
                   properties={properties}
+                  setProperties={setProperties}
+                  addProperty={addProperty}
                 />
               }
             >
-              {/* <Route
+              <Route
                 path=":dbItemId"
                 element={
                   <Sidebar
                     setSidebarWidth={setSidebarWidth}
                     sidebarWidth={sidebarWidth}
                     dbItems={dbItems}
+                    setDbItems={setDbItems}
                     properties={properties}
+                    setProperties={setProperties}
+                    addProperty={addProperty}
+                    removeProperty={removeProperty}
                     removeDbItem={removeDbItem}
                   />
                 }
-              /> */}
+              />
             </Route>
           </Routes>
         </DatabaseContext.Provider>

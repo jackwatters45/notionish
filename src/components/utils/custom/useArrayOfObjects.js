@@ -6,7 +6,6 @@ const useArrayOfObjects = (initial = []) => {
   const handleRemove = useCallback(
     (id) => {
       const newArr = arr.filter((obj) => obj.id !== id);
-      console.log(newArr);
       setArr(newArr);
       return newArr;
     },
