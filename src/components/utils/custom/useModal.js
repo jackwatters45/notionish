@@ -1,6 +1,8 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useContext } from 'react';
+import { DatabaseContext } from '../../../context/context';
 
 const useModal = (buttonRef, closeModal) => {
+  const { isModalOpen, setIsModalOpen } = useContext(DatabaseContext);
   const modalRef = useRef();
 
   const rightPositionStyle = useMemo(() => {
@@ -16,6 +18,7 @@ const useModal = (buttonRef, closeModal) => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') closeModal();
     };
+
     window.addEventListener('mousedown', handleClick);
     document.addEventListener('keydown', handleEscape);
     return () => {
@@ -23,6 +26,11 @@ const useModal = (buttonRef, closeModal) => {
       document.removeEventListener('mousedown', handleEscape);
     };
   }, [closeModal, modalRef]);
+
+  useEffect(() => {
+    setIsModalOpen(true);
+    return () => setIsModalOpen(false);
+  }, [isModalOpen, setIsModalOpen]);
 
   return { style: rightPositionStyle, ref: modalRef };
 };

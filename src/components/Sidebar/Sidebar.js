@@ -1,9 +1,17 @@
-import React, { useState,  useCallback, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+} from 'react';
 import styled from 'styled-components';
 import Icon from '@mdi/react';
 import { mdiChevronDoubleRight } from '@mdi/js';
 import SidebarContents from './SidebarContents';
 import { useNavigate, useParams } from 'react-router-dom';
+import { DatabaseContext } from '../../context/context';
 
 const SidebarContainer = styled.div`
   position: fixed;
@@ -46,19 +54,22 @@ const Sidebar = ({
   removeDbItem,
 }) => {
   const { dbItemId } = useParams();
+  const { isModalOpen } = useContext(DatabaseContext);
 
   const sidebarRef = useRef();
 
   const navigate = useNavigate();
   const navigateToParent = useCallback(() => navigate('../'), [navigate]);
 
-  const isFirstRender = useRef(true);
+  const [isUrlValid, setIsUrlValid] = useState(false);
+  useEffect(() => {
+    const dbItemExists = dbItems.some((item) => item.id === dbItemId);
+    return dbItemExists ? setIsUrlValid(true) : navigateToParent();
+  }, [dbItems, navigateToParent, dbItemId]);
 
   const [isResizing, setIsResizing] = useState(false);
-
   const stopResizing = useCallback(() => setIsResizing(false), []);
   const startResizing = useCallback(() => setIsResizing(true), []);
-
   const resize = useCallback(
     (mouseMoveEvent) => {
       if (!isResizing) return;
@@ -85,35 +96,29 @@ const Sidebar = ({
     };
   }, [resize, stopResizing]);
 
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (isFirstRender.current) {
-        isFirstRender.current = false;
-        return;
-      }
-
-      // TODO this may be the way to control the sidebar close behavior when also popup
+  useLayoutEffect(() => {
+    const handleMousedown = (e) => {
       if (
-        e.target.classList.contains(dbItemId) ||
-        sidebarRef.current?.contains(e.target)
+        !isModalOpen &&
+        !e.target.classList.contains(dbItemId) &&
+        !sidebarRef.current?.contains(e.target)
       )
-        return;
-
-      navigateToParent();
+        navigateToParent();
     };
     const handleEscape = (e) => {
-      if (e.key === 'Escape') navigateToParent();
+      if (e.key === 'Escape' && !isModalOpen) navigateToParent();
     };
-    window.addEventListener('mousedown', handleClick);
+    window.addEventListener('mousedown', handleMousedown);
     document.addEventListener('keydown', handleEscape);
     return () => {
-      window.removeEventListener('mousedown', handleClick);
+      window.removeEventListener('mousedown', handleMousedown);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [dbItemId, navigateToParent, sidebarRef]);
+  }, [dbItemId, isModalOpen, navigateToParent, sidebarRef]);
 
   const handleClickClose = () => navigateToParent();
 
+  if (!isUrlValid) return null;
   return (
     <SidebarContainer ref={sidebarRef} style={{ width: sidebarWidth }}>
       <Dragger onMouseDown={startResizing} />

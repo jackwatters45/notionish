@@ -10,7 +10,7 @@ const MainContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: fit-content;
-  margin: 0 50px;
+  padding: 0 96px;
   overflow: hidden;
 `;
 
@@ -47,14 +47,15 @@ const RootLayout = ({
     return newTodos;
   }, [selectedView, dbItems]);
 
-  const contentWidth = useMemo(
-    () => `calc(100% - 100px - ${!match ? sidebarWidth : 0}px)`,
-    [match, sidebarWidth],
-  );
+  const contentWidth = useMemo(() => {
+    return !match ? `calc(100%  - ${sidebarWidth}px)` : 'inherit';
+  }, [sidebarWidth, match]);
 
   return (
     <>
-      <MainContentContainer style={{ width: contentWidth }}>
+      <MainContentContainer
+        style={{ minWidth: contentWidth, width: contentWidth }}
+      >
         <ViewsNav
           selectedView={selectedView}
           views={views}

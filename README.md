@@ -3,8 +3,6 @@
 General checks
 
 - sidebar has modal open -> esc should not close sidebar (same for clicks)
-- add horizontal margin (50 -> 96px)
-- redirecting in offline mode (or maybe just in general?) when dbItem or view does not exist
 
 drag stuff
 

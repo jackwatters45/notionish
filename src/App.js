@@ -24,8 +24,8 @@ const AppContainer = styled.div`
 `;
 
 const StyledFooter = styled(Footer)`
-grid-row-start: 3;
-`
+  grid-row-start: 3;
+`;
 
 const App = () => {
   const [user, setUser] = useState();
@@ -119,11 +119,14 @@ const App = () => {
 
   const [sidebarWidth, setSidebarWidth] = useState(400);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return views?.length ? (
     <BrowserRouter>
       <AppContainer>
-        <Nav userDbRef={userDbRef} user={user} />
-        <DatabaseProvider value={{ userDbRef, user }}>
+        <Nav user={user} sidebarWidth={sidebarWidth} />
+        <DatabaseProvider
+          value={{ userDbRef, user, isModalOpen, setIsModalOpen }}
+        >
           <Routes>
             <Route
               path="/"

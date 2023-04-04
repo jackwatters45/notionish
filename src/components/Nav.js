@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  margin: 0px 70px;
+  margin: 0px 108px;
   padding: 60px 0px 20px;
   align-items: end;
 `;

@@ -38,6 +38,10 @@ const StyledPropertyLabel = styled(PropertyLabel)`
   ${hoverStyle};
 `;
 
+const DonePropertyLabel = styled(PropertyLabel)`
+  cursor: default;
+`;
+
 const ClickablePropertyValue = styled.div`
   ${hoverStyle};
   & > div:focus {
@@ -134,7 +138,7 @@ const SidebarContents = ({
         );
       })}
       <PropertyRow>
-        <PropertyLabel
+        <DonePropertyLabel
           icon={mdiCheckboxOutline}
           selectedProperty={{ name: 'Done?' }}
           disabled={true}
