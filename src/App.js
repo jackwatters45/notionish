@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -32,8 +32,13 @@ const App = () => {
   const [user, setUser] = useState();
   const [userDbRef, setUserDbRef] = useState();
 
+  const isLoaded = useRef(false);
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setUser(user));
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user === null) isLoaded.current = true;
+      setUser(user);
+    });
     return () => unsubscribe();
   }, []);
 
@@ -101,6 +106,8 @@ const App = () => {
           return { ...doc.data() };
         });
         setProperties(newPropertiesArr);
+
+        isLoaded.current = true;
       } catch (e) {
         console.log('Error getting documents: ', e);
       }
@@ -113,12 +120,18 @@ const App = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  return views?.length ? (
+  if (!isLoaded.current)
+    return (
+      <div className="loading">
+        <img src={notionLogo} alt="Notion logo" className="loading-logo" />
+      </div>
+    );
+  return (
     <BrowserRouter>
       <AppContainer>
         <Nav user={user} sidebarWidth={sidebarWidth} />
         <DatabaseProvider
-          value={{ userDbRef, user, isModalOpen, setIsModalOpen }}
+          value={{ userDbRef, user, isModalOpen, setIsModalOpen, isLoaded }}
         >
           <Routes>
             <Route
@@ -167,10 +180,6 @@ const App = () => {
         <StyledFooter />
       </AppContainer>
     </BrowserRouter>
-  ) : (
-    <div className="loading">
-      <img src={notionLogo} alt="Notion logo" className="loading-logo" />
-    </div>
   );
 };
 
