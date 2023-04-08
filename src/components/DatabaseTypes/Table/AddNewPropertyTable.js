@@ -12,6 +12,7 @@ const AddNewButton = styled.div`
   transition: background 20ms ease-in 0s;
   cursor: pointer;
   padding: 0 8px;
+  margin-right: 38px;
   align-items: center;
   &:hover {
     ${hoverNoBorder}

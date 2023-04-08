@@ -37,18 +37,18 @@ const RootLayout = ({
   }, [viewId, views]);
 
   const editedDbItems = useMemo(() => {
-    let newTodos = dbItems;
+    let updatedDbItems = dbItems;
     if (selectedView.filter?.length)
-      newTodos = applyFilters(newTodos, selectedView.filter);
+      updatedDbItems = applyFilters(updatedDbItems, selectedView.filter);
 
     if (selectedView.sort?.length)
-      newTodos = sortFunction(newTodos, selectedView.sort);
+      updatedDbItems = sortFunction(updatedDbItems, selectedView.sort);
 
-    return newTodos;
+    return updatedDbItems;
   }, [selectedView, dbItems]);
 
   const contentWidth = useMemo(() => {
-    return !match ? `calc(100%  - ${sidebarWidth}px)` : 'inherit';
+    return !match ? `calc(100%  - ${sidebarWidth}px)` : '100%';
   }, [sidebarWidth, match]);
 
   return (

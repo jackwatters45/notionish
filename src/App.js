@@ -14,6 +14,7 @@ import { DatabaseProvider } from './context/context';
 import notionLogo from './assets/notion-logo-no-background.png';
 import { defaultViews } from './components/utils/helpers/viewHelpers';
 import { defaultProperties } from './components/utils/helpers/propertyHelpers';
+import convertTimestampsToDate from './components/utils/helpers/convertTimestampsToDate';
 
 const AppContainer = styled.div`
   display: grid;
@@ -71,6 +72,7 @@ const App = () => {
   // fetching data
   useEffect(() => {
     if (!userDbRef) return;
+
     const fetchData = async () => {
       const dbItemsRef = collection(userDbRef, 'dbItems');
       const viewsRef = collection(userDbRef, 'views');
@@ -84,22 +86,11 @@ const App = () => {
             getDocs(propsCollection),
           ]);
 
-        const convertTimestampsToDate = (data) => {
-          return Object.fromEntries(
-            Object.entries(data).map(([key, value]) => {
-              return [
-                key,
-                value?.seconds ? new Date(value.seconds * 1000) : value,
-              ];
-            }),
-          );
-        };
-
         const newDbItemsArr = dbItemsSnapshot.docs.map((doc) => {
           const dbItemData = convertTimestampsToDate(doc.data());
           return { ...dbItemData };
         });
-        setDbItems(newDbItemsArr);
+        setDbItems(newDbItemsArr.sort((a, b) => a.order - b.order));
 
         const newViewsArr = viewsSnapshot.docs.map((doc) => {
           return { ...doc.data() };
@@ -114,12 +105,14 @@ const App = () => {
         console.log('Error getting documents: ', e);
       }
     };
+
     fetchData();
   }, [setDbItems, setViews, setProperties, userDbRef, user]);
 
   const [sidebarWidth, setSidebarWidth] = useState(400);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   return views?.length ? (
     <BrowserRouter>
       <AppContainer>

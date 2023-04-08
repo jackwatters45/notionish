@@ -15,9 +15,10 @@ const Board = ({
   selectedView,
   properties,
   setProperties,
+  dbItems,
   setDbItems,
   addDbItem,
-  removeDbItem
+  removeDbItem,
 }) => {
   const selectedProperty = useMemo(() => {
     return properties.find(({ id }) => id === 'CWn4hkG8N6XTyhPxLhnI');
@@ -62,6 +63,7 @@ const Board = ({
               properties={properties}
               setProperties={setProperties}
               selectedView={selectedView}
+              dbItems={dbItems}
               setDbItems={setDbItems}
               addDbItem={addDbItem}
               removeDbItem={removeDbItem}

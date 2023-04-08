@@ -120,10 +120,12 @@ const LabelModal = ({
     (updatedProperty) => {
       setDbItems((prevDbItems) =>
         prevDbItems.map((item) => {
-          return {
+          const newItem = {
             ...item,
             [updatedProperty.name]: item[selectedProperty.name],
           };
+          delete newItem[selectedProperty.name];
+          return newItem;
         }),
       );
     },
@@ -139,7 +141,8 @@ const LabelModal = ({
           const propertyValue = doc.get(selectedProperty.name);
           const updatedField = { [updatedProperty.name]: propertyValue };
           const deletedField = { [selectedProperty.name]: deleteField() };
-          batch.update(doc.ref, updatedField, deletedField);
+          const updateData = { ...updatedField, ...deletedField };
+          batch.update(doc.ref, updateData);
         });
       } catch (e) {
         console.log(e);

@@ -31,7 +31,7 @@ const StyledNameProp = styled(NameProperty)`
 const DbItemCard = ({ dbItem, setDbItems, removeDbItem }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'dbItem',
-    item: { todoId: dbItem.id },
+    item: { dbItemId: dbItem.id },
     collect: (monitor) => ({ isDragging: !!monitor.isDragging() }),
   }));
 

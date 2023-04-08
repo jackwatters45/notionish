@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { mdiAlphabeticalVariant } from '@mdi/js';
 import propertyData, {
@@ -11,7 +11,9 @@ import AddNewPropertyTable from './AddNewPropertyTable';
 import { DatabaseContext } from '../../../context/context';
 import TableRowContent from './TableRowContent';
 import { useDrop } from 'react-dnd';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, writeBatch } from 'firebase/firestore';
+import { db } from '../../../firebase';
+import useDnDPosition from '../../utils/custom/useDnDPosition';
 
 const Container = styled.div`
   min-width: fit-content;
@@ -99,16 +101,18 @@ const Table = ({
   setProperties,
   addProperty,
   removeProperty,
+  dbItems,
   setDbItems,
   addDbItem,
 }) => {
   const { userDbRef } = useContext(DatabaseContext);
 
-  const addTodo = async () => {
+  const addTodo = useCallback(async () => {
     const newDbItem = {
       name: null,
       id: uuid(),
       notes: null,
+      order: dbItems.length,
       ...getPropertiesObj(properties),
     };
     addDbItem(newDbItem);
@@ -120,24 +124,49 @@ const Table = ({
     } catch (e) {
       console.log(e);
     }
-  };
+  }, [addDbItem, dbItems.length, properties, userDbRef]);
 
-  const dropItem = ({ todoId }, offset) => {
-    // const dbCopy = [...dbItems];
-    // const droppedItem = dbCopy.find(({ id }) => todoId === id);
-    // const { y } = offset;
-    // const tableStart = 195;
-    // const tablePositionY = y - tableStart;
-    // const rowHeight = 35;
-    // const newIndex = Math.floor(tablePositionY / rowHeight);
-    // dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
-    // dbCopy.splice(newIndex, 0, droppedItem);
-    // setDbItems(dbCopy);
+  // Drag and Drop
+  const { updateDbItemOrder, updateDbItemOrderBackend, getDistanceMoved } =
+    useDnDPosition();
+
+  const dropItem = ({ dbItemId }, offset) => {
+    setDbItems((currentDbItems) => {
+      const rowHeight = 35;
+      const firstItemStart = 220;
+      const draggedItemIndex = currentDbItems.findIndex(({ id }) => {
+        return id === dbItemId;
+      });
+
+      const distanceMoved = getDistanceMoved(
+        currentDbItems,
+        draggedItemIndex,
+        rowHeight,
+        firstItemStart,
+        offset,
+      );
+      if (distanceMoved === null) return currentDbItems;
+
+      const newOrder = currentDbItems[draggedItemIndex].order + distanceMoved;
+
+      const updatedOrder = updateDbItemOrder(
+        currentDbItems,
+        draggedItemIndex,
+        newOrder,
+      );
+
+      // TODO this might need change
+      const batch = writeBatch(db);
+      updateDbItemOrderBackend(batch, updatedOrder);
+
+      return updatedOrder;
+    });
   };
 
   const forbidDrop = useMemo(() => {
-    return selectedView?.sort?.length;
+    return !!selectedView?.sort?.length;
   }, [selectedView]);
+
   const [{ opacity }, drop] = useDrop(
     () => ({
       accept: 'dbItem',

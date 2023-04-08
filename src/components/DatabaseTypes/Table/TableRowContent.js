@@ -128,7 +128,7 @@ const TableRowContent = ({
 
   const [{ opacity }, drag, dragPreview] = useDrag(() => ({
     type: 'dbItem',
-    item: { todoId: selectedDbItem.id },
+    item: { dbItemId: selectedDbItem.id },
     collect: (monitor) => ({ opacity: !!monitor.isDragging() ? 0.5 : 1 }),
   }));
 

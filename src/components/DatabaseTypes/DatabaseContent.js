@@ -6,6 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const Container = styled.div`
   overflow: auto;
+
 `;
 
 const DatabaseContent = (props) => {

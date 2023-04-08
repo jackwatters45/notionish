@@ -19,6 +19,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { db } from '../../../../firebase';
+import useDnDPosition from '../../../utils/custom/useDnDPosition';
 
 const GroupContainer = styled.div`
   margin: 4px;
@@ -62,14 +63,14 @@ const StyledNewButton = styled(NewButton)`
   margin-top: 4px;
 `;
 
-// make sure everything is actually being used
 const Group = ({
   group,
   selectedProperty,
   properties,
   setProperties,
-  addDbItem,
+  dbItems,
   setDbItems,
+  addDbItem,
   removeDbItem,
   dragHeight,
   selectedView,
@@ -82,6 +83,7 @@ const Group = ({
       name: null,
       id: uuid(),
       notes: null,
+      order: dbItems.length,
       ...getPropertiesObj(properties),
       [selectedProperty.name]: groupData,
     };
@@ -167,8 +169,6 @@ const Group = ({
 
     if (!userDbRef) return;
 
-    console.log('userDbRef', userDbRef);
-
     try {
       removeGroupFromPropertyBackend(batch, updatedPropertyValues);
       await updateDbItemsBackend(batch, groupId);
@@ -182,25 +182,87 @@ const Group = ({
   const handleMouseEnter = () => setIsShowTrashIcon(true);
   const handleMouseLeave = () => setIsShowTrashIcon(false);
 
-  // TODO useMemo (maybe idk thats what auto complete said??)
+  // Drag and Drop
+  const {
+    updateDbItemOrder,
+    updateDbItemOrderBackend,
+    getDistanceMoved,
+    updateGroup,
+    updateGroupBackend,
+  } = useDnDPosition();
+
   const dropItem = ({ dbItemId }, offset) => {
-    // const dbCopy = [...dbItems];
-    // const droppedItem = dbCopy.find(({ id }) => {
-    //   console.log(id);
-    //   console.log(dbItemId);
-    //   return dbItemId === id;
-    // });
-    // droppedItem.project = group;
-    // const { y } = offset;
-    // const firstItemStart = 210;
-    // const tablePositionY = y - firstItemStart;
-    // const rowHeight = 71.19;
-    // let newIndex = Math.floor(tablePositionY / rowHeight);
-    // if (newIndex < 0) newIndex = 0;
-    // if (newIndex > groupDbItems.length - 1) newIndex = groupDbItems.length - 1;
-    // dbCopy.splice(dbCopy.indexOf(droppedItem), 1);
-    // dbCopy.splice(newIndex, 0, droppedItem);
-    // setDbItems(dbCopy);
+    setDbItems((currentDbItems) => {
+      const currentDbItemsCopy = [...currentDbItems];
+
+      const firstItemStart = 227;
+      const rowHeight = 74.19;
+      const draggedItemIndex = currentDbItems.findIndex(({ id }) => {
+        return id === dbItemId;
+      });
+      const draggedItemId = currentDbItems[draggedItemIndex].id;
+
+      const draggedItemGroupIndex = groupDbItems.findIndex(({ id }) => {
+        return id === dbItemId;
+      });
+
+      const batch = writeBatch(db);
+
+      // if group dragged into is empty, don't worry about order
+      if (groupDbItems.length === 0) {
+        updateGroup(
+          currentDbItemsCopy,
+          draggedItemIndex,
+          groupData,
+          selectedProperty,
+        );
+
+        if (userDbRef)
+          updateGroupBackend(draggedItemId, selectedProperty, groupData);
+
+        return currentDbItemsCopy;
+      }
+
+      // if dragged into new group not empty -> update group
+      const isSameGroup = groupDbItems.some(({ id }) => id === dbItemId);
+      if (!isSameGroup) {
+        updateGroup(
+          currentDbItemsCopy,
+          draggedItemIndex,
+          groupData,
+          selectedProperty,
+        );
+
+        if (userDbRef)
+          updateGroupBackend(draggedItemId, selectedProperty, groupData);
+      }
+
+      // get distance moved in group using group index (not in dbItems/dbItems index)
+      const distanceMoved = getDistanceMoved(
+        groupDbItems,
+        draggedItemGroupIndex,
+        rowHeight,
+        firstItemStart,
+        offset,
+      );
+      if (distanceMoved === null) return currentDbItemsCopy;
+
+      // The todo should be moved right before the target
+      const targetGroupIndex = draggedItemGroupIndex + distanceMoved;
+      const targetDbItem = groupDbItems[targetGroupIndex];
+      const targetDbItemIndex = targetDbItem.order;
+
+      // optional 4th param to set new group
+      const updatedOrder = updateDbItemOrder(
+        currentDbItemsCopy,
+        draggedItemIndex,
+        targetDbItemIndex,
+      );
+
+      updateDbItemOrderBackend(batch, updatedOrder);
+
+      return updatedOrder;
+    });
   };
 
   const forbidDrop = useMemo(() => {
@@ -211,7 +273,9 @@ const Group = ({
     () => ({
       accept: 'dbItem',
       canDrop: () => !forbidDrop,
-      collect: (monitor) => ({ opacity: !!monitor.isOver() ? 0.75 : 1 }),
+      collect: (monitor) => ({
+        opacity: !!monitor.isOver() ? 0.75 : 1,
+      }),
       drop: (item, monitor) => dropItem(item, monitor.getClientOffset()),
     }),
     [],
