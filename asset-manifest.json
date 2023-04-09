@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/todo-list-react/static/css/main.9782e85b.css",
-    "main.js": "/todo-list-react/static/js/main.4d80692b.js",
+    "main.js": "/todo-list-react/static/js/main.d422754d.js",
     "static/media/notion-logo-no-background.png": "/todo-list-react/static/media/notion-logo-no-background.7aa264a898951e791ee3.png",
     "index.html": "/todo-list-react/index.html",
     "main.9782e85b.css.map": "/todo-list-react/static/css/main.9782e85b.css.map",
-    "main.4d80692b.js.map": "/todo-list-react/static/js/main.4d80692b.js.map"
+    "main.d422754d.js.map": "/todo-list-react/static/js/main.d422754d.js.map"
   },
   "entrypoints": [
     "static/css/main.9782e85b.css",
-    "static/js/main.4d80692b.js"
+    "static/js/main.d422754d.js"
   ]
 }
