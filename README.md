@@ -35,6 +35,7 @@ This project is a simple task management application that allows users to manage
 - **react-dnd**: First time using a drag and drop library
 - **Working with a large app**: This was the first time I worked on a project of this size, and I learned a lot about how to organize my code and components to make it easier to work with.
 - **Working with modals/dropdowns/popups**: This was the first time I seriously worked with modals, dropdowns, and popups, and I learned a lot about how to implement them and how to make them work with the rest of the app.
+- **Content Editable Divs**: Notion uses content editable divs to allow text wrapping. I had never used them before and learned how to use them. Implemented a custom hook for each of my different property types that used them.
 
 ### License
 
