@@ -177,6 +177,12 @@ const App = () => {
                 }
               />
             </Route>
+            <Route
+              path="*"
+              element={
+                <Navigate to={`/todo-list-react/${views[0].id}`} replace />
+              }
+            />
           </Routes>
         </DatabaseProvider>
         <StyledFooter />
