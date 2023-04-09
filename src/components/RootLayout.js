@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import ViewsNav from './Views/ViewsNav';
 import DatabaseContent from './DatabaseTypes/DatabaseContent';
-import { Outlet, useMatch, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useMatch, useParams } from 'react-router-dom';
 import { applyFilters } from './Views/Filter/filterHelpers';
 import sortFunction from './Views/Sort/sortHelpers';
 

@@ -2,6 +2,8 @@ const filterFuncBase = (property, searchEl, propertyType, comparator) => {
   if (!searchEl) return true;
   if (!property) return false;
 
+  console.log(property, searchEl, propertyType, comparator);
+
   if (!['date', 'select', 'text'].includes(propertyType)) {
     console.error(`Invalid property type: ${propertyType}`);
     return false;
@@ -56,13 +58,13 @@ export const applyFilters = (newDbItems, filterArr) => {
     }
 
     const filterFunction = filterOptions[filterType].filterFunc;
-    return filteredItems.filter((dbItem) =>
-      filterFunction(
-        dbItem[filteredProperty.id],
+    return filteredItems.filter((dbItem) => {
+      return filterFunction(
+        dbItem[filteredProperty.name],
         searchEl,
         filteredProperty.type,
-      ),
-    );
+      );
+    });
   }, newDbItems);
 };
 

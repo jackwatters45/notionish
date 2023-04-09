@@ -68,7 +68,7 @@ const sortFunction = (arr, propertiesArr) => {
     propertiesArr.some((property) => {
       try {
         const { property: propertyData, order } = property;
-        const { id, type } = propertyData;
+        const { name, type } = propertyData;
 
         if (
           !sortTypes.hasOwnProperty(type) ||
@@ -78,7 +78,7 @@ const sortFunction = (arr, propertiesArr) => {
         }
 
         const sortFunc = sortTypes[type][order];
-        result = sortFunc(a[id], b[id]);
+        result = sortFunc(a[name], b[name]);
 
         return result !== 0;
       } catch (e) {

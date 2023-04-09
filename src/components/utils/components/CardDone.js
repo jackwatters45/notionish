@@ -22,10 +22,7 @@ const CardDone = ({ dbItem: { id }, removeDbItem }) => {
   const { userDbRef } = useContext(DatabaseContext);
 
   const navigate = useNavigate();
-
   const match = useMatch('todo-list-react/:viewId');
-  // const
-  console.log('match: ', match);
 
   const handleRemoveDbItem = useCallback(
     async (e) => {
