@@ -4,7 +4,7 @@ import { mdiCheckboxBlankOutline } from '@mdi/js';
 import React, { useCallback, useContext } from 'react';
 import { DatabaseContext } from '../../../context/context';
 import { deleteDoc, doc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 
 const DoneContainer = styled.button`
   display: flex;
@@ -23,12 +23,16 @@ const CardDone = ({ dbItem: { id }, removeDbItem }) => {
 
   const navigate = useNavigate();
 
+  const match = useMatch('todo-list-react/:viewId');
+  // const
+  console.log('match: ', match);
+
   const handleRemoveDbItem = useCallback(
     async (e) => {
       // container has onClick event that opens sidebar but if we click the isDone button we don't want to open the sidebar. Ugly fix but I believe it works
       e.stopPropagation();
       e.preventDefault();
-      navigate('../');
+      if (!match) navigate('../');
 
       removeDbItem(id);
 
@@ -41,7 +45,7 @@ const CardDone = ({ dbItem: { id }, removeDbItem }) => {
         console.log('Error removing document: ', error);
       }
     },
-    [navigate, removeDbItem, id, userDbRef],
+    [match, navigate, removeDbItem, id, userDbRef],
   );
 
   return (

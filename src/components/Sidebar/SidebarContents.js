@@ -69,7 +69,6 @@ const StyledAddPropButton = styled(AddNewPropertySidebar)`
   margin: 0 0 10px 5px;
 `;
 
-// TODO make sure all small components work
 const SidebarContents = ({
   dbItemId,
   dbItems,
