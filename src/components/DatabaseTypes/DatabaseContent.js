@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {  } from 'react';
 import viewsData from '../utils/helpers/viewHelpers';
 import styled from 'styled-components';
 import { DndProvider } from 'react-dnd';
@@ -11,6 +11,7 @@ const Container = styled.div`
 const DatabaseContent = (props) => {
   const { selectedView } = props;
 
+  
   return (
     <DndProvider backend={HTML5Backend}>
       <Container>{viewsData[selectedView.type].getComponent(props)}</Container>
