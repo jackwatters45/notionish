@@ -18,6 +18,7 @@ const TodoContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+  user-select: none;
   cursor: pointer;
   &:hover {
     background-color: var(--card-hover-background-color);
@@ -26,6 +27,7 @@ const TodoContainer = styled.div`
 
 const StyledNameProp = styled(NameProperty)`
   padding: 0 0 6px 0;
+  user-select: none;
 `;
 
 const DbItemCard = ({ dbItem, setDbItems, removeDbItem }) => {

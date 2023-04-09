@@ -18,7 +18,13 @@ const NameProperty = (props) => {
     if (!innerRef.current.innerText) innerRef.current.focus();
   }, [innerRef]);
 
-  return <StyledContentEditable innerRef={innerRef} {...editableDivProps} />;
+  return (
+    <StyledContentEditable
+      innerRef={innerRef}
+      className={props.className}
+      {...editableDivProps}
+    />
+  );
 };
 
 export default NameProperty;
