@@ -79,7 +79,7 @@ const ViewsNav = ({
                 removeView={removeView}
               />
             ) : (
-              <Link to={`/${view.id}`} key={name}>
+              <Link to={`/todo-list-react/${view.id}`} key={name}>
                 <UnselectedView>
                   <Icon path={icon} size={0.75} />
                   {name}

@@ -135,11 +135,13 @@ const App = () => {
         >
           <Routes>
             <Route
-              path="/"
-              element={<Navigate to={`${views[0].id}`} replace />}
+              path="/todo-list-react/"
+              element={
+                <Navigate to={`/todo-list-react/${views[0].id}`} replace />
+              }
             />
             <Route
-              path=":viewId"
+              path="/todo-list-react/:viewId"
               element={
                 <RootLayout
                   views={views}

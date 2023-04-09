@@ -30,7 +30,7 @@ const RootLayout = ({
   sidebarWidth,
 }) => {
   const { viewId } = useParams();
-  const match = useMatch(`/${viewId}`);
+  const match = useMatch(`/todo-list-react/${viewId}`);
 
   const selectedView = useMemo(() => {
     return views.find((item) => item.id === viewId) ?? views[0];
