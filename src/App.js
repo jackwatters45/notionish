@@ -177,7 +177,7 @@ const App = () => {
               />
             </Route>
             <Route
-              path="*"
+              path="/todo-list-react/*"
               element={
                 <Navigate to={`/todo-list-react/${views[0].id}`} replace />
               }

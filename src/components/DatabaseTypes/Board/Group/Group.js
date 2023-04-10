@@ -238,6 +238,7 @@ const Group = ({
       }
 
       // get distance moved in group using group index (not in dbItems/dbItems index)
+      // TODO
       const distanceMoved = getDistanceMoved(
         groupDbItems,
         draggedItemGroupIndex,
@@ -245,6 +246,8 @@ const Group = ({
         firstItemStart,
         offset,
       );
+
+      console.log(distanceMoved);
       if (distanceMoved === null) return currentDbItemsCopy;
 
       // The todo should be moved right before the target

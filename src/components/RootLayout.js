@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import ViewsNav from './Views/ViewsNav';
 import DatabaseContent from './DatabaseTypes/DatabaseContent';
-import { Outlet, useMatch, useParams } from 'react-router-dom';
+import { Outlet, useMatch, useNavigate, useParams } from 'react-router-dom';
 import { applyFilters } from './Views/Filter/filterHelpers';
 import sortFunction from './Views/Sort/sortHelpers';
 
@@ -31,6 +31,12 @@ const RootLayout = ({
 }) => {
   const { viewId } = useParams();
   const match = useMatch(`/todo-list-react/${viewId}`);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!views.find((item) => item.id === viewId))
+      navigate(`/todo-list-react/${views[0].id}`);
+  }, [viewId, views, navigate]);
 
   const selectedView = useMemo(() => {
     return views.find((item) => item.id === viewId) ?? views[0];

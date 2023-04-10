@@ -111,7 +111,7 @@ const Nav = ({ user }) => {
 
   return (
     <Container>
-      <Link to={'/'}>
+      <Link to={'/todo-list-react/'}>
         <Header>Notion Todo Clone</Header>
       </Link>
       <LoginContainer>
