@@ -5,6 +5,7 @@
 This project is a simple task management application that allows users to manage their tasks with customizable properties and views. It is a copy of the way in which I use Notion.io to manage my own personal tasks. Users can create, edit, and delete tasks, as well as sort and filter them based on various properties.
 
 ## Example
+
 ![Screenshot 2023-04-08 at 6 39 30 PM](https://user-images.githubusercontent.com/70183051/230754531-eb10ffc4-2c66-40a7-9f49-d930e29b6a18.jpg)
 
 ## Key Components

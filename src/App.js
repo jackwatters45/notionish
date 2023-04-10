@@ -77,7 +77,6 @@ const App = () => {
   // fetching data
   useEffect(() => {
     if (!userDbRef) return;
-
     const fetchData = async () => {
       const dbItemsRef = collection(userDbRef, 'dbItems');
       const viewsRef = collection(userDbRef, 'views');
