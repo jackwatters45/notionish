@@ -78,6 +78,7 @@ const Group = ({
   const { userDbRef } = useContext(DatabaseContext);
 
   const { groupData, groupDbItems } = group;
+
   const handleAddDbItem = async () => {
     const newDbItem = {
       name: null,
@@ -183,85 +184,94 @@ const Group = ({
   const handleMouseLeave = () => setIsShowTrashIcon(false);
 
   // Drag and Drop
+  const firstItemStart = 227;
+  const rowHeight = 74.19;
   const {
+    getLocationNewGroup,
+    getLocationSameGroup,
     updateDbItemOrder,
     updateDbItemOrderBackend,
-    getDistanceMoved,
     updateGroup,
     updateGroupBackend,
-  } = useDnDPosition();
+  } = useDnDPosition(groupData, selectedProperty, firstItemStart, rowHeight);
 
   const dropItem = ({ dbItemId }, offset) => {
     setDbItems((currentDbItems) => {
       const currentDbItemsCopy = [...currentDbItems];
 
-      const firstItemStart = 227;
-      const rowHeight = 74.19;
-      const draggedItemIndex = currentDbItems.findIndex(({ id }) => {
-        return id === dbItemId;
-      });
-      const draggedItemId = currentDbItems[draggedItemIndex].id;
-
-      const draggedItemGroupIndex = groupDbItems.findIndex(({ id }) => {
-        return id === dbItemId;
+      const updatedGroupItems = currentDbItemsCopy.filter((dbItem) => {
+        if (!groupData) return !dbItem[selectedProperty.name];
+        return dbItem[selectedProperty.name]?.id === groupData.id;
       });
 
-      const batch = writeBatch(db);
+      const draggedItemIndex = currentDbItemsCopy.findIndex(({ id }) => {
+        return id === dbItemId;
+      });
+      const draggedItemId = currentDbItemsCopy[draggedItemIndex].id;
 
       // if group dragged into is empty, don't worry about order
-      if (groupDbItems.length === 0) {
-        updateGroup(
+      if (!updatedGroupItems.length) {
+        const updatedDbItems = updateGroup(
           currentDbItemsCopy,
           draggedItemIndex,
-          groupData,
-          selectedProperty,
         );
 
-        if (userDbRef)
-          updateGroupBackend(draggedItemId, selectedProperty, groupData);
+        if (userDbRef) updateGroupBackend(draggedItemId);
 
-        return currentDbItemsCopy;
+        return updatedDbItems;
       }
 
-      // if dragged into new group not empty -> update group
-      const isSameGroup = groupDbItems.some(({ id }) => id === dbItemId);
+      // if dragged into new group not empty -> update group and order
+      const isSameGroup = updatedGroupItems.some(({ id }) => id === dbItemId);
       if (!isSameGroup) {
-        updateGroup(
+        const updatedDbItems = updateGroup(
           currentDbItemsCopy,
           draggedItemIndex,
-          groupData,
-          selectedProperty,
         );
 
-        if (userDbRef)
-          updateGroupBackend(draggedItemId, selectedProperty, groupData);
+        const targetDbItemIndex = getLocationNewGroup(
+          updatedDbItems,
+          updatedGroupItems,
+          draggedItemIndex,
+          offset,
+        );
+
+        if (targetDbItemIndex === null) {
+          if (userDbRef) updateGroupBackend(draggedItemId);
+          return updatedDbItems;
+        }
+
+        const updatedOrder = updateDbItemOrder(
+          updatedDbItems,
+          draggedItemIndex,
+          targetDbItemIndex,
+        );
+
+        if (userDbRef) {
+          updateGroupBackend(draggedItemId);
+          const batch = writeBatch(db);
+          updateDbItemOrderBackend(batch, updatedOrder);
+        }
+
+        return updatedOrder;
       }
 
-      // get distance moved in group using group index (not in dbItems/dbItems index)
-      // TODO
-      const distanceMoved = getDistanceMoved(
-        groupDbItems,
-        draggedItemGroupIndex,
-        rowHeight,
-        firstItemStart,
+      const targetDbItemIndex = getLocationSameGroup(
+        updatedGroupItems,
+        draggedItemIndex,
+
         offset,
       );
 
-      console.log(distanceMoved);
-      if (distanceMoved === null) return currentDbItemsCopy;
+      if (targetDbItemIndex === null) return currentDbItemsCopy;
 
-      // The todo should be moved right before the target
-      const targetGroupIndex = draggedItemGroupIndex + distanceMoved;
-      const targetDbItem = groupDbItems[targetGroupIndex];
-      const targetDbItemIndex = targetDbItem.order;
-
-      // optional 4th param to set new group
       const updatedOrder = updateDbItemOrder(
         currentDbItemsCopy,
         draggedItemIndex,
         targetDbItemIndex,
       );
 
+      const batch = writeBatch(db);
       updateDbItemOrderBackend(batch, updatedOrder);
 
       return updatedOrder;

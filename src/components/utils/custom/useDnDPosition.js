@@ -2,49 +2,92 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { useCallback, useContext } from 'react';
 import { DatabaseContext } from '../../../context/context';
 
-const useDnDPosition = (setDbItems) => {
+const useDnDPosition = (
+  groupData,
+  selectedProperty,
+  firstItemStart,
+  rowHeight,
+) => {
   const { userDbRef } = useContext(DatabaseContext);
 
-  const getDistanceMoved = (
-    currentDbItems,
-    draggedItemIndex,
-    rowHeight,
-    firstItemStart,
-    offset,
-  ) => {
-    const lastItemEnd = firstItemStart + rowHeight * currentDbItems.length;
+  const getLocationNewGroup = useCallback(
+    (allDbItems, groupDbItems, draggedItemIndex, offset) => {
+      const lastItemEnd = firstItemStart + rowHeight * groupDbItems.length;
 
-    const draggedItemMiddle =
-      draggedItemIndex * rowHeight + firstItemStart + rowHeight / 2;
+      let { y } = offset;
+      if (y < firstItemStart) y = firstItemStart;
+      if (y > lastItemEnd) y = lastItemEnd;
 
-    let { y } = offset;
-    if (y < firstItemStart) y = firstItemStart;
-    if (y > lastItemEnd) y = lastItemEnd;
+      const distanceFromTop = Math.floor(
+        Math.abs(y - firstItemStart) / rowHeight,
+      );
 
-    const isValidMoveAbove = y < draggedItemMiddle - rowHeight;
-    const isValidMoveBelow = y > draggedItemMiddle + rowHeight;
-    if (!isValidMoveAbove && !isValidMoveBelow) return null;
+      
+      // If dragged to bottom of group, place after last item
+      if (distanceFromTop === groupDbItems.length) {
+        const dbItemBefore = groupDbItems[distanceFromTop - 1];
+        const dbItemBeforeOrder = dbItemBefore.order;
+        
+        const isLastItem = dbItemBeforeOrder === allDbItems.length - 1;
+        return isLastItem ? dbItemBeforeOrder : dbItemBeforeOrder + 1;
+      }
+      
+      const targetDbItem = groupDbItems[distanceFromTop];
 
-    let distanceMovedNoDirection = Math.floor(
-      Math.abs(y - draggedItemMiddle) / rowHeight,
-    );
+      // if no change in order return null
+      if (targetDbItem.order === draggedItemIndex) return null;
 
-    const distanceMoved = isValidMoveAbove
-      ? -distanceMovedNoDirection
-      : distanceMovedNoDirection;
+      // if dragged to top of group, place before first item
+      if (targetDbItem.order > draggedItemIndex) return targetDbItem.order - 1;
 
-    return distanceMoved;
-  };
+      // if dragged to middle of group, place after target item
+      return targetDbItem.order;
+    },
+    [firstItemStart, rowHeight],
+  );
+
+  const getLocationSameGroup = useCallback(
+    (groupDbItems, draggedItemIndex, offset) => {
+      const draggedItemGroupIndex = groupDbItems.findIndex(({ order }) => {
+        return order === draggedItemIndex;
+      });
+
+      let { y } = offset;
+      if (y < firstItemStart) y = firstItemStart;
+      const lastItemEnd = firstItemStart + rowHeight * groupDbItems.length;
+      if (y > lastItemEnd) y = lastItemEnd;
+
+      const draggedItemMiddle =
+        draggedItemGroupIndex * rowHeight + firstItemStart + rowHeight / 2;
+
+      const isValidMoveAbove = y < draggedItemMiddle - rowHeight;
+      const isValidMoveBelow = y > draggedItemMiddle + rowHeight;
+      if (!isValidMoveAbove && !isValidMoveBelow) return null;
+
+      let distanceMovedNoDirection = Math.floor(
+        Math.abs(y - draggedItemMiddle) / rowHeight,
+      );
+
+      const distanceMoved = isValidMoveAbove
+        ? -distanceMovedNoDirection
+        : distanceMovedNoDirection;
+
+      // The todo should be moved right before the target
+      const targetGroupIndex = draggedItemGroupIndex + distanceMoved;
+      const targetDbItem = groupDbItems[targetGroupIndex];
+      const targetDbItemIndex = targetDbItem.order;
+      return targetDbItemIndex;
+    },
+    [firstItemStart, rowHeight],
+  );
 
   const updateDbItemOrder = (currentDbItems, draggedItemIndex, newOrder) => {
-    const dbItemsCopy = [...currentDbItems];
-    const sortedDbItems = dbItemsCopy.sort((a, b) => a.order - b.order);
-
     const draggedItem = currentDbItems[draggedItemIndex];
-    sortedDbItems.splice(draggedItemIndex, 1);
-    sortedDbItems.splice(newOrder, 0, draggedItem);
 
-    const updatedOrder = sortedDbItems.map((item, index) => {
+    currentDbItems.splice(draggedItemIndex, 1);
+    currentDbItems.splice(newOrder, 0, draggedItem);
+
+    const updatedOrder = currentDbItems.map((item, index) => {
       return { ...item, order: index };
     });
 
@@ -57,7 +100,6 @@ const useDnDPosition = (setDbItems) => {
         updatedDbItems.forEach((dbItem, index) => {
           batch.update(doc(userDbRef, 'dbItems', dbItem.id), { order: index });
         });
-
         await batch.commit();
       } catch (e) {
         console.log(e);
@@ -66,30 +108,33 @@ const useDnDPosition = (setDbItems) => {
     [userDbRef],
   );
 
-  const updateGroup = (
-    currentDbItemsCopy,
-    draggedItemIndex,
-    groupData,
-    selectedProperty,
-  ) => {
-    currentDbItemsCopy[draggedItemIndex][selectedProperty.name] = groupData;
-  };
+  const updateGroup = useCallback(
+    (currentDbItemsCopy, draggedItemIndex) => {
+      return currentDbItemsCopy.map((item, index) => {
+        return index === draggedItemIndex
+          ? { ...item, [selectedProperty.name]: groupData }
+          : item;
+      });
+    },
+    [groupData, selectedProperty.name],
+  );
 
   const updateGroupBackend = useCallback(
-    async (draggedItemId, selectedProperty, groupData) => {
+    async (draggedItemId) => {
+      const docRef = doc(userDbRef, 'dbItems', draggedItemId);
+      const updatedGroup = { [selectedProperty.name]: groupData };
       try {
-        await updateDoc(doc(userDbRef, 'dbItems', draggedItemId), {
-          [selectedProperty.name]: groupData,
-        });
+        await updateDoc(docRef, updatedGroup);
       } catch (e) {
         console.log(e);
       }
     },
-    [userDbRef],
+    [groupData, selectedProperty.name, userDbRef],
   );
 
   return {
-    getDistanceMoved,
+    getLocationNewGroup,
+    getLocationSameGroup,
     updateDbItemOrder,
     updateDbItemOrderBackend,
     updateGroup,
@@ -98,77 +143,3 @@ const useDnDPosition = (setDbItems) => {
 };
 
 export default useDnDPosition;
-
-// const getUpdatedDroppedItemIndex = useCallback(
-//   (
-//     offset,
-//     dbItems,
-//     firstItemStart,
-//     rowHeight,
-//     droppedItem,
-//     groupDbItems = false,
-//   ) => {
-//     const { y } = offset;
-//     const tablePositionY = y - firstItemStart;
-
-//     // Calculate the index without considering the bounds
-//     const newIndexWithoutBounds = Math.floor(tablePositionY / rowHeight);
-
-//     const droppedOn = groupDbItems.find(
-//       (item) => item.order === newIndexWithoutBounds,
-//     );
-//     if (droppedOn === droppedItem) {
-//       // console.log('droppedOn === droppedItem');
-//       // console.log('problem is with the groupDbItems or the array updating');
-//       return false;
-//     }
-
-//     // groupDbItems not updated??
-//     // console.log('groupDbItems', groupDbItems);
-
-//     // Apply the lower bound (maximum value)
-//     const maxPos = groupDbItems.length;
-
-//     const lowerBoundIndex = Math.min(newIndexWithoutBounds, maxPos);
-
-//     // Apply the upper bound (minimum value) and return the result
-//     const updatedGroupIndex = Math.max(0, lowerBoundIndex);
-
-//     if (!groupDbItems[updatedGroupIndex]) {
-//       console.log('!groupDbItems[updatedGroupIndex]');
-//       return false;
-//     }
-
-//     const replacedItem = groupDbItems[updatedGroupIndex];
-//     const newIndex = dbItems.findIndex(
-//       (dbItem) => dbItem.id === replacedItem.id,
-//     );
-
-//     return newIndex;
-//   },
-//   [],
-// );
-
-// const getUpdatedArr = (dbCopy, currentOrder, newIndex, droppedItem) => {
-//   dbCopy.splice(currentOrder, 1);
-//   dbCopy.splice(newIndex, 0, droppedItem);
-
-//   return dbCopy;
-// };
-
-// const updateDbItemOrder = (updatedArr) => {
-//   setDbItems(
-//     updatedArr.map((dbItem, index) => ({
-//       ...dbItem,
-//       order: index,
-//     })),
-//   );
-// };
-// const updateDbItemOrderBackend = useCallback(
-//   (batch, updatedDbItems) => {
-//     updatedDbItems.forEach((dbItem, index) => {
-//       batch.update(doc(userDbRef, 'dbItems', dbItem.id), { order: index });
-//     });
-//   },
-//   [userDbRef],
-// );

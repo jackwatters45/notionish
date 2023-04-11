@@ -9,7 +9,6 @@ const GroupsContainer = styled.div`
   height: 100%;
 `;
 
-// TODO check what happens if no todos
 const Board = ({
   editedDbItems,
   selectedView,
@@ -32,7 +31,8 @@ const Board = ({
       return result;
     }, {});
 
-    return selectedProperty.values
+    // TODO fix eventually
+    const meep = selectedProperty.values
       .map((group) => {
         return {
           groupData: group,
@@ -43,6 +43,8 @@ const Board = ({
         groupData: null,
         groupDbItems: groupedDbItems['No Status'] ?? [],
       });
+
+    return meep;
   }, [editedDbItems, selectedProperty]);
 
   const groupsContainerRef = useRef();
