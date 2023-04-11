@@ -110,7 +110,6 @@ const AddPropertyModal = ({
     [userDbRef],
   );
 
-  // TODO idk if did right
   const addNewProperty = async () => {
     closeModal();
 

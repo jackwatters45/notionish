@@ -127,35 +127,33 @@ const Table = ({
   }, [addDbItem, dbItems.length, properties, userDbRef]);
 
   // Drag and Drop
-  const { updateDbItemOrder, updateDbItemOrderBackend, getDistanceMoved } =
-    useDnDPosition();
+  const firstItemStart = 220;
+  const rowHeight = 35;
+  const { updateDbItemOrder, updateDbItemOrderBackend, getLocationSameGroup } =
+    useDnDPosition(firstItemStart, rowHeight);
 
   const dropItem = ({ dbItemId }, offset) => {
     setDbItems((currentDbItems) => {
-      const rowHeight = 35;
-      const firstItemStart = 220;
-      const draggedItemIndex = currentDbItems.findIndex(({ id }) => {
+      const currentDbItemsCopy = [...currentDbItems];
+
+      const draggedItemIndex = currentDbItemsCopy.findIndex(({ id }) => {
         return id === dbItemId;
       });
 
-      const distanceMoved = getDistanceMoved(
-        currentDbItems,
+      const targetDbItemIndex = getLocationSameGroup(
+        currentDbItemsCopy,
         draggedItemIndex,
-        rowHeight,
-        firstItemStart,
         offset,
       );
-      if (distanceMoved === null) return currentDbItems;
 
-      const newOrder = currentDbItems[draggedItemIndex].order + distanceMoved;
+      if (targetDbItemIndex === null) return currentDbItemsCopy;
 
       const updatedOrder = updateDbItemOrder(
-        currentDbItems,
+        currentDbItemsCopy,
         draggedItemIndex,
-        newOrder,
+        targetDbItemIndex,
       );
 
-      // TODO this might need change
       const batch = writeBatch(db);
       updateDbItemOrderBackend(batch, updatedOrder);
 
@@ -165,7 +163,7 @@ const Table = ({
 
   const forbidDrop = useMemo(() => {
     return !!selectedView?.sort?.length;
-  }, [selectedView]);
+  }, [selectedView?.sort?.length]);
 
   const [{ opacity }, drop] = useDrop(
     () => ({

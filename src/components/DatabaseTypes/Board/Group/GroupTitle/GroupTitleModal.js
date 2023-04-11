@@ -98,7 +98,6 @@ const GroupTitleModal = (props) => {
     );
   }, [selectedProperty?.values, nameInput, groupData.id]);
 
-  // TODO
   const updateProperties = useCallback(
     (updatedProperty) => {
       setProperties((prev) =>

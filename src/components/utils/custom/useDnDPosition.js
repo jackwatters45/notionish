@@ -3,10 +3,10 @@ import { useCallback, useContext } from 'react';
 import { DatabaseContext } from '../../../context/context';
 
 const useDnDPosition = (
-  groupData,
-  selectedProperty,
   firstItemStart,
   rowHeight,
+  groupData = null,
+  selectedProperty = null,
 ) => {
   const { userDbRef } = useContext(DatabaseContext);
 
@@ -22,16 +22,15 @@ const useDnDPosition = (
         Math.abs(y - firstItemStart) / rowHeight,
       );
 
-      
       // If dragged to bottom of group, place after last item
       if (distanceFromTop === groupDbItems.length) {
         const dbItemBefore = groupDbItems[distanceFromTop - 1];
         const dbItemBeforeOrder = dbItemBefore.order;
-        
+
         const isLastItem = dbItemBeforeOrder === allDbItems.length - 1;
         return isLastItem ? dbItemBeforeOrder : dbItemBeforeOrder + 1;
       }
-      
+
       const targetDbItem = groupDbItems[distanceFromTop];
 
       // if no change in order return null
@@ -112,24 +111,24 @@ const useDnDPosition = (
     (currentDbItemsCopy, draggedItemIndex) => {
       return currentDbItemsCopy.map((item, index) => {
         return index === draggedItemIndex
-          ? { ...item, [selectedProperty.name]: groupData }
+          ? { ...item, [selectedProperty?.name]: groupData }
           : item;
       });
     },
-    [groupData, selectedProperty.name],
+    [groupData, selectedProperty?.name],
   );
 
   const updateGroupBackend = useCallback(
     async (draggedItemId) => {
       const docRef = doc(userDbRef, 'dbItems', draggedItemId);
-      const updatedGroup = { [selectedProperty.name]: groupData };
+      const updatedGroup = { [selectedProperty?.name]: groupData };
       try {
         await updateDoc(docRef, updatedGroup);
       } catch (e) {
         console.log(e);
       }
     },
-    [groupData, selectedProperty.name, userDbRef],
+    [groupData, selectedProperty?.name, userDbRef],
   );
 
   return {

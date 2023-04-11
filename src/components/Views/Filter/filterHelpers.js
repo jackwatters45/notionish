@@ -2,7 +2,6 @@ const filterFuncBase = (property, searchEl, propertyType, comparator) => {
   if (!searchEl) return true;
   if (!property) return false;
 
-  console.log(property, searchEl, propertyType, comparator);
 
   if (!['date', 'select', 'text'].includes(propertyType)) {
     console.error(`Invalid property type: ${propertyType}`);

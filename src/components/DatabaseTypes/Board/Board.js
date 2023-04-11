@@ -31,8 +31,7 @@ const Board = ({
       return result;
     }, {});
 
-    // TODO fix eventually
-    const meep = selectedProperty.values
+    return selectedProperty.values
       .map((group) => {
         return {
           groupData: group,
@@ -43,8 +42,6 @@ const Board = ({
         groupData: null,
         groupDbItems: groupedDbItems['No Status'] ?? [],
       });
-
-    return meep;
   }, [editedDbItems, selectedProperty]);
 
   const groupsContainerRef = useRef();

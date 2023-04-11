@@ -193,7 +193,7 @@ const Group = ({
     updateDbItemOrderBackend,
     updateGroup,
     updateGroupBackend,
-  } = useDnDPosition(groupData, selectedProperty, firstItemStart, rowHeight);
+  } = useDnDPosition(firstItemStart, rowHeight, groupData, selectedProperty);
 
   const dropItem = ({ dbItemId }, offset) => {
     setDbItems((currentDbItems) => {
@@ -280,7 +280,7 @@ const Group = ({
 
   const forbidDrop = useMemo(() => {
     return !!selectedView.sort?.length;
-  }, [selectedView]);
+  }, [selectedView?.sort?.length]);
 
   const [{ opacity }, drop] = useDrop(
     () => ({

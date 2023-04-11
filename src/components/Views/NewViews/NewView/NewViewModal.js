@@ -84,8 +84,8 @@ const NewViewModal = ({ views, addView, buttonRef, closeModal }) => {
 
     try {
       await setDoc(doc(userDbRef, 'views', id), newView);
-    } catch (err) {
-      console.log(err);
+    } catch (e) {
+      console.log(e);
     }
   };
 

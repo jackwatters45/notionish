@@ -311,7 +311,6 @@ const DatePicker = ({
   );
 };
 
-// TODO ad prop types
 DatePicker.propTypes = {
   date: PropTypes.instanceOf(Date),
 };
