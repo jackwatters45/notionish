@@ -3,7 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import styled from 'styled-components';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
@@ -15,6 +22,7 @@ import notionLogo from './assets/notion-logo-no-background.png';
 import { defaultViews } from './components/utils/helpers/viewHelpers';
 import { defaultProperties } from './components/utils/helpers/propertyHelpers';
 import convertTimestampsToDate from './components/utils/helpers/convertTimestampsToDate';
+import { v4 as uuid } from 'uuid';
 
 const AppContainer = styled.div`
   display: grid;
@@ -42,12 +50,28 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  const addUser = async ({ email, displayName, uid }) => {
+  const addUser = async (userInfo, userDb) => {
+    const { email, displayName, uid } = userInfo;
     try {
       await setDoc(doc(db, `users`, uid), {
         email,
         name: displayName,
       });
+
+      const batch = writeBatch(db);
+      const propertiesCollection = collection(userDb, 'properties');
+      const viewsCollection = collection(userDb, 'views');
+
+      defaultViews.forEach((view) => {
+        batch.set(doc(viewsCollection, view.id), view);
+      });
+      defaultProperties.forEach((property) => {
+        batch.set(doc(propertiesCollection, property.id), property);
+      });
+
+      batch.set(userDb, { id: uuid() });
+
+      await batch.commit();
     } catch (e) {
       console.error('Error adding document: ', e);
     }
@@ -59,8 +83,11 @@ const App = () => {
     const fetchUserDbRef = async () => {
       try {
         const userDocSnap = await getDoc(userDocRef);
-        if (!userDocSnap.exists()) addUser(user);
-        setUserDbRef(doc(userDocRef, 'dbData', 'mainDb'));
+
+        const userDb = doc(userDocRef, 'dbData', 'mainDb');
+        if (!userDocSnap.exists()) await addUser(user, userDb);
+
+        setUserDbRef(userDb);
       } catch (e) {
         console.error(e);
       }
@@ -119,12 +146,13 @@ const App = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (!isLoaded.current)
+  if (!isLoaded.current || (user && !views.length))
     return (
       <div className="loading">
         <img src={notionLogo} alt="Notion logo" className="loading-logo" />
       </div>
     );
+
   return (
     <BrowserRouter>
       <AppContainer>
