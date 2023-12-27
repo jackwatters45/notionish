@@ -30,12 +30,12 @@ const RootLayout = ({
   sidebarWidth,
 }) => {
   const { viewId } = useParams();
-  const match = useMatch(`/todo-list-react/${viewId}`);
+  const match = useMatch(`/${viewId}`);
 
   const navigate = useNavigate();
   useEffect(() => {
     if (!views.find((item) => item.id === viewId))
-      navigate(`/todo-list-react/${views[0].id}`);
+      navigate(`/${views[0].id}`);
   }, [viewId, views, navigate]);
 
   const selectedView = useMemo(() => {
