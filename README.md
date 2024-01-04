@@ -4,9 +4,34 @@
 
 This project is a simple task management application that allows users to manage their tasks with customizable properties and views. It is a copy of the way in which I use Notion.io to manage my own personal tasks. Users can create, edit, and delete tasks, as well as sort and filter them based on various properties.
 
-## Example
+## Live Project
+
+<https://todo-list.jackwatters.dev/>
+
+## Preview
 
 ![Screenshot 2023-04-08 at 6 39 30 PM](https://user-images.githubusercontent.com/70183051/230754531-eb10ffc4-2c66-40a7-9f49-d930e29b6a18.jpg)
+
+## Local Install
+
+```zsh
+git clone https://github.com/jackwatters45/todo-list-react.git
+
+npm run start
+```
+
+## Contribute
+
+- Issue Tracker: <https://github.com/jackwatters45/todo-list-react/issues>
+- Source Code: <https://github.com/jackwatters45/todo-list-react/tree/main/src>
+
+## Support
+
+If you are having issues, please let me know at: <jack.watters@me.com>
+
+## License
+
+The project is licensed under the MIT license.
 
 ## Key Components
 
@@ -40,7 +65,3 @@ This project is a simple task management application that allows users to manage
 - **Working with a large app**: This was the first time I worked on a project of this size, and I learned a lot about how to organize my code and components to make it easier to work with.
 - **Working with modals/dropdowns/popups**: This was the first time I seriously worked with modals, dropdowns, and popups, and I learned a lot about how to implement them and how to make them work with the rest of the app.
 - **Content Editable Divs**: Notion uses content editable divs to allow text wrapping. I had never used them before and learned how to use them. Implemented a custom hook for each of my different property types that used them.
-
-### License
-
-This project is licensed under the MIT License.
