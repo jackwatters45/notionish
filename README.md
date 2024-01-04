@@ -17,6 +17,8 @@ This project is a simple task management application that allows users to manage
 ```zsh
 git clone https://github.com/jackwatters45/todo-list-react.git
 
+npm install
+
 npm run start
 ```
 
