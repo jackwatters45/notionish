@@ -1,4 +1,4 @@
-# Notion Task Manager App: README
+# Notion Task Manager App
 
 ## Overview
 
